@@ -2,7 +2,7 @@
 #define VP_VIDEOPROCESSOR_H
 
 #include <opencv2/opencv.hpp>
-#include "vp/VideoFrame.h"
+#include "Frame.h"
 
 class VideoProcessor
 {
@@ -12,12 +12,12 @@ public:
 
 	float fps;
 
-	VideoFrame *processFrame();
+	Frame *processFrame();
 
 private:
 	cv::VideoCapture *capture;
 
-	void detectBalls(VideoFrame *frame);
+	void detectBalls(Frame *frame);
 };
 
 #endif

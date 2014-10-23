@@ -1,4 +1,5 @@
 #include <thread>
+#include "Frame.h"
 #include "util.h"
 #include "objects/BallObject.h"
 #include "VideoProcessor.h"
@@ -13,10 +14,10 @@ VideoProcessor::~VideoProcessor()
 {
 }
 
-VideoFrame *VideoProcessor::processFrame()
+Frame *VideoProcessor::processFrame()
 {
 	long beginTime = microtime();
-	VideoFrame *ret = new VideoFrame();
+	Frame *ret = new Frame();
 
 	ret->sourceMat = new cv::Mat();
 	ret->hsvMat = new cv::Mat();
@@ -35,7 +36,7 @@ VideoFrame *VideoProcessor::processFrame()
 	return ret;
 }
 
-void VideoProcessor::detectBalls(VideoFrame *frame)
+void VideoProcessor::detectBalls(Frame *frame)
 {
 	// OFF bottle cap
 	cv::Scalar lower(0, 120, 165);

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <opencv2/opencv.hpp>
+#include "Frame.h"
 #include "objects/BallObject.h"
-#include "vp/VideoFrame.h"
 #include "vp/VideoProcessor.h"
 
 int main(int argc, char** argv)
@@ -24,7 +24,7 @@ int main(int argc, char** argv)
 
 	while (true)
 	{
-		VideoFrame *frame = vp.processFrame();
+		Frame *frame = vp.processFrame();
 		cv::Mat preview(*frame->sourceMat);
 
 		for (std::vector<BaseObject *>::size_type i = 0; i != frame->objects.size(); ++i)

@@ -1,15 +1,15 @@
-#ifndef VP_VIDEOFRAME_H
-#define VP_VIDEOFRAME_H
+#ifndef FRAME_H
+#define FRAME_H
 
 #include <vector>
 #include <opencv2/opencv.hpp>
 #include "objects/BaseObject.h"
 
-class VideoFrame
+class Frame
 {
 public:
-	VideoFrame();
-	~VideoFrame();
+	Frame();
+	~Frame();
 
 	void addObject(BaseObject *obj);
 

@@ -1,12 +1,12 @@
-#include "VideoFrame.h"
+#include "Frame.h"
 
-VideoFrame::VideoFrame() :
+Frame::Frame() :
 	sourceMat(NULL),
 	objects()
 {
 }
 
-VideoFrame::~VideoFrame()
+Frame::~Frame()
 {
 	if (this->sourceMat)
 	{
@@ -24,7 +24,7 @@ VideoFrame::~VideoFrame()
 	}
 }
 
-void VideoFrame::addObject(BaseObject *obj)
+void Frame::addObject(BaseObject *obj)
 {
 	this->objects.push_back(obj);
 }
