@@ -72,8 +72,6 @@ int main(int argc, char** argv)
 	DebugLink::instance().close();
 
 	cv::destroyAllWindows();
-	cv::waitKey(0);
-
 	capture.release();
 
 	return 0;
