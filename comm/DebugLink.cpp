@@ -25,6 +25,12 @@ DebugLink::~DebugLink()
 	}
 }
 
+DebugLink &DebugLink::instance()
+{
+	static DebugLink instance;
+	return instance;
+}
+
 void DebugLink::close()
 {
 	this->server.stop();

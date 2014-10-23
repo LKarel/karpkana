@@ -20,8 +20,7 @@ public:
 	static const uint8_t PROTOCOL_TYPE_EVENT = 0x1;
 	static const uint8_t PROTOCOL_TYPE_MSG = 0x7;
 
-	DebugLink();
-	~DebugLink();
+	static DebugLink &instance();
 
 	void close();
 	void msg(int level, const std::string message);
@@ -29,6 +28,12 @@ public:
 	void object(int sequence, BaseObject *object);
 
 private:
+	DebugLink();
+	DebugLink(DebugLink const&);
+	~DebugLink();
+
+	void operator=(DebugLink const&);
+
 	class Server
 	{
 	public:
