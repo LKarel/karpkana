@@ -1,2 +1,3 @@
 *.o
 main
+debuglink_local.log
