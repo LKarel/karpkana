@@ -158,14 +158,14 @@ void DebugLink::localMsg(int level, const std::string message)
 	}
 
 	char log[2048];
-	snprintf(log, 2048, "[%llu] %s: %s\n", microtime() / 1000, levelStr.c_str(), message.c_str());
+	snprintf(log, 2048, "[%llu] %s: %s", microtime() / 1000, levelStr.c_str(), message.c_str());
 
 	if (this->logFile.is_open())
 	{
-		this->logFile << log;
+		this->logFile << log << "\n";
 	}
 
-	std::cout << log;
+	std::cout << log << std::endl;
 }
 
 DebugLink::Server::Server(DebugLink *dl, int port) :
