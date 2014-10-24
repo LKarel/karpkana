@@ -1,8 +1,10 @@
 package debugclient;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -29,6 +31,9 @@ public abstract class ConnectPanel extends JPanel
 
 		add(connectField);
 		add(connect);
+
+		setBorder(BorderFactory.createTitledBorder("Connection"));
+		setMaximumSize(new Dimension(10000, 50));
 	}
 
 	public abstract void onConnect(String hostname, int port);

@@ -30,6 +30,7 @@ public class Main
 	private static void showGUI()
 	{
 		JFrame frame = new JFrame("Main");
+		frame.setSize(800, 600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
 
