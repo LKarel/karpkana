@@ -42,6 +42,7 @@ public class Main
 			protected void onError(Throwable e)
 			{
 				outputPanel.putMessage("Connection error: " + e.toString());
+				videoPanel.setErrorMessage("CONNECTION LOST");
 			}
 
 			protected void onMessage(Message msg)

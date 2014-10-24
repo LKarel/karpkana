@@ -4,7 +4,10 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -18,6 +21,7 @@ public class VideoPanel extends JPanel
 	private static final int HEIGHT = 360;
 
 	private Image mFrame;
+	private String mErrorMessage = "NO SIGNAL";
 
 	private Image mNoise;
 	private Timer mNoiseTimer;
@@ -58,7 +62,14 @@ public class VideoPanel extends JPanel
 	public void setFrame(Image frame)
 	{
 		mFrame = frame;
+		mErrorMessage = null;
 		mNoiseTimer.cancel();
+		repaint();
+	}
+
+	public void setErrorMessage(String msg)
+	{
+		mErrorMessage = msg;
 		repaint();
 	}
 
@@ -87,5 +98,21 @@ public class VideoPanel extends JPanel
 		}
 
 		g.drawImage(image, 0, 0, width, height, 0, 0, width, height, null);
+
+		if (mErrorMessage != null)
+		{
+			paintError(g, width, height, mErrorMessage);
+		}
+	}
+
+	protected void paintError(Graphics g, int width, int height, String msg)
+	{
+		Font font = new Font("Sans-serif", Font.BOLD, 38);
+		FontMetrics fontMetrics = g.getFontMetrics(font);
+		int textWidth = fontMetrics.stringWidth(msg);
+
+		g.setFont(font);
+		g.setColor(new Color(1.0f, 0.0f, 0.0f, 0.8f));
+		g.drawString(msg, (width - textWidth) / 2, (height / 2) + 19);
 	}
 }
