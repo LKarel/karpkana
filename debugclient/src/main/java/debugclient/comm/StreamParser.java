@@ -3,10 +3,13 @@ package debugclient.comm;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
+import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.EOFException;
+
+import javax.imageio.ImageIO;
 
 public abstract class StreamParser implements Runnable
 {
@@ -76,29 +79,25 @@ public abstract class StreamParser implements Runnable
 		int frame_height = mIn.readUnsignedShort();
 		int width = mIn.readUnsignedShort();
 		int height = mIn.readUnsignedShort();
+		int len = mIn.readInt();
 
-		byte[] buf = new byte[width * height];
+		byte[] buf = new byte[len];
 		mIn.readFully(buf);
 
-		Image image = bytesToImage(buf, width, height);
+		java.io.FileOutputStream out = new java.io.FileOutputStream("/tmp/a.jpg");
 
-		return new FrameMessage(sequence, height / frame_height, image);
-	}
-
-	private Image bytesToImage(byte[] bytes, int width, int height)
-	{
-		int[] pixels = new int[width * height];
-
-		for (int i = 0; i < width * height; i++)
+		try
 		{
-			pixels[i] = bytes[i];
+			out.write(buf);
+		}
+		catch (IOException e)
+		{
 		}
 
-		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
-		WritableRaster raster = image.getRaster();
-		raster.setPixels(0, 0, width, height, pixels);
+		InputStream bodyStream = new ByteArrayInputStream(buf);
+		BufferedImage image = ImageIO.read(bodyStream);
 
-		return image;
+		return new FrameMessage(sequence, height / frame_height, image);
 	}
 
 	protected abstract void onError(Throwable e);

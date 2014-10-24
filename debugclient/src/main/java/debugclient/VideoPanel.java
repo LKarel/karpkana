@@ -17,7 +17,7 @@ import javax.swing.JPanel;
 
 public class VideoPanel extends JPanel
 {
-	private static final int WIDTH = 480;
+	private static final int WIDTH = 640;
 	private static final int HEIGHT = 360;
 
 	private Image mFrame;

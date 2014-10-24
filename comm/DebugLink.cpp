@@ -88,12 +88,14 @@ void DebugLink::object(int sequence, BaseObject *object)
 
 void DebugLink::frame(Frame *frame)
 {
-	int width = 480;
+	int width = 640;
 	int height = 360;
-	int chunksize = 2048;
 
 	cv::Mat mat;
-	cv::resize(*frame->hsvMat, mat, cv::Size(width, height));
+	cv::resize(*frame->sourceMat, mat, cv::Size(width, height));
+
+	std::vector<unsigned char> buffer;
+	cv::imencode(".jpg", mat, buffer);
 
 	uint8_t header[] = {
 		DebugLink::PROTOCOL_TYPE_FRAME,
@@ -114,30 +116,16 @@ void DebugLink::frame(Frame *frame)
 
 		// Image height
 		(uint8_t) ((height >> 8) & 0xFF),
-		(uint8_t) (height & 0xFF)
+		(uint8_t) (height & 0xFF),
+
+		(uint8_t) ((buffer.size() >> 24) & 0xFF),
+		(uint8_t) ((buffer.size() >> 16) & 0xFF),
+		(uint8_t) ((buffer.size() >> 8) & 0xFF),
+		(uint8_t) (buffer.size() & 0xFF)
 	};
 
-	this->server.broadcast(header, 11);
-
-	uint8_t *buffer = (uint8_t *) malloc(chunksize);
-	int buffer_size = 0;
-
-	for (int i = 0; i < width * height; ++i)
-	{
-		if (buffer_size == chunksize)
-		{
-			this->server.broadcast(buffer, buffer_size);
-			buffer_size = 0;
-		}
-
-		buffer[buffer_size++] = (uint8_t) mat.data[(i * 3) + 2];
-	}
-
-	if (buffer_size > 0)
-	{
-		// Send the last chunk
-		this->server.broadcast(buffer, buffer_size);
-	}
+	this->server.broadcast(header, 15);
+	this->server.broadcast(&buffer[0], buffer.size());
 
 	for (std::vector<BaseObject *>::size_type i = 0; i < frame->objects.size(); ++i)
 	{

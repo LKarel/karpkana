@@ -1,4 +1,4 @@
-LIBS = `pkg-config --libs opencv`
+LIBS = `pkg-config --libs opencv` -ljpeg
 CXX = g++ -std=c++11 -I./
 CFLAGS = -g -Wall
 

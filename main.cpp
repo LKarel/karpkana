@@ -38,6 +38,12 @@ int main(int argc, char** argv)
 	while (!sigint)
 	{
 		Frame *frame = vp.processFrame();
+
+		if (!frame)
+		{
+			continue;
+		}
+
 		cv::Mat preview(*frame->sourceMat);
 
 		for (std::vector<BaseObject *>::size_type i = 0; i != frame->objects.size(); ++i)
