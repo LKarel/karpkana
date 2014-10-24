@@ -6,6 +6,7 @@
 
 VideoProcessor::VideoProcessor(cv::VideoCapture *capture) :
 	fps(0),
+	sequence(0),
 	capture(capture)
 {
 }
@@ -17,7 +18,7 @@ VideoProcessor::~VideoProcessor()
 Frame *VideoProcessor::processFrame()
 {
 	long beginTime = microtime();
-	Frame *ret = new Frame();
+	Frame *ret = new Frame(this->sequence++);
 
 	ret->sourceMat = new cv::Mat();
 	ret->hsvMat = new cv::Mat();

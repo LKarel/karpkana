@@ -2,6 +2,7 @@
 #include <iostream>
 #include <netdb.h>
 #include <netinet/in.h>
+#include <opencv2/opencv.hpp>
 #include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>
@@ -46,18 +47,19 @@ void DebugLink::msg(int level, const std::string message)
 		this->msg(DebugLink::LEVEL_WARN, "DebugLink: Outgoing message exceeds 65535 bytes, ignoring the rest");
 	}
 
-	uint8_t data[len + 3];
+	uint8_t data[len + 4];
 
 	data[0] = DebugLink::PROTOCOL_TYPE_MSG;
-	data[1] = (uint8_t) ((len >> 8) & 0xFF);
-	data[2] = (uint8_t) ((len >> 0) & 0xFF);
+	data[1] = level;
+	data[2] = (len >> 8) & 0xFF;
+	data[3] = len & 0xFF;
 
 	for (int i = 0; i < len; ++i)
 	{
-		data[i + 3] = static_cast<uint8_t>(message[i]);
+		data[i + 4] = static_cast<uint8_t>(message[i]);
 	}
 
-	this->server.broadcast(data, len + 3);
+	this->server.broadcast(data, len + 4);
 	this->localMsg(level, message);
 }
 
@@ -82,6 +84,65 @@ void DebugLink::event(int event)
 
 void DebugLink::object(int sequence, BaseObject *object)
 {
+}
+
+void DebugLink::frame(Frame *frame)
+{
+	int width = 480;
+	int height = 360;
+	int chunksize = 2048;
+
+	cv::Mat mat;
+	cv::resize(*frame->hsvMat, mat, cv::Size(width, height));
+
+	uint8_t header[] = {
+		DebugLink::PROTOCOL_TYPE_FRAME,
+
+		// Frame sequence number
+		(uint8_t) ((frame->sequence >> 24) & 0xFF),
+		(uint8_t) ((frame->sequence >> 16) & 0xFF),
+		(uint8_t) ((frame->sequence >> 8) & 0xFF),
+		(uint8_t) (frame->sequence & 0xFF),
+
+		// Frame height
+		(uint8_t) ((frame->hsvMat->size().height >> 8) & 0xFF),
+		(uint8_t) (frame->hsvMat->size().height & 0xFF),
+
+		// Image width
+		(uint8_t) ((width >> 8) & 0xFF),
+		(uint8_t) (width & 0xFF),
+
+		// Image height
+		(uint8_t) ((height >> 8) & 0xFF),
+		(uint8_t) (height & 0xFF)
+	};
+
+	this->server.broadcast(header, 11);
+
+	uint8_t *buffer = (uint8_t *) malloc(chunksize);
+	int buffer_size = 0;
+
+	for (int i = 0; i < width * height; ++i)
+	{
+		if (buffer_size == chunksize)
+		{
+			this->server.broadcast(buffer, buffer_size);
+			buffer_size = 0;
+		}
+
+		buffer[buffer_size++] = (uint8_t) mat.data[(i * 3) + 2];
+	}
+
+	if (buffer_size > 0)
+	{
+		// Send the last chunk
+		this->server.broadcast(buffer, buffer_size);
+	}
+
+	for (std::vector<BaseObject *>::size_type i = 0; i < frame->objects.size(); ++i)
+	{
+		object(frame->sequence, frame->objects[i]);
+	}
 }
 
 void DebugLink::localMsg(int level, const std::string message)
@@ -225,7 +286,7 @@ void DebugLink::Server::listen()
 	tv.tv_sec = 0;
 	tv.tv_usec = 50000;
 
-	while (this->isRunning && select(0, &fds, NULL, NULL, &tv) > 0)
+	while (this->isRunning && select(0, &fds, NULL, NULL, &tv) >= 0)
 	{
 		size_t size = sizeof(struct sockaddr_in);
 		struct sockaddr_in client_addr;

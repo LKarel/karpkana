@@ -1,0 +1,13 @@
+apply plugin: 'java'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+}
+
+jar {
+	baseName = 'debugclient'
+	manifest.attributes('Main-Class': 'debugclient.Main')
+}

@@ -8,11 +8,12 @@
 class Frame
 {
 public:
-	Frame();
+	Frame(unsigned int sequence);
 	~Frame();
 
 	void addObject(BaseObject *obj);
 
+	unsigned int sequence;
 	cv::Mat *sourceMat;
 	cv::Mat *hsvMat;
 	std::vector<BaseObject *> objects;

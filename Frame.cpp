@@ -1,6 +1,7 @@
 #include "Frame.h"
 
-Frame::Frame() :
+Frame::Frame(unsigned int sequence) :
+	sequence(sequence),
 	sourceMat(NULL),
 	objects()
 {

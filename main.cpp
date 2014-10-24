@@ -1,5 +1,6 @@
 #include <signal.h>
 #include <stdio.h>
+#include <unistd.h>
 #include <opencv2/opencv.hpp>
 #include "Frame.h"
 #include "comm/DebugLink.h"
@@ -64,6 +65,8 @@ int main(int argc, char** argv)
 
 		cv::imshow("Frame", preview);
 		cv::waitKey(1);
+
+		DebugLink::instance().frame(frame);
 
 		delete frame;
 	}

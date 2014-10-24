@@ -15,6 +15,7 @@ public:
 	Frame *processFrame();
 
 private:
+	unsigned int sequence;
 	cv::VideoCapture *capture;
 
 	void detectBalls(Frame *frame);

@@ -7,6 +7,7 @@
 #include <string.h>
 #include <thread>
 #include <vector>
+#include "Frame.h"
 #include "objects/BaseObject.h"
 
 class DebugLink
@@ -19,6 +20,7 @@ public:
 
 	static const uint8_t PROTOCOL_TYPE_EVENT = 0x1;
 	static const uint8_t PROTOCOL_TYPE_MSG = 0x7;
+	static const uint8_t PROTOCOL_TYPE_FRAME = 0x8;
 
 	static DebugLink &instance();
 
@@ -26,6 +28,7 @@ public:
 	void msg(int level, const std::string message);
 	void event(int event);
 	void object(int sequence, BaseObject *object);
+	void frame(Frame *frame);
 
 private:
 	DebugLink();
