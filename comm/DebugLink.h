@@ -2,12 +2,9 @@
 #define COMM_DEBUGLINK_H
 
 #include <fstream>
-#include <mutex>
 #include <stdio.h>
-#include <string.h>
-#include <thread>
-#include <vector>
 #include "Frame.h"
+#include "comm/DebugServer.h"
 #include "objects/BaseObject.h"
 
 class DebugLink
@@ -36,31 +33,9 @@ private:
 	~DebugLink();
 
 	void operator=(DebugLink const&);
-
-	class Server
-	{
-	public:
-		Server(DebugLink *dl, int port);
-		~Server();
-
-		void start();
-		void stop();
-		int broadcast(const uint8_t *buf, size_t size);
-
-	private:
-		DebugLink *debug;
-		int port;
-		bool isRunning;
-		std::vector<int> clients;
-		std::mutex clientsMutex;
-		std::thread *thread;
-
-		void listen();
-	};
-
 	void localMsg(int level, const std::string message);
 
-	Server server;
+	DebugServer *server;
 	std::ofstream logFile;
 };
 
