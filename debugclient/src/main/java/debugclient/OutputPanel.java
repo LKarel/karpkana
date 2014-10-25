@@ -16,6 +16,7 @@ public class OutputPanel extends JPanel
 
 	public OutputPanel()
 	{
+		setPreferredSize(new Dimension(0, 200));
 		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
 		textArea = new JTextArea();
