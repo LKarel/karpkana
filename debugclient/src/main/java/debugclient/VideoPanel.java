@@ -41,7 +41,7 @@ public class VideoPanel extends JPanel
 
 				for (int i = 0; i < (WIDTH / 4) * HEIGHT; i++)
 				{
-					component = random.nextInt(148);
+					component = random.nextInt(35);
 					pixels[i * 4] = component;
 					pixels[(i * 4) + 1] = component;
 					pixels[(i * 4) + 2] = component;

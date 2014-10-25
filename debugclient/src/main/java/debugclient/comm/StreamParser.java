@@ -84,16 +84,6 @@ public abstract class StreamParser implements Runnable
 		byte[] buf = new byte[len];
 		mIn.readFully(buf);
 
-		java.io.FileOutputStream out = new java.io.FileOutputStream("/tmp/a.jpg");
-
-		try
-		{
-			out.write(buf);
-		}
-		catch (IOException e)
-		{
-		}
-
 		InputStream bodyStream = new ByteArrayInputStream(buf);
 		BufferedImage image = ImageIO.read(bodyStream);
 
