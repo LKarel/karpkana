@@ -11,6 +11,7 @@ import javax.swing.SwingUtilities;
 
 import debugclient.comm.Connection;
 import debugclient.comm.FrameMessage;
+import debugclient.comm.BallMessage;
 import debugclient.comm.MessageMessage;
 import debugclient.comm.Message;
 
@@ -50,7 +51,11 @@ public class Main
 			{
 				if (msg instanceof FrameMessage)
 				{
-					videoPanel.setFrame(((FrameMessage) msg).image);
+					videoPanel.setFrame((FrameMessage) msg);
+				}
+				else if (msg instanceof BallMessage)
+				{
+					videoPanel.putBall((BallMessage) msg);
 				}
 				else if (msg instanceof MessageMessage)
 				{

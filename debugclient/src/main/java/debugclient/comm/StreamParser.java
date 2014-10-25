@@ -53,11 +53,23 @@ public abstract class StreamParser implements Runnable
 
 		switch (first & 0x0F)
 		{
+			case Protocol.TYPE_BALL: return readNextBall();
 			case Protocol.TYPE_MSG: return readNextMsg();
 			case Protocol.TYPE_FRAME: return readNextFrame();
 		}
 
 		return null;
+	}
+
+	private Message readNextBall()
+		throws EOFException, IOException
+	{
+		int sequence = mIn.readInt();
+		int x = mIn.readUnsignedShort();
+		int y = mIn.readUnsignedShort();
+		int radius = mIn.readUnsignedShort();
+
+		return new BallMessage(sequence, x, y, radius);
 	}
 
 	private Message readNextMsg()
@@ -87,7 +99,7 @@ public abstract class StreamParser implements Runnable
 		InputStream bodyStream = new ByteArrayInputStream(buf);
 		BufferedImage image = ImageIO.read(bodyStream);
 
-		return new FrameMessage(sequence, height / frame_height, image);
+		return new FrameMessage(sequence, (float) height / (float) frame_height, image);
 	}
 
 	protected abstract void onError(Throwable e);

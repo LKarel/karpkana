@@ -1,5 +1,6 @@
 package debugclient;
 
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -15,12 +16,16 @@ import java.awt.image.WritableRaster;
 
 import javax.swing.JPanel;
 
+import debugclient.comm.BallMessage;
+import debugclient.comm.FrameMessage;
+
 public class VideoPanel extends JPanel
 {
 	private static final int WIDTH = 640;
 	private static final int HEIGHT = 360;
 
-	private Image mFrame;
+	private FrameMessage mFrame;
+	private ArrayList<BallMessage> mBalls;
 	private String mErrorMessage = "NO SIGNAL";
 
 	private Image mNoise;
@@ -29,6 +34,8 @@ public class VideoPanel extends JPanel
 	public VideoPanel()
 	{
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
+
+		mBalls = new ArrayList<BallMessage>();
 
 		mNoiseTimer = new Timer();
 		mNoiseTimer.schedule(new TimerTask()
@@ -59,12 +66,19 @@ public class VideoPanel extends JPanel
 		}, 0, 75);
 	}
 
-	public void setFrame(Image frame)
+	public void setFrame(FrameMessage frame)
 	{
 		mFrame = frame;
 		mErrorMessage = null;
+		mBalls.clear();
+
 		mNoiseTimer.cancel();
 		repaint();
+	}
+
+	public void putBall(BallMessage ball)
+	{
+		mBalls.add(ball);
 	}
 
 	public void setErrorMessage(String msg)
@@ -78,26 +92,39 @@ public class VideoPanel extends JPanel
 	{
 		super.paintComponent(g);
 
-		Image image = mFrame;
+		Image image = null;
 		int width = WIDTH;
 		int height = HEIGHT;
 
-		if (mFrame == null)
+		if (mFrame != null)
 		{
-			if (mNoise == null)
-			{
-				return;
-			}
-
+			image = mFrame.image;
+			width = image.getWidth(null);
+			height = image.getHeight(null);
+		}
+		else if (mNoise != null)
+		{
 			image = mNoise;
 		}
 		else
 		{
-			width = image.getWidth(null);
-			height = image.getHeight(null);
+			return;
 		}
 
 		g.drawImage(image, 0, 0, width, height, 0, 0, width, height, null);
+
+		if (mFrame != null)
+		{
+			for (BallMessage ball : mBalls)
+			{
+				int x = (int) ((float) ball.x * mFrame.scale);
+				int y = (int) ((float) ball.y * mFrame.scale);
+				int radius = (int) ((float) ball.radius * mFrame.scale);
+
+				g.setColor(Color.RED);
+				g.drawOval(x - (radius / 2), y - (radius / 2), radius * 2, radius * 2);
+			}
+		}
 
 		if (mErrorMessage != null)
 		{

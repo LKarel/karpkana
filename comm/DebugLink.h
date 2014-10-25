@@ -6,6 +6,7 @@
 #include "Frame.h"
 #include "comm/DebugServer.h"
 #include "objects/BaseObject.h"
+#include "objects/BallObject.h"
 
 class DebugLink
 {
@@ -16,6 +17,7 @@ public:
 	static const int LEVEL_ERROR = 4;
 
 	static const uint8_t PROTOCOL_TYPE_EVENT = 0x1;
+	static const uint8_t PROTOCOL_TYPE_BALL = 0x2;
 	static const uint8_t PROTOCOL_TYPE_MSG = 0x7;
 	static const uint8_t PROTOCOL_TYPE_FRAME = 0x8;
 
@@ -24,7 +26,6 @@ public:
 	void close();
 	void msg(int level, const std::string message);
 	void event(int event);
-	void object(int sequence, BaseObject *object);
 	void frame(Frame *frame);
 
 private:
@@ -34,6 +35,9 @@ private:
 
 	void operator=(DebugLink const&);
 	void localMsg(int level, const std::string message);
+
+	void object(int sequence, BaseObject *object);
+	void objectBall(int sequence, BallObject *ball);
 
 	DebugServer *server;
 	std::ofstream logFile;

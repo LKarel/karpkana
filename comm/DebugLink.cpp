@@ -5,6 +5,8 @@
 #include "util.h"
 #include "comm/DebugLink.h"
 #include "comm/DebugServer.h"
+#include "objects/BaseObject.h"
+#include "objects/BallObject.h"
 
 DebugLink::DebugLink() :
 	logFile("debuglink_local.log", std::ios::out | std::ios::app)
@@ -93,10 +95,6 @@ void DebugLink::event(int event)
 	}
 }
 
-void DebugLink::object(int sequence, BaseObject *object)
-{
-}
-
 void DebugLink::frame(Frame *frame)
 {
 	if (!this->server->hasClients())
@@ -170,4 +168,40 @@ void DebugLink::localMsg(int level, const std::string message)
 	}
 
 	std::cout << log << std::endl;
+}
+
+void DebugLink::object(int sequence, BaseObject *object)
+{
+	switch (object->type)
+	{
+		case BallObject::TYPE:
+			return objectBall(sequence, (BallObject *) object);
+	}
+}
+
+void DebugLink::objectBall(int sequence, BallObject *ball)
+{
+	uint8_t data[] = {
+		DebugLink::PROTOCOL_TYPE_BALL,
+
+		// Frame sequence number
+		(uint8_t) ((sequence >> 24) & 0xFF),
+		(uint8_t) ((sequence >> 16) & 0xFF),
+		(uint8_t) ((sequence >> 8) & 0xFF),
+		(uint8_t) (sequence & 0xFF),
+
+		// Position x
+		(uint8_t) ((ball->visual.x >> 8) & 0xFF),
+		(uint8_t) (ball->visual.x & 0xFF),
+
+		// Position y
+		(uint8_t) ((ball->visual.y >> 8) & 0xFF),
+		(uint8_t) (ball->visual.y & 0xFF),
+
+		// Radius
+		(uint8_t) ((ball->visual.radius >> 8) & 0xFF),
+		(uint8_t) (ball->visual.radius & 0xFF)
+	};
+
+	this->server->broadcast(data, 11);
 }
