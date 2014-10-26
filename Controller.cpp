@@ -41,8 +41,10 @@ void Controller::run()
 			continue;
 		}
 
+		MM_INIT(frame);
+
 		DebugLink::instance().frame(frame);
 
-		delete frame;
+		MM_DEC(frame);
 	}
 }
