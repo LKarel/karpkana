@@ -4,6 +4,7 @@
 #include <fstream>
 #include <stdio.h>
 #include "Frame.h"
+#include "comm/FrameBroadcaster.h"
 #include "comm/DebugServer.h"
 #include "objects/BaseObject.h"
 #include "objects/BallObject.h"
@@ -36,10 +37,8 @@ private:
 	void operator=(DebugLink const&);
 	void localMsg(int level, const std::string message);
 
-	void object(int sequence, BaseObject *object);
-	void objectBall(int sequence, BallObject *ball);
-
 	DebugServer *server;
+	FrameBroadcaster *frameBroadcaster;
 	std::ofstream logFile;
 };
 
