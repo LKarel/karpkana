@@ -17,6 +17,7 @@ void handleSigint(int signal)
 int main(int argc, char** argv)
 {
 	signal(SIGINT, handleSigint);
+	signal(SIGPIPE, SIG_IGN);
 
 	cv::VideoCapture capture(0);
 

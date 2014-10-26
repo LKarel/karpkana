@@ -10,6 +10,11 @@
 #include "comm/DebugLink.h"
 #include "comm/DebugServer.h"
 
+bool _isInvalidFd(int fd)
+{
+	return fd <= 0;
+}
+
 DebugServer::DebugServer() : isRunning(false)
 {
 }
@@ -47,31 +52,25 @@ void DebugServer::stop()
 
 bool DebugServer::hasClients()
 {
+	std::lock_guard<std::mutex> lock(this->clientsMutex);
 	return this->clients.size() > 0;
 }
 
-int DebugServer::broadcast(const uint8_t *buf, size_t size)
+void DebugServer::broadcast(const uint8_t *buf, size_t size)
 {
-	int success = 0;
 	std::lock_guard<std::mutex> lock(this->clientsMutex);
 
-	for (std::vector<int>::size_type i = 0; i < this->clients.size();)
+	for (std::vector<int>::size_type i = 0; i < this->clients.size(); ++i)
 	{
-		int fd = this->clients[i];
-
-		if (write(fd, buf, size) != (ssize_t) size)
+		if (write(this->clients[i], buf, size) != (ssize_t) size)
 		{
-			::close(fd);
-			this->clients.erase(this->clients.begin() + i);
-		}
-		else
-		{
-			++i;
-			++success;
+			this->clients[i] = -1;
 		}
 	}
 
-	return success;
+	// Remove negative values
+	std::vector<int>::iterator it = std::remove_if(this->clients.begin(), this->clients.end(), _isInvalidFd);
+    this->clients.resize(it - this->clients.begin());
 }
 
 void DebugServer::run()
@@ -119,29 +118,74 @@ void DebugServer::run()
 	DebugLink::instance().msg(DebugLink::LEVEL_INFO, "DebugServer: Listening for incoming connections");
 
 	fd_set fds;
-	timeval tv;
+	fd_set rfds;
+	int fdmax = sockfd;
+	uint8_t buf[1024];
 
 	FD_ZERO(&fds);
+	FD_ZERO(&rfds);
 	FD_SET(sockfd, &fds);
 
+	timeval tv;
 	tv.tv_sec = 0;
 	tv.tv_usec = 50000;
 
-	while (this->isRunning && select(0, &fds, NULL, NULL, &tv) >= 0)
+	while (this->isRunning)
 	{
-		size_t size = sizeof(struct sockaddr_in);
-		struct sockaddr_in client_addr;
-		int clientfd = accept(sockfd, NULL, NULL);
+		rfds = fds; // Copy the master FD set
 
-		if (clientfd == -1)
+		if (select(fdmax + 1, &rfds, NULL, NULL, &tv) == -1)
 		{
-			continue;
+			DebugLink::instance().msg(DebugLink::LEVEL_ERROR,
+				"DebugServer: select() returned error state");
+			break;
 		}
 
-		DebugLink::instance().msg(DebugLink::LEVEL_INFO, "DebugServer: Incoming connection");
+		for (int i = 0; i <= fdmax; ++i)
+		{
+			if (!FD_ISSET(i, &rfds))
+			{
+				// No events on descriptor i
+				continue;
+			}
 
-		std::lock_guard<std::mutex> lock(this->clientsMutex);
-		this->clients.push_back(clientfd);
+			// New incoming connection
+			if (i == sockfd)
+			{
+				int client = accept(sockfd, NULL, NULL);
+
+				if (client == -1)
+				{
+					continue;
+				}
+
+				DebugLink::instance().msg(DebugLink::LEVEL_INFO,
+					"DebugServer: Incoming connection");
+
+				FD_SET(client, &fds);
+				fdmax = (client > fdmax) ? client : fdmax;
+
+				std::lock_guard<std::mutex> lock(this->clientsMutex);
+				this->clients.push_back(client);
+			}
+			else
+			{
+				ssize_t count = recv(i, &buf, 1024, 0);
+
+				if (count > 0)
+				{
+					// TODO: Do something useful
+					DebugLink::instance().msg(DebugLink::LEVEL_INFO, "DebugServer: received data from client");
+				}
+				else
+				{
+					close(i);
+					FD_CLR(i, &fds);
+
+					DebugLink::instance().msg(DebugLink::LEVEL_INFO, "DebugServer: client disconnected");
+				}
+			}
+		}
 	}
 
 	::close(sockfd);

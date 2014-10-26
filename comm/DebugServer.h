@@ -14,7 +14,7 @@ public:
 	void start(int port);
 	void stop();
 	bool hasClients();
-	int broadcast(const uint8_t *buf, size_t size);
+	void broadcast(const uint8_t *buf, size_t size);
 
 private:
 	int port;
