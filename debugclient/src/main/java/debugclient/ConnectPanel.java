@@ -25,7 +25,14 @@ public abstract class ConnectPanel extends JPanel
 			public void actionPerformed(ActionEvent event)
 			{
 				String[] split = connectField.getText().split(":");
-				onConnect(split[0], Integer.parseInt(split[1]));
+				int port = 11000;
+
+				if (split.length == 2)
+				{
+					port = Integer.parseInt(split[1]);
+				}
+
+				onConnect(split[0], port);
 			}
 		});
 
