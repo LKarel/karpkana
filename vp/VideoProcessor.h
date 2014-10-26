@@ -1,22 +1,32 @@
 #ifndef VP_VIDEOPROCESSOR_H
 #define VP_VIDEOPROCESSOR_H
 
+#include <mutex>
 #include <opencv2/opencv.hpp>
+#include <thread>
 #include "Frame.h"
 
 class VideoProcessor
 {
 public:
-	VideoProcessor(cv::VideoCapture *capture);
+	VideoProcessor();
 	~VideoProcessor();
 
-	float fps;
+	/**
+	 * Insert a Mat for processing.
+	 */
+	void putMatFrame(cv::Mat mat);
 
-	Frame *processFrame();
+	/**
+	 * Get a processed frame.
+	 */
+	Frame *getFrame();
 
 private:
 	unsigned int sequence;
-	cv::VideoCapture *capture;
+
+	cv::Mat *mat;
+	std::mutex matMutex;
 
 	void detectBalls(Frame *frame);
 };

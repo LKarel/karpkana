@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <opencv2/opencv.hpp>
-#include "Frame.h"
+#include "Controller.h"
 #include "comm/DebugLink.h"
 #include "objects/BallObject.h"
 #include "vp/VideoProcessor.h"
@@ -29,27 +29,30 @@ int main(int argc, char** argv)
 
 	capture.set(CV_CAP_PROP_FRAME_WIDTH, 1280);
 	capture.set(CV_CAP_PROP_FRAME_HEIGHT, 720);
-	capture.set(CV_CAP_PROP_FPS, 60);
+	capture.set(CV_CAP_PROP_FPS, 30);
 
-	VideoProcessor vp(&capture);
-	cv::Point fpsPosition(5, 20);
-	char fpsString[16];
+	VideoProcessor vp;
+	Controller ctrl(&vp);
+	cv::Mat mat;
 
-	while (!sigint)
+	DebugLink::instance().msg(DebugLink::LEVEL_INFO, "main: Starting camera loop");
+
+	while (!sigint && ctrl.isRunning())
 	{
-		Frame *frame = vp.processFrame();
-
-		if (frame)
+		if (!capture.read(mat))
 		{
-			DebugLink::instance().frame(frame);
-			delete frame;
+			DebugLink::instance().msg(DebugLink::LEVEL_ERROR, "main: No frame received");
+			break;
 		}
+
+		vp.putMatFrame(mat);
 	}
 
 	DebugLink::instance().msg(DebugLink::LEVEL_INFO, "main: Shutting down");
 	DebugLink::instance().close();
 
 	capture.release();
+	ctrl.stop();
 
 	return 0;
 }

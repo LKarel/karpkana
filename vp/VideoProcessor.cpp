@@ -4,10 +4,9 @@
 #include "objects/BallObject.h"
 #include "VideoProcessor.h"
 
-VideoProcessor::VideoProcessor(cv::VideoCapture *capture) :
-	fps(0),
+VideoProcessor::VideoProcessor() :
 	sequence(0),
-	capture(capture)
+	mat(NULL)
 {
 }
 
@@ -15,24 +14,44 @@ VideoProcessor::~VideoProcessor()
 {
 }
 
-Frame *VideoProcessor::processFrame()
+void VideoProcessor::putMatFrame(cv::Mat mat)
 {
-	long beginTime = microtime();
-	Frame *ret = new Frame(this->sequence++);
+	std::lock_guard<std::mutex> lock(this->matMutex);
 
-	ret->sourceMat = new cv::Mat();
-	ret->hsvMat = new cv::Mat();
+	if (this->mat)
+	{
+		delete this->mat;
+	}
 
-	if (!this->capture->read(*ret->sourceMat))
+	this->mat = new cv::Mat(mat.clone());
+}
+
+Frame *VideoProcessor::getFrame()
+{
+	cv::Mat *source;
+
+	{
+		std::lock_guard<std::mutex> lock(this->matMutex);
+		source = this->mat;
+
+		// Avoid the Mat from getting deleted in putMatFrame
+		this->mat = NULL;
+	}
+
+	if (!source)
 	{
 		return NULL;
 	}
 
+	Frame *ret = new Frame(this->sequence++);
+
+	ret->sourceMat = source;
+	ret->hsvMat = new cv::Mat();
+
+	// Convert colors to HSV
 	cv::cvtColor(*ret->sourceMat, *ret->hsvMat, CV_BGR2HSV);
 
 	detectBalls(ret);
-
-	this->fps = 1000000.f / (float) (microtime() - beginTime);
 
 	return ret;
 }
