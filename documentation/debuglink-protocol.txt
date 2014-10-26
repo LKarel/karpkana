@@ -1,0 +1,154 @@
+1. The DebugLink protocol
+
+1.1. Messages
+
+   Every message begins with four(4) zero bits and four(4) bits
+   indicating the message type, followed by the message body.
+
+1.1.1. Type: EVENT
+
+   Message type: 0x1
+
+   Arguments:
+
+      EVENT: 16 bits
+         The event type that occurred
+
+   The event types are implementation-sepcific and not specified in this
+   document.
+
+1.1.2. Type: BALL
+
+   MessageType: 0x2
+
+   Arguments:
+
+      FRAME_ID: 32 bits
+
+      X: 16 bits
+         x-coordinate of the center of the ball
+
+      Y: 16 bits
+         y-coordinate of the center of the ball
+
+      RADIUS: 16 bits
+         radius of the ball
+
+   All the sizes are relative to the 1280x720 frame that the program
+   works on.
+
+1.1.3. Type: GOAL
+
+   Message type: 0x3
+
+   Arguments:
+
+      FRAME_ID: 16 bits
+
+      FLAGS: 8 bits
+         bit 0:     COLOR (0 - blue, 1 - yellow)
+         bits 1..7: reserved
+
+      CENTER_X: 16 bits
+         x-coordinate for the bottom center of the goalbox
+
+      CENTER_Y: 16 bits
+         y-coordinate for the bottom center of the goalbox
+
+      HALFWIDTH: 16 bits
+         half of the width of the goalbox
+
+      HEIGHT: 16 bits
+         height of the goalbox
+
+   The rectangle made up from the goalbox coordinates represents the
+   front face of the goalbox.
+
+1.1.4. Type: OBSTACLE
+
+   Message type: 0x4
+
+   Represents some arbitrary obstacle on the field.
+
+   NOTE: The documentation for this message type is incomplete.
+
+1.1.5. Type: BOUNDARY
+
+   Message type: 0x6
+
+   NOTE: The documentation for this message type is incomplete.
+
+1.1.6. Type: MSG
+
+   Message type: 0x7
+
+   Arguments:
+
+      LEVEL: 8 bits
+         message level indicating the severity of the message
+
+      LEN: 16 bits
+         length of the message
+
+      MSG: x bytes
+         ASCII-encoded message body, no NUL terminator
+
+   Message levels:
+
+      DEBUG: 0x01
+         Debugging messages. Normally not used in a production
+         environment.
+
+      INFO: 0x02
+         Informative messages
+
+      WARN: 0x03
+         Warning messages
+
+      ERROR: 0x04
+         Critical problems that require immediate attention
+
+1.1.7. Type: FRAME
+
+   Message type: 0x8
+
+   Arguments:
+
+      FRAME_ID: 32 bits
+
+      FRAME_HEIGHT: 16 bits
+         height of the original frame, that the image processor works on
+
+      IMAGE_WIDTH: 16 bits
+         width of the transmitted image
+
+      IMAGE_HEIGHT: 16 bits
+         height of the transmitted image
+
+      LEN: 32 bits
+         length of the transmitted image payload
+
+      BODY: x bytes
+         the JPEG-encoded image data
+
+   The transmitted image is a downscaled version of the originally
+   captured frame. All object information that is transmitted is in
+   relation to the captured frame and NOT the transmitted image.
+
+1.1.8. Type: PONG
+
+   Message type: 0x9
+
+   This message has no parameters.
+
+1.2. Incoming commands
+
+   All incoming commands consist of a command code (8 bits), argument
+   count (8 bits) and the arguments.
+
+1.2.1. Command: CMD_PING
+
+   Command code: 0x01
+
+   Causes the server to respond with a PONG message. This command has
+   no arguments.
