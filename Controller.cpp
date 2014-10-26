@@ -2,6 +2,7 @@
 
 Controller::Controller(VideoProcessor *vp) :
 	vp(vp),
+	fps(0),
 	running(true)
 {
 	this->thread = std::thread(&Controller::run, this);
@@ -34,6 +35,8 @@ void Controller::run()
 
 	while (this->running)
 	{
+		long begin = microtime();
+
 		frame = this->vp->getFrame();
 
 		if (!frame)
@@ -46,5 +49,7 @@ void Controller::run()
 		DebugLink::instance().frame(frame);
 
 		MM_DEC(frame);
+
+		this->fps = 1000000.0 / (microtime() - begin);
 	}
 }
