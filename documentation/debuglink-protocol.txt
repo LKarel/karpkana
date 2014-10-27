@@ -141,6 +141,29 @@
 
    This message has no parameters.
 
+1.1.9. Type: PARAMS
+
+   Message type: 0xA
+
+   Arguments:
+
+      TYPE: 8 bits
+
+      VALUE: x bytes
+
+   The `VALUE` argument depends on the `TYPE`:
+
+   TYPE=0x11 (FPS_PROC)
+      Video processor FPS
+      VALUE: 8 bits
+         unsigned int
+
+   TYPE=0x12 (FPS_CAPTURE)
+      Video capture FPS
+      VALUE: 8 bits
+         unsigned int
+
+
 1.2. Incoming commands
 
    All incoming commands consist of a command code (8 bits), argument
