@@ -1,5 +1,6 @@
 package debugclient;
 
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Timer;
@@ -80,7 +81,7 @@ public class Main
 		};
 
 		JPanel topPanel = new JPanel();
-		topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
+		topPanel.setLayout(new GridLayout(1, 0));
 		topPanel.add(connectPanel);
 		topPanel.add(fpsPanel);
 

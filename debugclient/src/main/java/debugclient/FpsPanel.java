@@ -1,6 +1,7 @@
 package debugclient;
 
 import java.awt.Dimension;
+import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -22,6 +23,7 @@ public class FpsPanel extends JPanel
 		add(ctrlFps);
 
 		setBorder(BorderFactory.createTitledBorder("FPS"));
+		setLayout(new GridLayout(1, 0));
 		setMaximumSize(new Dimension(10000, 50));
 	}
 
