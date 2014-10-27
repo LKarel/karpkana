@@ -5,6 +5,7 @@
 #include <opencv2/opencv.hpp>
 #include <thread>
 #include "Frame.h"
+#include "comm/DebugLink.h"
 
 class VideoProcessor
 {

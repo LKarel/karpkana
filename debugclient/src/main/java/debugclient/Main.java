@@ -7,9 +7,11 @@ import java.util.TimerTask;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import debugclient.comm.Connection;
+import debugclient.comm.FpsMessage;
 import debugclient.comm.FrameMessage;
 import debugclient.comm.BallMessage;
 import debugclient.comm.MessageMessage;
@@ -36,6 +38,7 @@ public class Main
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
 
+		final FpsPanel fpsPanel = new FpsPanel();
 		final OutputPanel outputPanel = new OutputPanel();
 		final VideoPanel videoPanel = new VideoPanel();
 
@@ -61,6 +64,10 @@ public class Main
 				{
 					outputPanel.putMessage("MSG: " + msg);
 				}
+				else if (msg instanceof FpsMessage)
+				{
+					fpsPanel.onFps((FpsMessage) msg);
+				}
 			}
 		};
 
@@ -72,7 +79,12 @@ public class Main
 			};
 		};
 
-		frame.add(connectPanel);
+		JPanel topPanel = new JPanel();
+		topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
+		topPanel.add(connectPanel);
+		topPanel.add(fpsPanel);
+
+		frame.add(topPanel);
 		frame.add(videoPanel);
 		frame.add(outputPanel);
 

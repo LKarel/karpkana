@@ -29,6 +29,7 @@ void VideoProcessor::putMatFrame(cv::Mat mat)
 Frame *VideoProcessor::getFrame()
 {
 	cv::Mat *source;
+	long begin = microtime();
 
 	{
 		std::lock_guard<std::mutex> lock(this->matMutex);
@@ -52,6 +53,8 @@ Frame *VideoProcessor::getFrame()
 	cv::cvtColor(*ret->sourceMat, *ret->hsvMat, CV_BGR2HSV);
 
 	detectBalls(ret);
+
+	DebugLink::instance().fps(DebugLink::FPS_PROC, 1000000.0 / (microtime() - begin));
 
 	return ret;
 }

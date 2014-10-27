@@ -98,6 +98,17 @@ void DebugLink::frame(Frame *frame)
 	this->frameBroadcaster->putFrame(frame);
 }
 
+void DebugLink::fps(uint8_t type, int fps)
+{
+	uint8_t data[] = {
+		DebugLink::PROTOCOL_TYPE_FPS,
+		type,
+		(uint8_t) (fps & 0xFF)
+	};
+
+	this->server->broadcast(data, 3);
+}
+
 void DebugLink::localMsg(int level, const std::string message)
 {
 	std::string levelStr;

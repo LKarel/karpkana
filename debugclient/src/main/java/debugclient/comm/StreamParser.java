@@ -51,11 +51,12 @@ public abstract class StreamParser implements Runnable
 			throw new EOFException();
 		}
 
-		switch (first & 0x0F)
+		switch (first)
 		{
 			case Protocol.TYPE_BALL: return readNextBall();
 			case Protocol.TYPE_MSG: return readNextMsg();
 			case Protocol.TYPE_FRAME: return readNextFrame();
+			case Protocol.TYPE_FPS: return readNextFps();
 		}
 
 		return null;
@@ -100,6 +101,12 @@ public abstract class StreamParser implements Runnable
 		BufferedImage image = ImageIO.read(bodyStream);
 
 		return new FrameMessage(sequence, (float) height / (float) frame_height, image);
+	}
+
+	private Message readNextFps()
+		throws EOFException, IOException
+	{
+		return new FpsMessage(mIn.read(), mIn.read());
 	}
 
 	protected abstract void onError(Throwable e);

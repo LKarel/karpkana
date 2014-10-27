@@ -50,6 +50,6 @@ void Controller::run()
 
 		MM_DEC(frame);
 
-		this->fps = 1000000.0 / (microtime() - begin);
+		DebugLink::instance().fps(DebugLink::FPS_CTRL, 1000000.0 / (microtime() - begin));
 	}
 }

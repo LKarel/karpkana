@@ -21,6 +21,11 @@ public:
 	static const uint8_t PROTOCOL_TYPE_BALL = 0x2;
 	static const uint8_t PROTOCOL_TYPE_MSG = 0x7;
 	static const uint8_t PROTOCOL_TYPE_FRAME = 0x8;
+	static const uint8_t PROTOCOL_TYPE_FPS = 0xA;
+
+	static const uint8_t FPS_CAPTURE = 0x01;
+	static const uint8_t FPS_PROC = 0x02;
+	static const uint8_t FPS_CTRL = 0x03;
 
 	static DebugLink &instance();
 
@@ -28,6 +33,7 @@ public:
 	void msg(int level, const std::string message);
 	void event(int event);
 	void frame(Frame *frame);
+	void fps(uint8_t type, int fps);
 
 private:
 	DebugLink();

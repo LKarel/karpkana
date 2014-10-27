@@ -141,24 +141,19 @@
 
    This message has no parameters.
 
-1.1.9. Type: PROC_FPS
+1.1.9. Type: FPS
 
    Message type: 0x0A
 
    Arguments:
 
+       TYPE: 8 bits
+          0x01 - video capture
+          0x02 - processing thread
+          0x03 - controller
+
        FPS: 8 bits
           VideoProcessor FPS
-
-1.1.10. Type: CAPTURE_FPS
-
-   Message type: 0x0B
-
-   Arguments:
-
-       FPS: 8 bits
-          video capture FPS
-
 
 1.2. Incoming commands
 
