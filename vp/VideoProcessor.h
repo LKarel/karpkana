@@ -2,10 +2,13 @@
 #define VP_VIDEOPROCESSOR_H
 
 #include <mutex>
-#include <opencv2/opencv.hpp>
 #include <thread>
-#include "Frame.h"
+#include "main.h"
+#include "util.h"
+#include "3rdparty/cmvision.h"
 #include "comm/DebugLink.h"
+#include "vp/Camera.h"
+#include "vp/VideoFrame.h"
 
 class VideoProcessor
 {
@@ -14,22 +17,23 @@ public:
 	~VideoProcessor();
 
 	/**
-	 * Insert a Mat for processing.
+	 * Insert a camera frame for processing
 	 */
-	void putMatFrame(cv::Mat mat);
+	void putRawFrame(unsigned char *data);
 
 	/**
 	 * Get a processed frame.
 	 */
-	Frame *getFrame();
+	VideoFrame *getFrame();
+
+	bool debugClassify;
 
 private:
 	unsigned int sequence;
+	CMVision vision;
 
-	cv::Mat *mat;
-	std::mutex matMutex;
-
-	void detectBalls(Frame *frame);
+	unsigned char data[CAPT_WIDTH * CAPT_HEIGHT * 4];
+	std::mutex dataMutex;
 };
 
 #endif

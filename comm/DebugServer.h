@@ -1,9 +1,12 @@
 #ifndef COMM_DEBUGSERVER_H
 #define COMM_DEBUGSERVER_H
 
+#include <algorithm>
 #include <mutex>
+#include <string.h>
 #include <thread>
 #include <vector>
+#include "comm/Log.h"
 
 class DebugServer
 {

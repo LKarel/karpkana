@@ -54,8 +54,7 @@ public abstract class StreamParser implements Runnable
 		switch (first)
 		{
 			case Protocol.TYPE_BALL: return readNextBall();
-			case Protocol.TYPE_MSG: return readNextMsg();
-			case Protocol.TYPE_FRAME: return readNextFrame();
+			case Protocol.TYPE_IMAGE: return readNextFrame();
 			case Protocol.TYPE_FPS: return readNextFps();
 		}
 

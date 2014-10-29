@@ -1,0 +1,4 @@
+#define CAPT_WIDTH 640
+#define CAPT_HEIGHT 480
+
+#define REGION_NUM 4

@@ -1,10 +1,9 @@
 #include <signal.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <opencv2/opencv.hpp>
-#include "Controller.h"
 #include "comm/DebugLink.h"
-#include "objects/BallObject.h"
+#include "comm/Log.h"
+#include "vp/Camera.h"
 #include "vp/VideoProcessor.h"
 
 bool sigint = false;
@@ -19,41 +18,22 @@ int main(int argc, char** argv)
 	signal(SIGINT, handleSigint);
 	signal(SIGPIPE, SIG_IGN);
 
-	cv::VideoCapture capture(0);
+	setbuf(stdout, NULL);
 
-	if (!capture.isOpened())
-	{
-		DebugLink::instance().msg(DebugLink::LEVEL_ERROR, "main: Failed to initialize the camera");
-		capture.release();
-		return 1;
-	}
-
-	capture.set(CV_CAP_PROP_FRAME_WIDTH, 1280);
-	capture.set(CV_CAP_PROP_FRAME_HEIGHT, 720);
-	capture.set(CV_CAP_PROP_FPS, 30);
+	Camera camera("/dev/video0", CAPT_WIDTH, CAPT_HEIGHT);
 
 	VideoProcessor vp;
-	Controller ctrl(&vp);
-	cv::Mat mat;
+	vp.debugClassify = true;
 
-	DebugLink::instance().msg(DebugLink::LEVEL_INFO, "main: Starting camera loop");
-
-	while (!sigint && ctrl.isRunning())
+	while (!sigint)
 	{
-		if (!capture.read(mat))
-		{
-			DebugLink::instance().msg(DebugLink::LEVEL_ERROR, "main: No frame received");
-			break;
-		}
-
-		vp.putMatFrame(mat);
+		camera.Update();
+		vp.putRawFrame(camera.data);
+		vp.getFrame();
 	}
 
-	DebugLink::instance().msg(DebugLink::LEVEL_INFO, "main: Shutting down");
+	Log::printf("main: shutting down");
 	DebugLink::instance().close();
-
-	capture.release();
-	ctrl.stop();
 
 	return 0;
 }

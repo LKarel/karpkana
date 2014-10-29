@@ -1,31 +1,19 @@
-#include <iostream>
-#include <opencv2/opencv.hpp>
-#include <stdio.h>
-#include <string.h>
-#include "util.h"
 #include "comm/DebugLink.h"
-#include "comm/DebugServer.h"
-#include "objects/BaseObject.h"
-#include "objects/BallObject.h"
 
 DebugLink::DebugLink() :
-	logFile("debuglink_local.log", std::ios::out | std::ios::app)
+	isRunning(true),
+	frameSequence(0),
+	imageData(NULL)
 {
 	this->server = new DebugServer();
 	this->server->start(11000);
 
-	this->frameBroadcaster = new FrameBroadcaster(this->server);
+	this->thread = std::thread(&DebugLink::run, this);
 }
 
 DebugLink::~DebugLink()
 {
 	delete this->server;
-	delete this->frameBroadcaster;
-
-	if (this->logFile.is_open())
-	{
-		this->logFile.close();
-	}
 }
 
 DebugLink &DebugLink::instance()
@@ -36,98 +24,152 @@ DebugLink &DebugLink::instance()
 
 void DebugLink::close()
 {
+	this->isRunning = false;
+	this->thread.join();
+
 	this->server->stop();
-	this->frameBroadcaster->stop();
 }
 
-void DebugLink::msg(int level, const std::string message)
+void DebugLink::image(int sequence, rgb *img)
 {
-	this->localMsg(level, message);
-
-	if (this->server->hasClients())
+	if (sequence < this->frameSequence)
 	{
-		size_t len = (size_t) message.length();
-
-		if (len > 65535)
-		{
-			len = 65535;
-			this->msg(DebugLink::LEVEL_WARN, "DebugLink: Outgoing message exceeds 65535 bytes, ignoring the rest");
-		}
-
-		uint8_t data[len + 4];
-
-		data[0] = DebugLink::PROTOCOL_TYPE_MSG;
-		data[1] = level;
-		data[2] = (len >> 8) & 0xFF;
-		data[3] = len & 0xFF;
-
-		for (int i = 0; i < len; ++i)
-		{
-			data[i + 4] = static_cast<uint8_t>(message[i]);
-		}
-
-		this->server->broadcast(data, len + 4);
+		return;
 	}
-}
 
-void DebugLink::event(int event)
-{
-	this->localMsg(DebugLink::LEVEL_INFO, std::string("Emitting event ")
-		.append(std::to_string(event)));
-
-	if (this->server->hasClients())
+	if (this->imageMutex.try_lock())
 	{
-		if (event > 65535)
+		if (this->imageData)
 		{
-			// Cannot send event of this type
-			return;
+			delete this->imageData;
 		}
 
-		uint8_t data[] = {
-			DebugLink::PROTOCOL_TYPE_EVENT,
-			(uint8_t) ((event >> 8) & 0xFF),
-			(uint8_t) ((event >> 0) & 0xFF)
-		};
-
-		this->server->broadcast(data, 3);
+		this->imageData = img;
+		this->imageMutex.unlock();
 	}
-}
-
-void DebugLink::frame(Frame *frame)
-{
-	this->frameBroadcaster->putFrame(frame);
 }
 
 void DebugLink::fps(uint8_t type, int fps)
 {
-	uint8_t data[] = {
-		DebugLink::PROTOCOL_TYPE_FPS,
-		type,
-		(uint8_t) (fps & 0xFF)
+	this->fpsData.push_back(fps);
+
+	if (this->fpsData.size() == DEBUGLINK_FPS_SAMPLES)
+	{
+		int sum = 0;
+		int fps;
+
+		for (std::vector<int>::size_type i = 0; i < DEBUGLINK_FPS_SAMPLES; i++)
+		{
+			sum += this->fpsData[i];
+		}
+
+		fps = sum / DEBUGLINK_FPS_SAMPLES;
+		fps = (fps > 255) ? 255 : fps;
+
+		uint8_t data[] = {
+			DebugLink::PROTOCOL_TYPE_FPS,
+			type,
+			(uint8_t) (fps & 0xFF)
+		};
+
+		this->server->broadcast(data, 3);
+		this->fpsData.clear();
+	}
+}
+
+void DebugLink::run()
+{
+	while (this->isRunning)
+	{
+		broadcastImage();
+		usleep(10000);
+	}
+}
+
+void DebugLink::broadcastImage()
+{
+	uint8_t *buf;
+
+	{
+		std::lock_guard<std::mutex> lock(this->imageMutex);
+
+		if (!this->imageData)
+		{
+			return;
+		}
+
+		buf = (uint8_t *) malloc(CAPT_WIDTH * CAPT_HEIGHT * 3);
+
+		for (size_t i = 0; i < (CAPT_WIDTH * CAPT_HEIGHT); i++)
+		{
+			buf[(i * 3)] = this->imageData[i].red;
+			buf[(i * 3) + 1] = this->imageData[i].green;
+			buf[(i * 3) + 2] = this->imageData[i].blue;
+		}
+	}
+
+	int jpegSize = CAPT_WIDTH * CAPT_HEIGHT;
+	uint8_t *jpeg = (uint8_t *) malloc(jpegSize);
+
+	jpge::compress_image_to_jpeg_file_in_memory(jpeg, jpegSize,
+		CAPT_WIDTH, CAPT_HEIGHT, 3, buf);
+
+	jpge::compress_image_to_jpeg_file("/tmp/e.jpg", CAPT_WIDTH, CAPT_HEIGHT, 3, buf);
+
+	uint8_t header[] = {
+		DebugLink::PROTOCOL_TYPE_IMAGE,
+
+		// Frame frameSequence number
+		(uint8_t) ((this->frameSequence >> 24) & 0xFF),
+		(uint8_t) ((this->frameSequence >> 16) & 0xFF),
+		(uint8_t) ((this->frameSequence >> 8) & 0xFF),
+		(uint8_t) (this->frameSequence & 0xFF),
+
+		// Frame height
+		(CAPT_HEIGHT >> 8) & 0xFF,
+		(CAPT_HEIGHT) & 0xFF,
+
+		// Image width
+		(CAPT_WIDTH >> 8) & 0xFF,
+		(CAPT_WIDTH) & 0xFF,
+
+		// Image height
+		(CAPT_HEIGHT >> 8) & 0xFF,
+		(CAPT_HEIGHT) & 0xFF,
+
+		(uint8_t) ((jpegSize >> 24) & 0xFF),
+		(uint8_t) ((jpegSize >> 16) & 0xFF),
+		(uint8_t) ((jpegSize >> 8) & 0xFF),
+		(uint8_t) (jpegSize & 0xFF)
 	};
 
-	this->server->broadcast(data, 3);
+	this->server->broadcast(header, 15);
+	this->server->broadcast(jpeg, jpegSize);
+
+	free(buf);
+	free(jpeg);
 }
 
-void DebugLink::localMsg(int level, const std::string message)
-{
-	std::string levelStr;
+// For reference
+//void DebugLink::localMsg(int level, const std::string message)
+//{
+	//std::string levelStr;
 
-	switch (level)
-	{
-		case DebugLink::LEVEL_INFO: levelStr = "INFO"; break;
-		case DebugLink::LEVEL_WARN: levelStr = "WARN"; break;
-		case DebugLink::LEVEL_ERROR: levelStr = "ERROR"; break;
-		default: levelStr = "DEBUG";
-	}
+	//switch (level)
+	//{
+		//case DebugLink::LEVEL_INFO: levelStr = "INFO"; break;
+		//case DebugLink::LEVEL_WARN: levelStr = "WARN"; break;
+		//case DebugLink::LEVEL_ERROR: levelStr = "ERROR"; break;
+		//default: levelStr = "DEBUG";
+	//}
 
-	char log[2048];
-	snprintf(log, 2048, "[%llu] %s: %s", microtime() / 1000, levelStr.c_str(), message.c_str());
+	//char log[2048];
+	//snprintf(log, 2048, "[%llu] %s: %s", microtime() / 1000, levelStr.c_str(), message.c_str());
 
-	if (this->logFile.is_open())
-	{
-		this->logFile << log << "\n";
-	}
+	//if (this->logFile.is_open())
+	//{
+		//this->logFile << log << "\n";
+	//}
 
-	std::cout << log << std::endl;
-}
+	//std::cout << log << std::endl;
+//}

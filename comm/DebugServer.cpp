@@ -7,7 +7,6 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 #include "util.h"
-#include "comm/DebugLink.h"
 #include "comm/DebugServer.h"
 
 bool _isInvalidFd(int fd)
@@ -115,7 +114,7 @@ void DebugServer::run()
 	}
 
 	freeaddrinfo(res);
-	DebugLink::instance().msg(DebugLink::LEVEL_INFO, "DebugServer: Listening for incoming connections");
+	Log::printf("DebugServer: listening for incoming connections");
 
 	fd_set fds;
 	fd_set rfds;
@@ -136,8 +135,7 @@ void DebugServer::run()
 
 		if (select(fdmax + 1, &rfds, NULL, NULL, &tv) == -1)
 		{
-			DebugLink::instance().msg(DebugLink::LEVEL_ERROR,
-				"DebugServer: select() returned error state");
+			Log::perror("select()");
 			break;
 		}
 
@@ -159,8 +157,7 @@ void DebugServer::run()
 					continue;
 				}
 
-				DebugLink::instance().msg(DebugLink::LEVEL_INFO,
-					"DebugServer: Incoming connection");
+				Log::printf("DebugServer: incoming connection");
 
 				FD_SET(client, &fds);
 				fdmax = (client > fdmax) ? client : fdmax;
@@ -175,19 +172,19 @@ void DebugServer::run()
 				if (count > 0)
 				{
 					// TODO: Do something useful
-					DebugLink::instance().msg(DebugLink::LEVEL_INFO, "DebugServer: received data from client");
+					Log::printf("DebugServer: receiving data from client");
 				}
 				else
 				{
 					close(i);
 					FD_CLR(i, &fds);
 
-					DebugLink::instance().msg(DebugLink::LEVEL_INFO, "DebugServer: client disconnected");
+					Log::printf("DebugServer: client disconnected");
 				}
 			}
 		}
 	}
 
 	::close(sockfd);
-	DebugLink::instance().msg(DebugLink::LEVEL_INFO, "DebugServer: DebugServer socket closed");
+	Log::printf("DebugServer: server socket closed");
 }

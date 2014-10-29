@@ -1,84 +1,78 @@
-#include <thread>
-#include "Frame.h"
-#include "util.h"
-#include "objects/BallObject.h"
 #include "VideoProcessor.h"
 
 VideoProcessor::VideoProcessor() :
-	sequence(0),
-	mat(NULL)
+	debugClassify(false),
+	sequence(0)
 {
+	this->vision.initialize(CAPT_WIDTH, CAPT_HEIGHT);
+	this->vision.loadOptions("config/colors.txt");
 }
 
 VideoProcessor::~VideoProcessor()
 {
+	this->vision.close();
 }
 
-void VideoProcessor::putMatFrame(cv::Mat mat)
+void VideoProcessor::putRawFrame(unsigned char *data)
 {
-	std::lock_guard<std::mutex> lock(this->matMutex);
-
-	if (this->mat)
-	{
-		delete this->mat;
-	}
-
-	this->mat = new cv::Mat(mat.clone());
+	std::lock_guard<std::mutex> lock(this->dataMutex);
+	memcpy(&this->data, data, CAPT_WIDTH * CAPT_HEIGHT * 4);
 }
 
-Frame *VideoProcessor::getFrame()
+VideoFrame *VideoProcessor::getFrame()
 {
-	cv::Mat *source;
+	image_pixel *cmImg = new image_pixel[(CAPT_WIDTH * CAPT_HEIGHT) / 2];
 	long begin = microtime();
 
+	// Convert data to a format acceptable to CMVision
 	{
-		std::lock_guard<std::mutex> lock(this->matMutex);
-		source = this->mat;
+		std::lock_guard<std::mutex> lock(this->dataMutex);
 
-		// Avoid the Mat from getting deleted in putMatFrame
-		this->mat = NULL;
+		for (size_t i = 0; i < (CAPT_WIDTH * CAPT_HEIGHT) / 2; i++)
+		{
+			cmImg[i].y1 = this->data[(i * 4)];
+			cmImg[i].u = this->data[(i * 4) + 1];
+			cmImg[i].y2 = this->data[(i * 4) + 2];
+			cmImg[i].v = this->data[(i * 4) + 3];
+		}
 	}
 
-	if (!source)
+	if (!this->vision.processFrame(cmImg))
 	{
+		perror("Processing frame");
 		return NULL;
 	}
 
-	Frame *ret = new Frame(this->sequence++);
+	VideoFrame *vf = new VideoFrame(this->sequence++);
 
-	ret->sourceMat = source;
-	ret->hsvMat = new cv::Mat();
+	for (size_t color = 0; color < REGION_NUM; color++)
+	{
+		CMVision::region *region = this->vision.getRegions(color);
 
-	// Convert colors to HSV
-	cv::cvtColor(*ret->sourceMat, *ret->hsvMat, CV_BGR2HSV);
+		while (region)
+		{
+			VideoFrame::Blob *blob = VideoFrame::Blob::fromRegion(region);
 
-	detectBalls(ret);
+			if (blob)
+			{
+				vf->blobs.push_back(blob);
+			}
+
+			region = region->next;
+		}
+	}
+
+	if (this->debugClassify)
+	{
+		rgb *debugImg = new rgb[CAPT_WIDTH * CAPT_HEIGHT];
+		this->vision.testClassify(debugImg, cmImg);
+
+		DebugLink::instance().image(vf->sequence, debugImg);
+	}
 
 	DebugLink::instance().fps(DebugLink::FPS_PROC, 1000000.0 / (microtime() - begin));
 
-	return ret;
-}
+	delete cmImg;
 
-void VideoProcessor::detectBalls(Frame *frame)
-{
-	// OFF bottle cap
-	cv::Scalar lower(0, 120, 165);
-	cv::Scalar upper(16, 180, 210);
-
-	cv::Mat mask(frame->hsvMat->rows, frame->hsvMat->cols, CV_8U);
-	cv::inRange(*frame->hsvMat, lower, upper, mask);
-
-	cv::GaussianBlur(mask, mask, cv::Size(13, 13), 6, 6);
-
-	std::vector<cv::Vec3f> circles;
-	cv::HoughCircles(mask, circles, CV_HOUGH_GRADIENT, 1, 100, 200, 30, 50, 450);
-
-	for (std::vector<cv::Vec3f>::size_type i = 0; i != circles.size(); ++i)
-	{
-		int x = circles[i][0];
-		int y = circles[i][1];
-		int radius = circles[i][2];
-
-		frame->addObject((BaseObject *) BallObject::createByVisual(x, y, radius));
-	}
+	return vf;
 }
