@@ -10,7 +10,7 @@ class Log
 {
 public:
 	static void printf(const char *fmt, ...);
-	static void perror(const char *name);
+	static void perror(const char *fmt, ...);
 };
 
 #endif

@@ -1,6 +1,7 @@
 #include <signal.h>
 #include <stdio.h>
 #include <unistd.h>
+#include "comm/Coilgun.h"
 #include "comm/DebugLink.h"
 #include "comm/Log.h"
 #include "vp/Camera.h"
@@ -19,6 +20,16 @@ int main(int argc, char** argv)
 	signal(SIGPIPE, SIG_IGN);
 
 	setbuf(stdout, NULL);
+
+	Coilgun cg("/home/ragnis/tmp/cg", 3);
+
+	while (!sigint)
+	{
+		cg.tick();
+		usleep(10000);
+	}
+
+	return 0;
 
 	Camera camera("/dev/video0", CAPT_WIDTH, CAPT_HEIGHT);
 
