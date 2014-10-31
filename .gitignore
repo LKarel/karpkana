@@ -1,5 +1,5 @@
 *.o
-/main
+/bin/main
 /debuglink_local.log
 /debugclient/build/*
 /debugclient/.gradle/*
