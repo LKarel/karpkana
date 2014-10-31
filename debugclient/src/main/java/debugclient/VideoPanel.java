@@ -16,13 +16,15 @@ import java.awt.image.WritableRaster;
 
 import javax.swing.JPanel;
 
+import org.imgscalr.Scalr;
+
 import debugclient.comm.BallMessage;
 import debugclient.comm.FrameMessage;
 
 public class VideoPanel extends JPanel
 {
-	private static final int WIDTH = 640;
-	private static final int HEIGHT = 360;
+	private static final int WIDTH = 746;
+	private static final int HEIGHT = 480;
 
 	private FrameMessage mFrame;
 	private ArrayList<BallMessage> mBalls;
@@ -93,14 +95,11 @@ public class VideoPanel extends JPanel
 		super.paintComponent(g);
 
 		Image image = null;
-		int width = WIDTH;
-		int height = HEIGHT;
 
 		if (mFrame != null)
 		{
-			image = mFrame.image;
-			width = image.getWidth(null);
-			height = image.getHeight(null);
+			image = (Image) Scalr.resize(mFrame.toBufferedImage(), Scalr.Method.SPEED,
+				Scalr.Mode.FIT_EXACT, WIDTH, HEIGHT, Scalr.OP_ANTIALIAS);
 		}
 		else if (mNoise != null)
 		{
@@ -111,24 +110,11 @@ public class VideoPanel extends JPanel
 			return;
 		}
 
-		g.drawImage(image, 0, 0, width, height, 0, 0, width, height, null);
-
-		if (mFrame != null)
-		{
-			for (BallMessage ball : mBalls)
-			{
-				int x = (int) ((float) ball.x * mFrame.scale);
-				int y = (int) ((float) ball.y * mFrame.scale);
-				int radius = (int) ((float) ball.radius * mFrame.scale);
-
-				g.setColor(Color.RED);
-				g.drawOval(x - (radius / 2), y - (radius / 2), radius * 2, radius * 2);
-			}
-		}
+		g.drawImage(image, 0, 0, null);
 
 		if (mErrorMessage != null)
 		{
-			paintError(g, width, height, mErrorMessage);
+			paintError(g, WIDTH, HEIGHT, mErrorMessage);
 		}
 	}
 

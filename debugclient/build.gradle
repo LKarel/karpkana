@@ -5,9 +5,13 @@ repositories {
 }
 
 dependencies {
+	compile group: 'org.imgscalr', name: 'imgscalr-lib', version: '4.2'
 }
 
-jar {
+task fatJar(type: Jar) {
 	baseName = 'debugclient'
 	manifest.attributes('Main-Class': 'debugclient.Main')
+
+	from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+	with jar
 }
