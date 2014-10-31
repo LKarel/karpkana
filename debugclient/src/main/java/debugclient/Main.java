@@ -40,14 +40,12 @@ public class Main
 		frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
 
 		final FpsPanel fpsPanel = new FpsPanel();
-		final OutputPanel outputPanel = new OutputPanel();
 		final VideoPanel videoPanel = new VideoPanel();
 
 		final Connection connection = new Connection()
 		{
 			protected void onError(Throwable e)
 			{
-				outputPanel.putMessage("Connection error: " + e.toString());
 				videoPanel.setErrorMessage("CONNECTION LOST");
 			}
 
@@ -60,10 +58,6 @@ public class Main
 				else if (msg instanceof BallMessage)
 				{
 					videoPanel.putBall((BallMessage) msg);
-				}
-				else if (msg instanceof MessageMessage)
-				{
-					outputPanel.putMessage("MSG: " + msg);
 				}
 				else if (msg instanceof FpsMessage)
 				{
@@ -87,7 +81,6 @@ public class Main
 
 		frame.add(topPanel);
 		frame.add(videoPanel);
-		frame.add(outputPanel);
 
 		frame.pack();
 		frame.setVisible(true);
