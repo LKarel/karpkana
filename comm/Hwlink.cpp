@@ -1,8 +1,8 @@
 #include "comm/Hwlink.h"
 
 Hwlink::Hwlink(const char *device) :
-	fd(-1),
-	id(0)
+	id(0),
+	fd(-1)
 {
 	this->fd = open(device, O_RDWR | O_NOCTTY | O_NONBLOCK);
 
