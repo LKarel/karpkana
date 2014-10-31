@@ -12,8 +12,7 @@
 #include "comm/Log.h"
 
 #define COMM_HWLINK_MOTORS_COUNT 3
-//#define COMM_HWLINK_TIMEOUT 1500000
-#define COMM_HWLINK_TIMEOUT 1000000000
+#define COMM_HWLINK_TIMEOUT 1500000
 
 class Hwlink
 {
