@@ -26,10 +26,10 @@ public:
 	void command(const char *fmt, ...);
 
 	std::queue<char *> messages;
+	int id;
 
 private:
 	int fd;
-	int id;
 	std::vector<char> buffer;
 };
 
