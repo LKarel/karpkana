@@ -13,6 +13,10 @@
 class VideoProcessor
 {
 public:
+	static const int DEBUG_IMG_NONE = 0;
+	static const int DEBUG_IMG_RAW = 1;
+	static const int DEBUG_IMG_CLASSIFY = 2;
+
 	VideoProcessor();
 	~VideoProcessor();
 
@@ -26,7 +30,7 @@ public:
 	 */
 	VideoFrame *getFrame();
 
-	bool debugClassify;
+	int debugImgMode;
 
 private:
 	unsigned int sequence;

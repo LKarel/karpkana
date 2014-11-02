@@ -1,7 +1,7 @@
 #include "VideoProcessor.h"
 
 VideoProcessor::VideoProcessor() :
-	debugClassify(false),
+	debugImgMode(DEBUG_IMG_NONE),
 	sequence(0)
 {
 	this->vision.initialize(CAPT_WIDTH, CAPT_HEIGHT);
@@ -62,10 +62,35 @@ VideoFrame *VideoProcessor::getFrame()
 		}
 	}
 
-	if (this->debugClassify)
+	if (this->debugImgMode == DEBUG_IMG_CLASSIFY)
 	{
 		rgb *debugImg = new rgb[CAPT_WIDTH * CAPT_HEIGHT];
 		this->vision.testClassify(debugImg, cmImg);
+
+		DebugLink::instance().image(vf->sequence, debugImg);
+	}
+	else if (this->debugImgMode == DEBUG_IMG_RAW)
+	{
+		rgb *debugImg = new rgb[CAPT_WIDTH * CAPT_HEIGHT];
+		image_pixel yuyv;
+		int r, g, b;
+
+		for (size_t i = 0; i < CAPT_WIDTH * CAPT_HEIGHT; i++)
+		{
+			yuyv = cmImg[i / 2];
+
+			r = yuyv.y1 + (1.370705 * (yuyv.v-128));
+			g = yuyv.y1 - (0.698001 * (yuyv.v-128)) - (0.337633 * (yuyv.u-128));
+			b = yuyv.y1 + (1.732446 * (yuyv.u-128));
+
+			FORCE_RANGE(r, 0, 255);
+			FORCE_RANGE(g, 0, 255);
+			FORCE_RANGE(b, 0, 255);
+
+			debugImg[i].red = (unsigned char) r;
+			debugImg[i].green = (unsigned char) g;
+			debugImg[i].blue = (unsigned char) b;
+		}
 
 		DebugLink::instance().image(vf->sequence, debugImg);
 	}
