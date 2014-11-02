@@ -30,7 +30,7 @@ void TestController::run()
 
 		if (!frame)
 		{
-			usleep(500);
+			usleep(5000);
 			continue;
 		}
 	}

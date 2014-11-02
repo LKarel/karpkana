@@ -37,6 +37,7 @@ private:
 	CMVision vision;
 
 	unsigned char data[CAPT_WIDTH * CAPT_HEIGHT * 4];
+	bool dataFresh;
 	std::mutex dataMutex;
 };
 

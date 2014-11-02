@@ -2,7 +2,8 @@
 
 VideoProcessor::VideoProcessor() :
 	debugImgMode(DEBUG_IMG_NONE),
-	sequence(0)
+	sequence(0),
+	dataFresh(false)
 {
 	this->vision.initialize(CAPT_WIDTH, CAPT_HEIGHT);
 	this->vision.loadOptions("config/colors.txt");
@@ -17,6 +18,7 @@ void VideoProcessor::putRawFrame(unsigned char *data)
 {
 	std::lock_guard<std::mutex> lock(this->dataMutex);
 	memcpy(&this->data, data, CAPT_WIDTH * CAPT_HEIGHT * 4);
+	this->dataFresh = true;
 }
 
 VideoFrame *VideoProcessor::getFrame()
@@ -28,6 +30,11 @@ VideoFrame *VideoProcessor::getFrame()
 	{
 		std::lock_guard<std::mutex> lock(this->dataMutex);
 
+		if (!this->dataFresh)
+		{
+			return NULL;
+		}
+
 		for (size_t i = 0; i < (CAPT_WIDTH * CAPT_HEIGHT) / 2; i++)
 		{
 			cmImg[i].y1 = this->data[(i * 4)];
@@ -35,6 +42,8 @@ VideoFrame *VideoProcessor::getFrame()
 			cmImg[i].y2 = this->data[(i * 4) + 2];
 			cmImg[i].v = this->data[(i * 4) + 3];
 		}
+
+		this->dataFresh = false;
 	}
 
 	if (!this->vision.processFrame(cmImg))
