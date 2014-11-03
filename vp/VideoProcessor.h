@@ -21,6 +21,11 @@ public:
 	~VideoProcessor();
 
 	/**
+	 * Load the colors config file.
+	 */
+	void loadColors(const char *file);
+
+	/**
 	 * Insert a camera frame for processing
 	 */
 	void putRawFrame(unsigned char *data);
@@ -35,6 +40,7 @@ public:
 private:
 	unsigned int sequence;
 	CMVision vision;
+	std::mutex visionMutex;
 
 	unsigned char data[CAPT_WIDTH * CAPT_HEIGHT * 4];
 	bool dataFresh;

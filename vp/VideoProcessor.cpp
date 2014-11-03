@@ -6,12 +6,17 @@ VideoProcessor::VideoProcessor() :
 	dataFresh(false)
 {
 	this->vision.initialize(CAPT_WIDTH, CAPT_HEIGHT);
-	this->vision.loadOptions("config/colors.txt");
 }
 
 VideoProcessor::~VideoProcessor()
 {
 	this->vision.close();
+}
+
+void VideoProcessor::loadColors(const char *file)
+{
+	std::lock_guard<std::mutex> lock(this->visionMutex);
+	this->vision.loadOptions(file);
 }
 
 void VideoProcessor::putRawFrame(unsigned char *data)
@@ -23,6 +28,8 @@ void VideoProcessor::putRawFrame(unsigned char *data)
 
 VideoFrame *VideoProcessor::getFrame()
 {
+	std::lock_guard<std::mutex> lock(this->visionMutex);
+
 	image_pixel *cmImg;
 	long begin = microtime();
 
