@@ -263,7 +263,7 @@ if(-1==xioctl(fd, VIDIOC_S_STD, &s))
 */
 
 
-struct v4l2_streamparm p;
+struct v4l2_streamparm p = { 0 };
 p.type=V4L2_BUF_TYPE_VIDEO_CAPTURE;
 //p.parm.capture.capability=V4L2_CAP_TIMEPERFRAME;
 //p.parm.capture.capturemode=V4L2_MODE_HIGHQUALITY;

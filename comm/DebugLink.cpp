@@ -34,6 +34,7 @@ void DebugLink::image(int sequence, rgb *img)
 {
 	if (sequence < this->frameSequence)
 	{
+		delete[] img;
 		return;
 	}
 
@@ -41,11 +42,15 @@ void DebugLink::image(int sequence, rgb *img)
 	{
 		if (this->imageData)
 		{
-			delete this->imageData;
+			delete[] this->imageData;
 		}
 
 		this->imageData = img;
 		this->imageMutex.unlock();
+	}
+	else
+	{
+		delete[] img;
 	}
 }
 
@@ -106,6 +111,9 @@ void DebugLink::broadcastImage()
 			buf[(i * 3) + 1] = this->imageData[i].green;
 			buf[(i * 3) + 2] = this->imageData[i].blue;
 		}
+
+		delete[] this->imageData;
+		this->imageData = NULL;
 	}
 
 	int jpegSize = CAPT_WIDTH * CAPT_HEIGHT;

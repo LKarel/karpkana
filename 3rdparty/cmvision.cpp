@@ -827,7 +827,7 @@ bool CMVision::disable(unsigned opt)
 
 void CMVision::close()
 {
-  if(map) delete(map);
+  if(map) delete[] map;
   map = NULL;
 }
 

@@ -24,27 +24,30 @@ int main(int argc, char** argv)
 
 	Camera camera("/dev/video0", CAPT_WIDTH, CAPT_HEIGHT);
 
-	VideoProcessor vp;
-	TestController ctrl(vp);
+	VideoProcessor *vp = new VideoProcessor();
+	TestController *ctrl = new TestController(vp);
 
 	if (env_is("C22_DEBUGIMG", "raw"))
 	{
-		vp.debugImgMode = VideoProcessor::DEBUG_IMG_RAW;
+		vp->debugImgMode = VideoProcessor::DEBUG_IMG_RAW;
 	}
 	else if (env_is("C22_DEBUGIMG", "classify"))
 	{
-		vp.debugImgMode = VideoProcessor::DEBUG_IMG_CLASSIFY;
+		vp->debugImgMode = VideoProcessor::DEBUG_IMG_CLASSIFY;
 	}
 
 	while (!sigint)
 	{
 		camera.Update();
-		vp.putRawFrame(camera.data);
+		vp->putRawFrame(camera.data);
 	}
 
 	Log::printf("main: shutting down");
-	ctrl.stop();
+	ctrl->stop();
 	DebugLink::instance().close();
+
+	delete vp;
+	delete ctrl;
 
 	return 0;
 }

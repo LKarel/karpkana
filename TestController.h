@@ -8,13 +8,13 @@
 class TestController
 {
 public:
-	TestController(VideoProcessor &vp);
+	TestController(VideoProcessor *vp);
 	~TestController();
 
 	void stop();
 
 private:
-	VideoProcessor &vp;
+	VideoProcessor *vp;
 	bool isRunning;
 	std::thread thread;
 

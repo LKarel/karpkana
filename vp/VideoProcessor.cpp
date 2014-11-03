@@ -23,7 +23,7 @@ void VideoProcessor::putRawFrame(unsigned char *data)
 
 VideoFrame *VideoProcessor::getFrame()
 {
-	image_pixel *cmImg = new image_pixel[(CAPT_WIDTH * CAPT_HEIGHT) / 2];
+	image_pixel *cmImg;
 	long begin = microtime();
 
 	// Convert data to a format acceptable to CMVision
@@ -34,6 +34,8 @@ VideoFrame *VideoProcessor::getFrame()
 		{
 			return NULL;
 		}
+
+		cmImg = new image_pixel[(CAPT_WIDTH * CAPT_HEIGHT) / 2];
 
 		for (size_t i = 0; i < (CAPT_WIDTH * CAPT_HEIGHT) / 2; i++)
 		{
@@ -106,7 +108,7 @@ VideoFrame *VideoProcessor::getFrame()
 
 	DebugLink::instance().fps(DebugLink::FPS_PROC, 1000000.0 / (microtime() - begin));
 
-	delete cmImg;
+	delete[] cmImg;
 
 	return vf;
 }

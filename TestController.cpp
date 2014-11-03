@@ -1,6 +1,6 @@
 #include "TestController.h"
 
-TestController::TestController(VideoProcessor &vp) :
+TestController::TestController(VideoProcessor *vp) :
 	vp(vp),
 	isRunning(true)
 {
@@ -26,12 +26,14 @@ void TestController::run()
 {
 	while (this->isRunning)
 	{
-		VideoFrame *frame = this->vp.getFrame();
+		VideoFrame *frame = this->vp->getFrame();
 
 		if (!frame)
 		{
 			usleep(5000);
 			continue;
 		}
+
+		delete frame;
 	}
 }
