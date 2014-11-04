@@ -21,7 +21,7 @@ HwScanner::HwScanner(const char *type) :
 			Log::printf("HwScanner: found %s", names[i]->d_name);
 
 			char fullpath[64];
-			snprintf(fullpath, 64, "%s/%s", type, names[i]->d_name);
+			snprintf(fullpath, 64, "/dev/%s", names[i]->d_name);
 
 			Hwlink *link = new Hwlink(fullpath);
 
