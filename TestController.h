@@ -3,6 +3,7 @@
 
 #include <thread>
 #include <unistd.h>
+#include "util.h"
 #include "World.h"
 #include "comm/HwScanner.h"
 #include "comm/Log.h"

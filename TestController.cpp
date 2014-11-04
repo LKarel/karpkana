@@ -37,6 +37,7 @@ void TestController::run()
 
 	while (this->isRunning)
 	{
+		long begin = microtime();
 		VideoFrame *frame = this->vp->getFrame();
 
 		if (!frame)
@@ -46,6 +47,8 @@ void TestController::run()
 		}
 
 		this->world.onFrame(frame);
+
+		DebugLink::instance().fps(DebugLink::FPS_CTRL, 1000000.0 / (microtime() - begin));
 
 		delete frame;
 	}
