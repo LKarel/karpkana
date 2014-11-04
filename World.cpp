@@ -29,12 +29,12 @@ void World::onFrame(VideoFrame *frame)
 
 		ball->sequence = frame->sequence;
 
-		//ball->realx = ball->distance * sin(ball->angle);
-		//ball->realy = ball->distance * cos(ball->angle);
+		//ball->blobx = ball->distance * sin(ball->angle);
+		//ball->bloby = ball->distance * cos(ball->angle);
 
 		// Temporary
-		ball->realx = (blob->x1 + blob->x2) / 2;
-		ball->realy = (blob->y1 + blob->y2) / 2;
+		ball->blobx = (blob->x1 + blob->x2) / 2;
+		ball->bloby = (blob->y1 + blob->y2) / 2;
 
 		// Verify if in any tracking area
 		for (std::vector<World::Ball *>::size_type j = 0; j < this->balls.size(); j++)
@@ -77,7 +77,8 @@ void World::onFrame(VideoFrame *frame)
 
 bool World::Ball::inTrackingBox(Ball *ball)
 {
-	int distance = sqrt(pow(ball->realx - this->realx, 2) + pow(ball->realy - this->realy, 2));
+	int distance = sqrt(pow(ball->blobx - this->blobx, 2) + pow(ball->bloby - this->bloby, 2));
 
+	// TODO: In TRACKING_RADIUS account for real-world distance
 	return distance <= TRACKING_RADIUS;
 }

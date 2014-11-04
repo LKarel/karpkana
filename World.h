@@ -11,7 +11,7 @@ public:
 	class Ball
 	{
 	public:
-		Ball() : id(0), sequence(0), distance(0), angle(0), realx(0), realy(0)
+		Ball() : id(0), sequence(0), distance(0), angle(0), blobx(0), bloby(0)
 		{
 		}
 
@@ -22,8 +22,8 @@ public:
 		int distance;
 		double angle;
 
-		int realx;
-		int realy;
+		int blobx;
+		int bloby;
 	};
 
 	World();
