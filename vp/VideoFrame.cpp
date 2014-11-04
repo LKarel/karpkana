@@ -24,7 +24,16 @@ VideoFrame::Blob::Blob(int x1, int y1, int x2, int y2, int color)
 
 VideoFrame::Blob *VideoFrame::Blob::fromRegion(CMVision::region *region)
 {
-	// TODO: Check, if allowed
+	if (region->color == VideoFrame::Blob::COLOR_BALL)
+	{
+		double width = (double) abs(region->x2 - region->x1);
+		double ratio = width / (double) abs(region->y2 - region->y1);
+
+		if (width < 35 || ratio > 1.45 || ratio < 0.65)
+		{
+			return NULL;
+		}
+	}
 
 	return new VideoFrame::Blob(region->x1, region->y1, region->x2, region->y2, region->color);
 }
