@@ -3,6 +3,11 @@
 
 #include <thread>
 #include <unistd.h>
+#include "World.h"
+#include "comm/HwScanner.h"
+#include "comm/Log.h"
+#include "comm/Motor.h"
+#include "vp/VideoFrame.h"
 #include "vp/VideoProcessor.h"
 
 class TestController
@@ -17,6 +22,7 @@ private:
 	VideoProcessor *vp;
 	bool isRunning;
 	std::thread thread;
+	World world;
 
 	void run();
 };

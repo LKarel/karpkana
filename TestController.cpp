@@ -24,6 +24,17 @@ void TestController::stop()
 
 void TestController::run()
 {
+	//HwScanner hw("ttyACM");
+
+	//hw.motors[MOTOR_A]->setSpeed(Motor::SPEED_MAX * 0.5);
+	//hw.motors[MOTOR_B]->setSpeed(Motor::SPEED_MAX * 0.5);
+	//hw.motors[MOTOR_C]->setSpeed(Motor::SPEED_MAX * 0.5);
+
+	//usleep(400000);
+	//Log::printf("TestController: done");
+
+	//return; // The destructors should auto-stop all motors
+
 	while (this->isRunning)
 	{
 		VideoFrame *frame = this->vp->getFrame();
@@ -33,6 +44,8 @@ void TestController::run()
 			usleep(5000);
 			continue;
 		}
+
+		this->world.onFrame(frame);
 
 		delete frame;
 	}
