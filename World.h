@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <vector>
+#include "main.h"
 #include "vp/VideoFrame.h"
 
 class World
@@ -11,7 +12,7 @@ public:
 	class Ball
 	{
 	public:
-		Ball() : id(0), sequence(0), distance(0), angle(0), blobx(0), bloby(0)
+		Ball() : id(0), sequence(0), distance(0), angle(0), realx(0), realy(0)
 		{
 		}
 
@@ -21,9 +22,11 @@ public:
 		int sequence;
 		int distance;
 		double angle;
+		int age;
 
-		int blobx;
-		int bloby;
+		// Ball coordinates in real world
+		int realx;
+		int realy;
 	};
 
 	World();

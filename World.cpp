@@ -2,6 +2,16 @@
 
 #define TRACKING_RADIUS 65
 
+//#define CAM_VFOV 0.598647933
+//#define CAM_HFOV 1.06465084
+//#define CAM_ANGLE 0.586154177
+//#define CAM_HEIGHT 194.48
+
+#define CAM_VFOV 0.300393263
+#define CAM_HFOV 1.06465084
+#define CAM_ANGLE 0.53804420679
+#define CAM_HEIGHT 305
+
 World::World() :
 	ids(1)
 {
@@ -28,13 +38,16 @@ void World::onFrame(VideoFrame *frame)
 		World::Ball *ball = new World::Ball();
 
 		ball->sequence = frame->sequence;
+		ball->age = 0;
 
-		//ball->blobx = ball->distance * sin(ball->angle);
-		//ball->bloby = ball->distance * cos(ball->angle);
+		double y = (double) (blob->y1 + blob->y2) / 2;
+		double x = (double) (blob->x1 + blob->x2) / 2;
 
-		// Temporary
-		ball->blobx = (blob->x1 + blob->x2) / 2;
-		ball->bloby = (blob->y1 + blob->y2) / 2;
+		ball->distance = CAM_HEIGHT / tan((CAM_VFOV * (y / CAPT_HEIGHT)) + CAM_ANGLE);
+		ball->angle = (CAM_HFOV * (x / (CAPT_WIDTH / 2))) - 1;
+
+		ball->realx = ball->distance * sin(ball->angle);
+		ball->realy = ball->distance * cos(ball->angle);
 
 		// Verify if in any tracking area
 		for (std::vector<World::Ball *>::size_type j = 0; j < this->balls.size(); j++)
@@ -43,6 +56,7 @@ void World::onFrame(VideoFrame *frame)
 				this->balls[j]->inTrackingBox(ball))
 			{
 				ball->id = this->balls[j]->id;
+				ball->age++;
 
 				// Replace the previous ball
 				delete this->balls[j];
@@ -58,6 +72,9 @@ void World::onFrame(VideoFrame *frame)
 			ball->id = this->ids++;
 			this->balls.push_back(ball);
 		}
+
+		//printf("id=%d\tdistance: %d\tangle=%f\n", ball->id, ball->distance, ball->angle);
+		printf("id=%d\tx=%d\ty=%d\n", ball->id, ball->realx, ball->realy);
 	}
 
 	std::vector<World::Ball *>::size_type i = 0;
@@ -77,8 +94,7 @@ void World::onFrame(VideoFrame *frame)
 
 bool World::Ball::inTrackingBox(Ball *ball)
 {
-	int distance = sqrt(pow(ball->blobx - this->blobx, 2) + pow(ball->bloby - this->bloby, 2));
+	int distance = sqrt(pow(ball->realx - this->realx, 2) + pow(ball->realy - this->realy, 2));
 
-	// TODO: In TRACKING_RADIUS account for real-world distance
 	return distance <= TRACKING_RADIUS;
 }
