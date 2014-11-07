@@ -91,15 +91,18 @@ VideoFrame *VideoProcessor::getFrame()
 	{
 		rgb *debugImg = new rgb[CAPT_WIDTH * CAPT_HEIGHT];
 		image_pixel yuyv;
+		int y;
 		int r, g, b;
 
 		for (size_t i = 0; i < CAPT_WIDTH * CAPT_HEIGHT; i++)
 		{
 			yuyv = cmImg[i / 2];
 
-			r = yuyv.y1 + (1.370705 * (yuyv.v-128));
-			g = yuyv.y1 - (0.698001 * (yuyv.v-128)) - (0.337633 * (yuyv.u-128));
-			b = yuyv.y1 + (1.732446 * (yuyv.u-128));
+			y = (i % 2) ? yuyv.y1 : yuyv.y2;
+
+			r = y + (1.370705 * (yuyv.v-128));
+			g = y - (0.698001 * (yuyv.v-128)) - (0.337633 * (yuyv.u-128));
+			b = y + (1.732446 * (yuyv.u-128));
 
 			FORCE_RANGE(r, 0, 255);
 			FORCE_RANGE(g, 0, 255);
