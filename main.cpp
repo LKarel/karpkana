@@ -7,6 +7,7 @@
 #include "comm/DebugLink.h"
 #include "comm/Log.h"
 #include "vp/Camera.h"
+#include "vp/ImageCamera.h"
 #include "vp/VideoProcessor.h"
 
 #define COLORS_FILE "config/colors.txt"
@@ -26,7 +27,16 @@ int main(int argc, char** argv)
 
 	setbuf(stdout, NULL);
 
-	Camera camera("/dev/video0", CAPT_WIDTH, CAPT_HEIGHT);
+	BaseCamera *camera;
+
+	if (env_has("C22_SOURCE"))
+	{
+		camera = (BaseCamera *) new ImageCamera(getenv("C22_SOURCE"));
+	}
+	else
+	{
+		camera = (BaseCamera *) new Camera("/dev/video1", CAPT_WIDTH, CAPT_HEIGHT);
+	}
 
 	VideoProcessor *vp = new VideoProcessor();
 	TestController *ctrl = new TestController(vp);
@@ -56,8 +66,8 @@ int main(int argc, char** argv)
 
 	while (!sigint)
 	{
-		camera.Update();
-		vp->putRawFrame(camera.data);
+		camera->Update();
+		vp->putRawFrame(camera->data);
 
 		char buf[INOTIFY_BUF_SIZE];
 		ssize_t size = read(inotifyFd, &buf, INOTIFY_BUF_SIZE);

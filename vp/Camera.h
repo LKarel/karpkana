@@ -8,6 +8,8 @@
 #ifndef __LIBCAM__H__
 #define __LIBCAM__H__
 
+#include "vp/BaseCamera.h"
+
 //#define USE_OPENCV 1
 #define USE_LOOKUP 1
 
@@ -33,7 +35,7 @@ typedef enum {
 
 
 
-class Camera {
+class Camera : public BaseCamera {
 private:
   void Open();
   void Close();

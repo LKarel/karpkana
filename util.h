@@ -1,6 +1,8 @@
 #ifndef UTIL_H
 #define UTIL_H
 
+#define LIMIT(x, min, max) ((x) < (min) ? (min) : ((x) > (max) ? (max) : (x)))
+
 #define FORCE_RANGE(x, min, max) do {\
 	if ((x) < (min)) { (x) = (min); }\
 	if ((x) > (max)) { (x) = (max); }\
