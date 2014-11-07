@@ -2,6 +2,7 @@
 #define VP_VIDEOFRAME_H
 
 #include <vector>
+#include "main.h"
 #include "3rdparty/cmvision.h"
 
 class VideoFrame
