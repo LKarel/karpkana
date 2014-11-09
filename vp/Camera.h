@@ -67,7 +67,7 @@ public:
 
   int w2;
 
-  unsigned char *data;
+  //unsigned char *data;
 
   io_method io;
   int fd;
