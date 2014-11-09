@@ -147,7 +147,10 @@ void Hwlink::command(const char *fmt, ...)
 	vsnprintf(cmd, 64, myfmt, args);
 	va_end(args);
 
-	Log::printf("Hwlink: transmitting: %s", cmd);
+	char debug[64];
+	snprintf(debug, strlen(cmd), "%s", cmd);
+
+	Log::printf("Hwlink: transmitting: %s", debug);
 
 	if (write(this->fd, cmd, strlen(cmd)) == -1)
 	{
