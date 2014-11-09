@@ -104,13 +104,9 @@ VideoFrame *VideoProcessor::getFrame()
 			g = y - (0.698001 * (yuyv.v-128)) - (0.337633 * (yuyv.u-128));
 			b = y + (1.732446 * (yuyv.u-128));
 
-			FORCE_RANGE(r, 0, 255);
-			FORCE_RANGE(g, 0, 255);
-			FORCE_RANGE(b, 0, 255);
-
-			debugImg[i].red = (unsigned char) r;
-			debugImg[i].green = (unsigned char) g;
-			debugImg[i].blue = (unsigned char) b;
+			debugImg[i].red = (unsigned char) LIMIT(r, 0, 255);
+			debugImg[i].green = (unsigned char) LIMIT(g, 0, 255);
+			debugImg[i].blue = (unsigned char) LIMIT(b, 0, 255);
 		}
 
 		DebugLink::instance().image(vf->sequence, debugImg);
