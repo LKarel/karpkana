@@ -98,7 +98,7 @@ VideoFrame *VideoProcessor::getFrame()
 		{
 			yuyv = cmImg[i / 2];
 
-			y = (i % 2) ? yuyv.y1 : yuyv.y2;
+			y = (i % 2) ? yuyv.y2 : yuyv.y1;
 
 			r = y + (1.370705 * (yuyv.v-128));
 			g = y - (0.698001 * (yuyv.v-128)) - (0.337633 * (yuyv.u-128));
