@@ -19,6 +19,11 @@ public class FrameMessage implements Message
 
 	public BufferedImage toBufferedImage()
 	{
+		if (image == null)
+		{
+			return null;
+		}
+
 		BufferedImage buf = new BufferedImage(image.getWidth(null), image.getHeight(null),
 			BufferedImage.TYPE_INT_ARGB);
 

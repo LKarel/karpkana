@@ -55,6 +55,7 @@ public abstract class StreamParser implements Runnable
 		{
 			case Protocol.TYPE_BALL: return readNextBall();
 			case Protocol.TYPE_IMAGE: return readNextFrame();
+			case Protocol.TYPE_BLOB: return readNextBlob();
 			case Protocol.TYPE_FPS: return readNextFps();
 		}
 
@@ -82,6 +83,19 @@ public abstract class StreamParser implements Runnable
 		mIn.readFully(buf);
 
 		return new MessageMessage(level, new String(buf));
+	}
+
+	private Message readNextBlob()
+		throws EOFException, IOException
+	{
+		int sequence = mIn.readInt();
+		int color = mIn.readByte();
+		int x1 = mIn.readShort();
+		int x2 = mIn.readShort();
+		int y1 = mIn.readShort();
+		int y2 = mIn.readShort();
+
+		return new BlobMessage(sequence, color, x1, x2, y1, y2);
 	}
 
 	private Message readNextFrame()

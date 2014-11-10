@@ -10,6 +10,7 @@
 #include "3rdparty/cmvision.h"
 #include "3rdparty/jpge.h"
 #include "comm/DebugServer.h"
+#include "vp/VideoFrame.h"
 #include "main.h"
 
 #define DEBUGLINK_FPS_SAMPLES 5
@@ -19,6 +20,7 @@ class DebugLink
 public:
 	static const uint8_t PROTOCOL_TYPE_BALL = 0x2;
 	static const uint8_t PROTOCOL_TYPE_IMAGE = 0x3;
+	static const uint8_t PROTOCOL_TYPE_BLOB = 0x4;
 	static const uint8_t PROTOCOL_TYPE_FPS = 0xA;
 
 	static const uint8_t FPS_CAPTURE = 0x01;
@@ -29,6 +31,7 @@ public:
 
 	void close();
 	void image(int sequence, rgb *img);
+	void blob(int sequence, VideoFrame::Blob *blob);
 	void fps(uint8_t type, int fps);
 
 private:

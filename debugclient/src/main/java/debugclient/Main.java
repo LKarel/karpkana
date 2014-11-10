@@ -14,7 +14,7 @@ import javax.swing.SwingUtilities;
 import debugclient.comm.Connection;
 import debugclient.comm.FpsMessage;
 import debugclient.comm.FrameMessage;
-import debugclient.comm.BallMessage;
+import debugclient.comm.BlobMessage;
 import debugclient.comm.MessageMessage;
 import debugclient.comm.Message;
 
@@ -55,9 +55,9 @@ public class Main
 				{
 					videoPanel.setFrame((FrameMessage) msg);
 				}
-				else if (msg instanceof BallMessage)
+				else if (msg instanceof BlobMessage)
 				{
-					videoPanel.putBall((BallMessage) msg);
+					videoPanel.putBlob((BlobMessage) msg);
 				}
 				else if (msg instanceof FpsMessage)
 				{

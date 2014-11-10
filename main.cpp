@@ -52,6 +52,11 @@ int main(int argc, char** argv)
 		vp->debugImgMode = VideoProcessor::DEBUG_IMG_CLASSIFY;
 	}
 
+	if (env_is("C22_DEBUG_BLOBS", "1"))
+	{
+		vp->debugBlobs = true;
+	}
+
 	int inotifyFd = inotify_init1(IN_NONBLOCK);
 	int inotifyWd = -1;
 

@@ -46,12 +46,46 @@ void DebugLink::image(int sequence, rgb *img)
 		}
 
 		this->imageData = img;
+		this->frameSequence = sequence;
 		this->imageMutex.unlock();
 	}
 	else
 	{
 		delete[] img;
 	}
+}
+
+void DebugLink::blob(int sequence, VideoFrame::Blob *blob)
+{
+	uint8_t data[] = {
+		DebugLink::PROTOCOL_TYPE_BLOB,
+
+		// Frame frameSequence number
+		(uint8_t) ((sequence >> 24) & 0xFF),
+		(uint8_t) ((sequence >> 16) & 0xFF),
+		(uint8_t) ((sequence >> 8) & 0xFF),
+		(uint8_t) (sequence & 0xFF),
+
+		(uint8_t) blob->color,
+
+		// X1
+		(uint8_t) ((blob->x1 >> 8) & 0xFF),
+		(uint8_t) (blob->x1 & 0xFF),
+
+		// X2
+		(uint8_t) ((blob->x2 >> 8) & 0xFF),
+		(uint8_t) (blob->x2 & 0xFF),
+
+		// Y1
+		(uint8_t) ((blob->y1 >> 8) & 0xFF),
+		(uint8_t) (blob->y1 & 0xFF),
+
+		// Y2
+		(uint8_t) ((blob->y2 >> 8) & 0xFF),
+		(uint8_t) (blob->y2 & 0xFF)
+	};
+
+	this->server->broadcast(data, 14);
 }
 
 void DebugLink::fps(uint8_t type, int fps)

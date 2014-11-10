@@ -36,6 +36,7 @@ public:
 	VideoFrame *getFrame();
 
 	int debugImgMode;
+	bool debugBlobs;
 
 private:
 	unsigned int sequence;

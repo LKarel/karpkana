@@ -1,6 +1,7 @@
 package debugclient;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -18,16 +19,16 @@ import javax.swing.JPanel;
 
 import org.imgscalr.Scalr;
 
-import debugclient.comm.BallMessage;
+import debugclient.comm.BlobMessage;
 import debugclient.comm.FrameMessage;
 
 public class VideoPanel extends JPanel
 {
-	private static final int WIDTH = 746;
+	private static final int WIDTH = 640;
 	private static final int HEIGHT = 480;
 
 	private FrameMessage mFrame;
-	private ArrayList<BallMessage> mBalls;
+	private ArrayList<BlobMessage> mBlobs;
 	private String mErrorMessage = "NO SIGNAL";
 
 	private Image mNoise;
@@ -37,7 +38,7 @@ public class VideoPanel extends JPanel
 	{
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
 
-		mBalls = new ArrayList<BallMessage>();
+		mBlobs = new ArrayList<BlobMessage>();
 
 		mNoiseTimer = new Timer();
 		mNoiseTimer.schedule(new TimerTask()
@@ -72,15 +73,36 @@ public class VideoPanel extends JPanel
 	{
 		mFrame = frame;
 		mErrorMessage = null;
-		mBalls.clear();
+
+		// Clear old blobs
+		for (Iterator<BlobMessage> it = mBlobs.iterator(); it.hasNext();)
+		{
+			BlobMessage blob = it.next();
+
+			if (blob.sequence < frame.sequence)
+			{
+				// Remove blobs from previous frames
+				it.remove();
+			}
+		}
 
 		mNoiseTimer.cancel();
 		repaint();
 	}
 
-	public void putBall(BallMessage ball)
+	public synchronized void putBlob(BlobMessage blob)
 	{
-		mBalls.add(ball);
+		int frameSequence = 0;
+
+		if (mFrame != null)
+		{
+			frameSequence = mFrame.sequence;
+		}
+
+		if (blob.sequence >= frameSequence)
+		{
+			mBlobs.add(blob);
+		}
 	}
 
 	public void setErrorMessage(String msg)
@@ -90,7 +112,7 @@ public class VideoPanel extends JPanel
 	}
 
 	@Override
-	public void paintComponent(Graphics g)
+	public synchronized void paintComponent(Graphics g)
 	{
 		super.paintComponent(g);
 
@@ -98,19 +120,43 @@ public class VideoPanel extends JPanel
 
 		if (mFrame != null)
 		{
-			image = (Image) Scalr.resize(mFrame.toBufferedImage(), Scalr.Method.SPEED,
-				Scalr.Mode.FIT_EXACT, WIDTH, HEIGHT, Scalr.OP_ANTIALIAS);
+			BufferedImage bufImg = mFrame.toBufferedImage();
+
+			if (bufImg != null)
+			{
+				image = (Image) Scalr.resize(bufImg, Scalr.Method.SPEED,
+					Scalr.Mode.FIT_EXACT, WIDTH, HEIGHT, Scalr.OP_ANTIALIAS);
+			}
 		}
 		else if (mNoise != null)
 		{
 			image = mNoise;
 		}
-		else
+
+		if (image == null)
 		{
 			return;
 		}
 
 		g.drawImage(image, 0, 0, null);
+
+		if (mFrame != null)
+		{
+			for (BlobMessage blob : mBlobs)
+			{
+				if (blob.sequence != mFrame.sequence)
+				{
+					continue;
+				}
+
+				// Draw a shadow for better visibility
+				g.setColor(Color.WHITE);
+				g.drawRect(blob.x1, blob.y2, blob.width(), blob.height());
+
+				g.setColor(Color.RED);
+				g.drawRect(blob.x1 + 1, blob.y2 + 1, blob.width(), blob.height());
+			}
+		}
 
 		if (mErrorMessage != null)
 		{

@@ -2,6 +2,7 @@
 
 VideoProcessor::VideoProcessor() :
 	debugImgMode(DEBUG_IMG_NONE),
+	debugBlobs(false),
 	sequence(0),
 	dataFresh(false)
 {
@@ -74,6 +75,11 @@ VideoFrame *VideoProcessor::getFrame()
 			if (blob)
 			{
 				vf->blobs.push_back(blob);
+
+				if (this->debugBlobs)
+				{
+					DebugLink::instance().blob(vf->sequence, blob);
+				}
 			}
 
 			region = region->next;
