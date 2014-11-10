@@ -18,7 +18,7 @@ ImageCamera::ImageCamera(const char *path)
 	assert(width == CAPT_WIDTH);
 	assert(height == CAPT_HEIGHT);
 
-	this->data = (unsigned char *) malloc(width * height * 2);
+	this->data = (unsigned char *) malloc(width * height * 4);
 
 	for (ssize_t i = 0; i < (width * height) / 2; ++i)
 	{
