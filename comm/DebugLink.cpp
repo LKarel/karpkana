@@ -105,11 +105,17 @@ void DebugLink::broadcastImage()
 
 		buf = (uint8_t *) malloc(CAPT_WIDTH * CAPT_HEIGHT * 3);
 
-		for (size_t i = 0; i < (CAPT_WIDTH * CAPT_HEIGHT); i++)
+		for (size_t i = 0, j = 0; i < (CAPT_WIDTH * CAPT_HEIGHT); i++)
 		{
-			buf[(i * 3)] = this->imageData[i].red;
-			buf[(i * 3) + 1] = this->imageData[i].green;
-			buf[(i * 3) + 2] = this->imageData[i].blue;
+#if CAPT_FLIP == 1
+			j = (i % CAPT_WIDTH) + CAPT_WIDTH * (CAPT_HEIGHT - (i / CAPT_WIDTH) - 1);
+#else
+			j = i;
+#endif
+
+			buf[(j * 3)] = this->imageData[i].red;
+			buf[(j * 3) + 1] = this->imageData[i].green;
+			buf[(j * 3) + 2] = this->imageData[i].blue;
 		}
 
 		delete[] this->imageData;
