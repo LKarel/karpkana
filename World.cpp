@@ -96,6 +96,11 @@ void World::readBallBlob(VideoFrame *frame, VideoFrame::Blob *blob)
 		this->balls.push_back(ball);
 	}
 
+	if (frame->sequence - this->target.sequence > 5)
+	{
+		this->target.visible = false;
+	}
+
 	//printf("id=%d\tdistance: %d\tangle=%f\n", ball->id, ball->distance, ball->angle);
 	//printf("id=%d\tx=%d\ty=%d\n", ball->id, ball->realx, ball->realy);
 }
@@ -107,6 +112,7 @@ void World::readGoalBlob(VideoFrame *frame, VideoFrame::Blob *blob)
 		return;
 	}
 
+	this->target.visible = true;
 	this->target.sequence = frame->sequence;
 
 	double y = (blob->y1 < blob->y2) ? blob->y1 : blob->y2;
