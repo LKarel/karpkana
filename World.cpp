@@ -44,9 +44,9 @@ void World::onFrame(VideoFrame *frame)
 	std::vector<World::Ball *>::size_type i = 0;
 	while (i < this->balls.size())
 	{
-		if (this->balls[i]->sequence != frame->sequence)
+		if (frame->sequence - this->balls[i]->sequence > 10)
 		{
-			// This ball is no longer in the frame
+			// This ball has not been visible for some time
 			this->balls.erase(this->balls.begin() + i);
 		}
 		else
