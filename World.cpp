@@ -13,6 +13,7 @@
 #define CAM_HEIGHT 305
 
 World::World() :
+	targetColor(VideoFrame::Blob::COLOR_YELLOW),
 	ids(1)
 {
 }
@@ -23,58 +24,21 @@ World::~World()
 
 void World::onFrame(VideoFrame *frame)
 {
-	std::vector<World::Ball *> balls;
-
 	for (std::vector<VideoFrame::Blob *>::size_type i = 0; i < frame->blobs.size(); i++)
 	{
 		VideoFrame::Blob *blob = frame->blobs[i];
 
-		// Do not hard-code this
-		if (blob->color != VideoFrame::Blob::COLOR_BALL)
+		switch (blob->color)
 		{
-			continue;
-		}
-
-		World::Ball *ball = new World::Ball();
-
-		ball->sequence = frame->sequence;
-		ball->age = 0;
-
-		double y = (double) (blob->y1 + blob->y2) / 2;
-		double x = (double) (blob->x1 + blob->x2) / 2;
-
-		ball->distance = CAM_HEIGHT / tan((CAM_VFOV * (y / CAPT_HEIGHT)) + CAM_ANGLE);
-		ball->angle = (CAM_HFOV * (x / (CAPT_WIDTH / 2))) - 1;
-
-		ball->realx = ball->distance * sin(ball->angle);
-		ball->realy = ball->distance * cos(ball->angle);
-
-		// Verify if in any tracking area
-		for (std::vector<World::Ball *>::size_type j = 0; j < this->balls.size(); j++)
-		{
-			if (frame->sequence != this->balls[j]->sequence &&
-				this->balls[j]->inTrackingBox(ball))
-			{
-				ball->id = this->balls[j]->id;
-				ball->age++;
-
-				// Replace the previous ball
-				delete this->balls[j];
-				this->balls[j] = ball;
-
+			case VideoFrame::Blob::COLOR_BALL:
+				this->readBallBlob(frame, blob);
 				break;
-			}
-		}
 
-		if (!ball->id)
-		{
-			// This is a new ball
-			ball->id = this->ids++;
-			this->balls.push_back(ball);
+			case VideoFrame::Blob::COLOR_YELLOW:
+			case VideoFrame::Blob::COLOR_BLUE:
+				this->readGoalBlob(frame, blob);
+				break;
 		}
-
-		//printf("id=%d\tdistance: %d\tangle=%f\n", ball->id, ball->distance, ball->angle);
-		printf("id=%d\tx=%d\ty=%d\n", ball->id, ball->realx, ball->realy);
 	}
 
 	std::vector<World::Ball *>::size_type i = 0;
@@ -90,6 +54,71 @@ void World::onFrame(VideoFrame *frame)
 			i++;
 		}
 	}
+}
+
+void World::readBallBlob(VideoFrame *frame, VideoFrame::Blob *blob)
+{
+	World::Ball *ball = new World::Ball();
+
+	ball->sequence = frame->sequence;
+	ball->age = 0;
+
+	double y = (double) (blob->y1 + blob->y2) / 2;
+	double x = (double) (blob->x1 + blob->x2) / 2;
+
+	ball->distance = CAM_HEIGHT / tan((CAM_VFOV * (y / CAPT_HEIGHT)) + CAM_ANGLE);
+	ball->angle = (CAM_HFOV * (x / (CAPT_WIDTH / 2))) - 1;
+
+	ball->realx = ball->distance * sin(ball->angle);
+	ball->realy = ball->distance * cos(ball->angle);
+
+	// Verify if in any tracking area
+	for (std::vector<World::Ball *>::size_type j = 0; j < this->balls.size(); j++)
+	{
+		if (frame->sequence != this->balls[j]->sequence &&
+			this->balls[j]->inTrackingBox(ball))
+		{
+			ball->id = this->balls[j]->id;
+			ball->age++;
+
+			// Replace the previous ball
+			delete this->balls[j];
+			this->balls[j] = ball;
+
+			break;
+		}
+	}
+
+	if (!ball->id)
+	{
+		// This is a new ball
+		ball->id = this->ids++;
+		this->balls.push_back(ball);
+	}
+
+	//printf("id=%d\tdistance: %d\tangle=%f\n", ball->id, ball->distance, ball->angle);
+	//printf("id=%d\tx=%d\ty=%d\n", ball->id, ball->realx, ball->realy);
+}
+
+void World::readGoalBlob(VideoFrame *frame, VideoFrame::Blob *blob)
+{
+	if (blob->color != this->targetColor)
+	{
+		return;
+	}
+
+	this->target.sequence = frame->sequence;
+
+	double y = (blob->y1 < blob->y2) ? blob->y1 : blob->y2;
+	double x = (double) (blob->x1 + blob->x2) / 2;
+
+	this->target.distance = CAM_HEIGHT / tan((CAM_VFOV * (y / CAPT_HEIGHT)) + CAM_ANGLE);
+	this->target.angle = (CAM_HFOV * (x / (CAPT_WIDTH / 2))) - 1;
+
+	this->target.realx = this->target.distance * sin(this->target.angle);
+	this->target.realy = this->target.distance * cos(this->target.angle);
+
+	//printf("goal distance=%d\tangle=%f\n", this->target.distance, this->target.angle);
 }
 
 bool World::Ball::inTrackingBox(Ball *ball)

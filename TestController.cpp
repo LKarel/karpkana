@@ -4,6 +4,16 @@ TestController::TestController(VideoProcessor *vp) :
 	vp(vp),
 	isRunning(true)
 {
+	if (env_is("C22_TARGET", "blue"))
+	{
+		this->world.targetColor = VideoFrame::Blob::COLOR_BLUE;
+	}
+	else
+	{
+		this->world.targetColor = VideoFrame::Blob::COLOR_YELLOW;
+		Log::printf("TestController: target color not specified, assuming yellow");
+	}
+
 	this->thread = std::thread(&TestController::run, this);
 }
 

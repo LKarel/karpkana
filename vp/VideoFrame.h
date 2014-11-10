@@ -25,6 +25,9 @@ public:
 		int y1;
 		int y2;
 		int color;
+
+		int width();
+		int height();
 	};
 
 	VideoFrame(int sequence);
