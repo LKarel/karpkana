@@ -69,7 +69,7 @@ public class VideoPanel extends JPanel
 		}, 0, 75);
 	}
 
-	public void setFrame(FrameMessage frame)
+	public synchronized void setFrame(FrameMessage frame)
 	{
 		mFrame = frame;
 		mErrorMessage = null;
