@@ -8,6 +8,7 @@
 #define CMD_KICK "k%d"
 #define CMD_AUTO_CHARGE "ac%d"
 #define CMD_FAILSAFE "fs%d"
+#define CMD_TRIBBLER "m%d"
 
 Coilgun::Coilgun(Hwlink *link) :
 	link(link)
@@ -28,6 +29,7 @@ Coilgun::~Coilgun()
 	Log::printf("Coilgun: shutting down");
 
 	this->link->command(CMD_AUTO_CHARGE, 0);
+	this->tribbler(false);
 
 	delete this->link;
 }
@@ -42,6 +44,11 @@ void Coilgun::tick()
 		this->link->command(CMD_PING);
 		this->lastPing = now;
 	}
+}
+
+void Coilgun::tribbler(bool active)
+{
+	this->link->command(CMD_TRIBBLER, active ? 1 : 0);
 }
 
 void Coilgun::kick(uint16_t time)

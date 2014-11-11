@@ -18,6 +18,7 @@ public:
 
 	void tick();
 	void command(const char *cmd, ...);
+	void tribbler(bool active);
 	void kick(uint16_t time);
 
 private:
