@@ -8,4 +8,4 @@
 #define MOTOR_A 2
 #define MOTOR_B 1
 #define MOTOR_C 3
-#define COILGUN 0
+#define COILGUN 4
