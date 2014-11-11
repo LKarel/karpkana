@@ -4,6 +4,7 @@
 #include <cmath>
 #include <vector>
 #include "main.h"
+#include "util.h"
 #include "vp/VideoFrame.h"
 
 class World
@@ -12,7 +13,7 @@ public:
 	class Ball
 	{
 	public:
-		Ball() : id(0), sequence(0), distance(0), angle(0), realx(0), realy(0)
+		Ball() : id(0), sequence(0), age(0), pos{0}
 		{
 		}
 
@@ -20,28 +21,22 @@ public:
 
 		int id;
 		int sequence;
-		int distance;
-		double angle;
 		int age;
 
-		// Ball coordinates in real world
-		int realx;
-		int realy;
+		RelPosition pos;
 	};
 
 	class Goal
 	{
 	public:
-		Goal() : visible(false), sequence(0), distance(0), angle(0), realx(0), realy(0)
+		Goal() : visible(false), sequence(0), pos{0}
 		{
 		}
 
 		bool visible;
 		int sequence;
-		int distance;
-		double angle;
-		int realx;
-		int realy;
+
+		RelPosition pos;
 	};
 
 	World();
@@ -55,6 +50,8 @@ public:
 
 private:
 	int ids;
+
+	RelPosition pointToWorldPos(const Point2d &point) const;
 
 	void readBallBlob(VideoFrame *frame, VideoFrame::Blob *blob);
 	void readGoalBlob(VideoFrame *frame, VideoFrame::Blob *blob);

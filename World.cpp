@@ -7,10 +7,13 @@
 //#define CAM_ANGLE 0.586154177
 //#define CAM_HEIGHT 194.48
 
-#define CAM_VFOV 0.300393263
-#define CAM_HFOV 1.06465084
+#define CAM_VFOV 0.32070425
+#define CAM_HFOV 0.570286333
 #define CAM_ANGLE 0.53804420679
 #define CAM_HEIGHT 305
+
+#define CAPT_CENTER_Y (CAPT_HEIGHT / 2.0)
+#define CAPT_CENTER_X (CAPT_WIDTH / 2.0)
 
 World::World() :
 	targetColor(VideoFrame::Blob::COLOR_YELLOW),
@@ -56,6 +59,14 @@ void World::onFrame(VideoFrame *frame)
 	}
 }
 
+RelPosition World::pointToWorldPos(const Point2d &point) const
+{
+	double distance = CAM_HEIGHT / tan((CAM_VFOV * (point.y - CAPT_CENTER_Y) / CAPT_CENTER_Y) + CAM_ANGLE);
+	double hordev = ((tan(CAM_HFOV) * distance) * (point.x - CAPT_CENTER_X) / CAPT_CENTER_X);
+
+	return {sqrt(pow(distance, 2) + pow(hordev, 2)), atan(hordev / distance)};
+}
+
 void World::readBallBlob(VideoFrame *frame, VideoFrame::Blob *blob)
 {
 	World::Ball *ball = new World::Ball();
@@ -63,14 +74,9 @@ void World::readBallBlob(VideoFrame *frame, VideoFrame::Blob *blob)
 	ball->sequence = frame->sequence;
 	ball->age = 0;
 
-	double y = (double) (blob->y1 + blob->y2) / 2;
-	double x = (double) (blob->x1 + blob->x2) / 2;
-
-	ball->distance = CAM_HEIGHT / tan((CAM_VFOV * (y / CAPT_HEIGHT)) + CAM_ANGLE);
-	ball->angle = (CAM_HFOV * (x / (CAPT_WIDTH / 2))) - 1;
-
-	ball->realx = ball->distance * sin(ball->angle);
-	ball->realy = ball->distance * cos(ball->angle);
+	// Calculate real-world position
+	Point2d ballPoint = {(blob->x1 + blob->x2) / 2.0, (blob->y1 + blob->y2) / 2.0};
+	ball->pos = this->pointToWorldPos(ballPoint);
 
 	// Verify if in any tracking area
 	for (std::vector<World::Ball *>::size_type j = 0; j < this->balls.size(); j++)
@@ -101,8 +107,7 @@ void World::readBallBlob(VideoFrame *frame, VideoFrame::Blob *blob)
 		this->target.visible = false;
 	}
 
-	//printf("id=%d\tdistance: %d\tangle=%f\n", ball->id, ball->distance, ball->angle);
-	//printf("id=%d\tx=%d\ty=%d\n", ball->id, ball->realx, ball->realy);
+	//printf("id=%d\tradius=%f\tangle=%f\n", ball->id, ball->pos.radius, ball->pos.angle);
 }
 
 void World::readGoalBlob(VideoFrame *frame, VideoFrame::Blob *blob)
@@ -115,21 +120,17 @@ void World::readGoalBlob(VideoFrame *frame, VideoFrame::Blob *blob)
 	this->target.visible = true;
 	this->target.sequence = frame->sequence;
 
-	double y = (blob->y1 < blob->y2) ? blob->y1 : blob->y2;
-	double x = (double) (blob->x1 + blob->x2) / 2;
+	Point2d center = {
+		(blob->y1 < blob->y2) ? (double) blob->y1 : (double) blob->y2,
+		(blob->x1 + blob->x2) / 2.0
+	};
 
-	this->target.distance = CAM_HEIGHT / tan((CAM_VFOV * (y / CAPT_HEIGHT)) + CAM_ANGLE);
-	this->target.angle = (CAM_HFOV * (x / (CAPT_WIDTH / 2))) - 1;
+	this->target.pos = this->pointToWorldPos(center);
 
-	this->target.realx = this->target.distance * sin(this->target.angle);
-	this->target.realy = this->target.distance * cos(this->target.angle);
-
-	//printf("goal distance=%d\tangle=%f\n", this->target.distance, this->target.angle);
+	//printf("goal radius=%f\tangle=%f\n", this->target.pos.radius, this->target.pos.angle);
 }
 
 bool World::Ball::inTrackingBox(Ball *ball)
 {
-	int distance = sqrt(pow(ball->realx - this->realx, 2) + pow(ball->realy - this->realy, 2));
-
-	return distance <= TRACKING_RADIUS;
+	return relPositionDistance(ball->pos, this->pos) <= TRACKING_RADIUS;
 }

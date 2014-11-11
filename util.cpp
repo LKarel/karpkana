@@ -25,3 +25,11 @@ bool env_is(const char *env, const char *test)
 
 	return strcmp(getenv(env), test) == 0;
 }
+
+double relPositionDistance(const RelPosition &pos1, const RelPosition &pos2)
+{
+	return sqrt(
+		pow(RELPOS_X(pos1) - RELPOS_X(pos2), 2) +
+		pow(RELPOS_Y(pos1) - RELPOS_Y(pos2), 2)
+	);
+}
