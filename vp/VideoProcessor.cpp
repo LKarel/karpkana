@@ -1,5 +1,9 @@
 #include "VideoProcessor.h"
 
+#define VP_IGNORE_Y (CAPT_HEIGHT - 40)
+#define VP_MIN_HEIGHT 10
+#define VP_MIN_WIDTH 10
+
 VideoProcessor::VideoProcessor() :
 	debugImgMode(DEBUG_IMG_NONE),
 	debugBlobs(false),
@@ -68,21 +72,55 @@ VideoFrame *VideoProcessor::getFrame()
 	{
 		CMVision::region *region = this->vision.getRegions(color);
 
-		while (region)
+		for(; region; region = region->next)
 		{
+			if (region->color == VideoFrame::Blob::COLOR_GUIDE)
+			{
+				continue;
+			}
+
 			VideoFrame::Blob *blob = VideoFrame::Blob::fromRegion(region);
 
-			if (blob)
+			if (blob->y2 >= VP_IGNORE_Y || blob->y1 >= VP_IGNORE_Y)
 			{
-				vf->blobs.push_back(blob);
+				continue;
+			}
 
-				if (this->debugBlobs)
+			double width = abs(region->x1 - region->x2);
+			double height = abs(region->y1 - region->y2);
+
+			if (width < VP_MIN_WIDTH || height < VP_MIN_HEIGHT)
+			{
+				continue;
+			}
+
+			double ratio = width / height;
+
+			if (blob->color == VideoFrame::Blob::COLOR_BALL)
+			{
+				if (width < 25 || ratio > 1.65 || ratio < 0.45)
 				{
-					DebugLink::instance().blob(vf->sequence, blob);
+					// It's not a ball, maybe a discolored yellow goal?
+					blob->color = VideoFrame::Blob::COLOR_YELLOW;
 				}
 			}
 
-			region = region->next;
+			if (blob->color == VideoFrame::Blob::COLOR_YELLOW ||
+				blob->color == VideoFrame::Blob::COLOR_BLUE)
+			{
+				if (width < 100 || ratio > 2.5 || ratio < 6.0)
+				{
+					// Not a valid goal
+					continue;
+				}
+			}
+
+			vf->blobs.push_back(blob);
+
+			if (this->debugBlobs)
+			{
+				DebugLink::instance().blob(vf->sequence, blob);
+			}
 		}
 	}
 
