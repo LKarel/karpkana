@@ -35,7 +35,7 @@ int main(int argc, char** argv)
 	}
 	else
 	{
-		camera = (BaseCamera *) new Camera("/dev/video1", CAPT_WIDTH, CAPT_HEIGHT);
+		camera = (BaseCamera *) new Camera("/dev/video0", CAPT_WIDTH, CAPT_HEIGHT);
 	}
 
 	VideoProcessor *vp = new VideoProcessor();
