@@ -23,6 +23,10 @@ World::World() :
 
 World::~World()
 {
+	for (std::vector<World::Ball *>::size_type i = 0; i < this->balls.size(); i++)
+	{
+		delete this->balls[i];
+	}
 }
 
 void World::onFrame(VideoFrame *frame)
@@ -50,6 +54,7 @@ void World::onFrame(VideoFrame *frame)
 		if (frame->sequence - this->balls[i]->sequence > 10)
 		{
 			// This ball has not been visible for some time
+			delete this->balls[i];
 			this->balls.erase(this->balls.begin() + i);
 		}
 		else

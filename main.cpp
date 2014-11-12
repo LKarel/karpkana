@@ -101,6 +101,7 @@ int main(int argc, char** argv)
 
 	delete vp;
 	delete ctrl;
+	delete camera;
 
 	return 0;
 }

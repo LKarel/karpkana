@@ -39,6 +39,8 @@ ImageCamera::ImageCamera(const char *path)
 		this->data[(i * 4) + 2] = LIMIT(y2, 0, 255);
 		this->data[(i * 4) + 3] = LIMIT(v, 0, 255);
 	}
+
+	free(rgb);
 }
 
 ImageCamera::~ImageCamera()

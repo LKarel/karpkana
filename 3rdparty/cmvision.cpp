@@ -829,6 +829,13 @@ void CMVision::close()
 {
   if(map) delete[] map;
   map = NULL;
+
+  for(size_t i=0; i<CMV_MAX_COLORS; i++){
+    if(colors[i].name){
+      free(colors[i].name);
+      colors[i].name = NULL;
+    }
+  }
 }
 
 

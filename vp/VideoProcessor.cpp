@@ -83,6 +83,7 @@ VideoFrame *VideoProcessor::getFrame()
 
 			if (blob->y2 >= VP_IGNORE_Y || blob->y1 >= VP_IGNORE_Y)
 			{
+				delete blob;
 				continue;
 			}
 
@@ -91,6 +92,7 @@ VideoFrame *VideoProcessor::getFrame()
 
 			if (width < VP_MIN_WIDTH || height < VP_MIN_HEIGHT)
 			{
+				delete blob;
 				continue;
 			}
 
@@ -111,6 +113,7 @@ VideoFrame *VideoProcessor::getFrame()
 				if (width < 100 || ratio > 2.5 || ratio < 6.0)
 				{
 					// Not a valid goal
+					delete blob;
 					continue;
 				}
 			}
