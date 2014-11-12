@@ -33,3 +33,8 @@ double relPositionDistance(const RelPosition &pos1, const RelPosition &pos2)
 		pow(RELPOS_Y(pos1) - RELPOS_Y(pos2), 2)
 	);
 }
+
+double speedForRotation(double angle, double time)
+{
+	return (ROBOT_RADIUS * angle) / (ROTATION_CONST * WHEEL_CIRCUMFERENCE * time);
+}

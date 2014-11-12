@@ -2,6 +2,7 @@
 #define UTIL_H
 
 #include <cmath>
+#include "main.h"
 
 #define PI 3.14159265359
 #define LIMIT(x, min, max) ((x) < (min) ? (min) : ((x) > (max) ? (max) : (x)))
