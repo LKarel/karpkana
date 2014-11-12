@@ -1,6 +1,6 @@
-#include "comm/HwScanner.h"
+#include "Robot.h"
 
-HwScanner::HwScanner(const char *type) :
+Robot::Robot(const char *type) :
 	motors{NULL},
 	coilgun(NULL)
 {
@@ -10,7 +10,7 @@ HwScanner::HwScanner(const char *type) :
 
 	if (count == -1)
 	{
-		Log::perror("HwScanner: could not list /dev");
+		Log::perror("Robot: could not list /dev");
 		return;
 	}
 
@@ -18,7 +18,7 @@ HwScanner::HwScanner(const char *type) :
 	{
 		if (strstr(names[i]->d_name, type) == names[i]->d_name)
 		{
-			Log::printf("HwScanner: found %s", names[i]->d_name);
+			Log::printf("Robot: found %s", names[i]->d_name);
 
 			char fullpath[64];
 			snprintf(fullpath, 64, "/dev/%s", names[i]->d_name);
@@ -27,12 +27,12 @@ HwScanner::HwScanner(const char *type) :
 
 			if (!link->id)
 			{
-				Log::printf("HwScanner: failed to identify device");
+				Log::printf("Robot: failed to identify device");
 				delete link;
 				continue;
 			}
 
-			Log::printf("HwScanner: loaded %s with ID %d", names[i]->d_name, link->id);
+			Log::printf("Robot: loaded %s with ID %d", names[i]->d_name, link->id);
 
 			switch (link->id)
 			{
@@ -52,7 +52,7 @@ HwScanner::HwScanner(const char *type) :
 
 				default:
 				{
-					Log::printf("HwScanner: unknown ID, unloading device");
+					Log::printf("Robot: unknown ID, unloading device");
 					delete link;
 				}
 				break;
@@ -62,11 +62,11 @@ HwScanner::HwScanner(const char *type) :
 
 	if (motors_count != MOTORS_NUM)
 	{
-		Log::printf("HwScanner: warning: not all motors loaded");
+		Log::printf("Robot: warning: not all motors loaded");
 	}
 }
 
-HwScanner::~HwScanner()
+Robot::~Robot()
 {
 	for (size_t i = 0; i < MOTORS_NUM; i++)
 	{
@@ -79,5 +79,17 @@ HwScanner::~HwScanner()
 	if (this->coilgun)
 	{
 		delete this->coilgun;
+	}
+}
+
+
+void Robot::motorsSpeed(int speed)
+{
+	for (size_t i = 0; i < MOTORS_NUM; i++)
+	{
+		if (this->motors[i])
+		{
+			this->motors[i]->setSpeed(speed);
+		}
 	}
 }

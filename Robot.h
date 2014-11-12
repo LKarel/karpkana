@@ -1,5 +1,5 @@
-#ifndef COMM_HWSCANNER_H
-#define COMM_HWSCANNER_H
+#ifndef ROBOT_H
+#define ROBOT_H
 
 #include <dirent.h>
 #include "main.h"
@@ -8,14 +8,16 @@
 #include "comm/Log.h"
 #include "comm/Motor.h"
 
-class HwScanner
+class Robot
 {
 public:
-	HwScanner(const char *device);
-	~HwScanner();
+	Robot(const char *device);
+	~Robot();
 
 	Motor *motors[MOTORS_NUM];
 	Coilgun *coilgun;
+
+	void motorsSpeed(int speed);
 };
 
 #endif
