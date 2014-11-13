@@ -5,6 +5,7 @@
 #include "main.h"
 
 #define PI 3.14159265359
+#define ABS_F(x) ((x) < 0 ? -(x) : (x))
 #define LIMIT(x, min, max) ((x) < (min) ? (min) : ((x) > (max) ? (max) : (x)))
 #define IN_RANGE(x, min, max) ((x) >= (min) && (x) <= (max))
 
