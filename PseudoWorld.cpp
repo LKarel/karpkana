@@ -147,6 +147,15 @@ void PseudoWorld::readGoalBlob(VideoFrame *frame, VideoFrame::Blob *blob)
 		return;
 	}
 
+	// Another target of the same color from the same frame
+	if (this->target.sequence == frame->sequence)
+	{
+		if (blob->width() / 2 <= this->target.halfwidth)
+		{
+			return;
+		}
+	}
+
 	Point2d point = {
 		((blob->x1 + blob->x2) / 2.0) - (CAPT_WIDTH / 2),
 		(double) (CAPT_HEIGHT - blob->y1)
