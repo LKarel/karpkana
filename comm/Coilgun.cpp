@@ -20,6 +20,7 @@ Coilgun::Coilgun(Hwlink *link) :
 	this->link->command(CMD_AUTO_CHARGE, 1);
 	this->link->command(CMD_FAILSAFE, 1);
 	this->link->command(CMD_CHARGE);
+	this->tribbler(false);
 
 	Log::printf("Coilgun: ready");
 }
