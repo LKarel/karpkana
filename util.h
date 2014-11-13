@@ -21,6 +21,11 @@ typedef struct {
 	double angle;
 } RelPosition;
 
+typedef struct {
+	double x;
+	double y;
+} Vector2d;
+
 long microtime();
 bool env_has(const char *env);
 bool env_is(const char *env, const char *test);
