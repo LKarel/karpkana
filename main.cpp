@@ -3,7 +3,7 @@
 #include <sys/inotify.h>
 #include <unistd.h>
 #include "util.h"
-#include "TestController.h"
+#include "GameController.h"
 #include "comm/DebugLink.h"
 #include "comm/Log.h"
 #include "vp/Camera.h"
@@ -39,7 +39,7 @@ int main(int argc, char** argv)
 	}
 
 	VideoProcessor *vp = new VideoProcessor();
-	TestController *ctrl = new TestController(vp);
+	GameController *ctrl = new GameController(vp);
 
 	vp->loadColors(COLORS_FILE);
 
