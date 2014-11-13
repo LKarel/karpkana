@@ -4,6 +4,7 @@ Hwlink::Hwlink(const char *device) :
 	id(0),
 	fd(-1)
 {
+#if HW_SIMULATE != 1
 	this->fd = open(device, O_RDWR | O_NOCTTY | O_NONBLOCK);
 
 	struct termios tty;
@@ -65,14 +66,23 @@ Hwlink::Hwlink(const char *device) :
 		close(this->fd);
 		this->fd = -1;
 	}
+#endif
 }
+
+#if HW_SIMULATE == 1
+Hwlink::Hwlink(int id) : id(id), fd(-1)
+{
+}
+#endif
 
 Hwlink::~Hwlink()
 {
+#if HW_SIMULATE != 1
 	if (this->fd > 0)
 	{
 		close(this->fd);
 	}
+#endif
 
 	while (!this->messages.empty())
 	{
@@ -83,11 +93,16 @@ Hwlink::~Hwlink()
 
 bool Hwlink::isOpen()
 {
+#if HW_SIMULATE == 1
+	return true;
+#else
 	return this->fd > 0;
+#endif
 }
 
 void Hwlink::tick()
 {
+#if HW_SIMULATE != 1
 	char buf[32];
 	ssize_t count;
 
@@ -126,6 +141,7 @@ void Hwlink::tick()
 			this->buffer.push_back(buf[i]);
 		}
 	}
+#endif
 }
 
 void Hwlink::command(const char *fmt, ...)
@@ -152,9 +168,11 @@ void Hwlink::command(const char *fmt, ...)
 
 	Log::printf("Hwlink: transmitting: %s", debug);
 
+#if HW_SIMULATE != 1
 	if (write(this->fd, cmd, strlen(cmd)) == -1)
 	{
 		Log::perror("Hwlink: sending command");
 		return;
 	}
+#endif
 }

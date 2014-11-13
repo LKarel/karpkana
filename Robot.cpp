@@ -4,6 +4,14 @@ Robot::Robot(const char *type) :
 	motors{NULL},
 	coilgun(NULL)
 {
+#if HW_SIMULATE == 1
+	Log::printf("Robot: in hardware simulation mode, no actual devices connected");
+
+	this->motors[MOTOR_A] = new Motor(new Hwlink(MOTOR_A));
+	this->motors[MOTOR_B] = new Motor(new Hwlink(MOTOR_B));
+	this->motors[MOTOR_C] = new Motor(new Hwlink(MOTOR_C));
+	this->coilgun = new Coilgun(new Hwlink(COILGUN));
+#else
 	int motors_count = 0;
 	struct dirent **names;
 	ssize_t count = scandir("/dev", &names, NULL, alphasort);
@@ -64,6 +72,7 @@ Robot::Robot(const char *type) :
 	{
 		Log::printf("Robot: warning: not all motors loaded");
 	}
+#endif
 }
 
 Robot::~Robot()

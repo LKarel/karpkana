@@ -9,6 +9,7 @@
 #include <termio.h>
 #include <unistd.h>
 #include <vector>
+#include "main.h"
 #include "comm/Log.h"
 
 #define COMM_HWLINK_MOTORS_COUNT 3
@@ -18,6 +19,9 @@ class Hwlink
 {
 public:
 	Hwlink(const char *device);
+#if HW_SIMULATE == 1
+	Hwlink(int id);
+#endif
 	~Hwlink();
 
 	bool isOpen();

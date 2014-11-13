@@ -4,6 +4,10 @@ LIBS = -lz -lpthread
 CXX = g++ -std=c++11
 CXXFLAGS = -g -Wall -O2 -ffast-math -I./ -D_GNU_SOURCE
 
+ifeq ($(HW_SIMULATE), 1)
+	CXXFLAGS += -DHW_SIMULATE=1
+endif
+
 .PHONY: default all clean
 
 default: bin/main
