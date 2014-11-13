@@ -2,7 +2,7 @@
 #define CAPT_HEIGHT 480
 #define CAPT_FLIP 1
 
-#define REGION_NUM 4
+#define REGION_NUM 3
 
 #define MOTORS_NUM 4
 #define MOTOR_A 2

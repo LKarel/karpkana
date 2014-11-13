@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "main.h"
+#include "util.h"
 #include "3rdparty/cmvision.h"
 
 class VideoFrame
@@ -12,9 +13,9 @@ public:
 	{
 	public:
 		static const int COLOR_BALL = 0;
-		static const int COLOR_YELLOW = 1;
-		static const int COLOR_BLUE = 2;
-		static const int COLOR_GUIDE = 3;
+		static const int COLOR_BLUE = 1;
+		static const int COLOR_GUIDE = 2;
+		static const int COLOR_YELLOW = 9;
 
 		static Blob *fromRegion(CMVision::region *region);
 
@@ -25,6 +26,9 @@ public:
 		int y1;
 		int y2;
 		int color;
+
+		double overlap(VideoFrame::Blob *blob);
+		void consume(VideoFrame::Blob *blob);
 
 		int width();
 		int height();

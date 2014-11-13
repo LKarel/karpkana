@@ -1,6 +1,5 @@
 #include "VideoProcessor.h"
 
-#define VP_IGNORE_Y (CAPT_HEIGHT - 40)
 #define VP_MIN_HEIGHT 10
 #define VP_MIN_WIDTH 10
 
@@ -79,22 +78,15 @@ VideoFrame *VideoProcessor::getFrame()
 				continue;
 			}
 
-			VideoFrame::Blob *blob = VideoFrame::Blob::fromRegion(region);
-
-			if (blob->y2 >= VP_IGNORE_Y || blob->y1 >= VP_IGNORE_Y)
-			{
-				delete blob;
-				continue;
-			}
-
 			double width = abs(region->x1 - region->x2);
 			double height = abs(region->y1 - region->y2);
 
 			if (width < VP_MIN_WIDTH || height < VP_MIN_HEIGHT)
 			{
-				delete blob;
 				continue;
 			}
+
+			VideoFrame::Blob *blob = VideoFrame::Blob::fromRegion(region);
 
 			double ratio = width / height;
 
@@ -110,7 +102,7 @@ VideoFrame *VideoProcessor::getFrame()
 			if (blob->color == VideoFrame::Blob::COLOR_YELLOW ||
 				blob->color == VideoFrame::Blob::COLOR_BLUE)
 			{
-				if (width < 100 || ratio > 2.5 || ratio < 6.0)
+				if (width < 100 || height < 10)
 				{
 					// Not a valid goal
 					delete blob;
@@ -118,12 +110,36 @@ VideoFrame *VideoProcessor::getFrame()
 				}
 			}
 
-			vf->blobs.push_back(blob);
-
-			if (this->debugBlobs)
+			if (blob->color == VideoFrame::Blob::COLOR_BALL)
 			{
-				DebugLink::instance().blob(vf->sequence, blob);
+				std::vector<VideoFrame::Blob *>::iterator it = vf->blobs.begin();
+				while (it != vf->blobs.end())
+				{
+					if (blob->color == (*it)->color && blob->overlap(*it) > 0.75)
+					{
+						blob->consume(*it);
+
+						delete *it;
+						it = vf->blobs.erase(it);
+					}
+					else
+					{
+						++it;
+					}
+				}
 			}
+
+			vf->blobs.push_back(blob);
+		}
+	}
+
+	if (this->debugBlobs)
+	{
+		std::vector<VideoFrame::Blob *>::iterator it = vf->blobs.begin();
+		while (it != vf->blobs.end())
+		{
+			DebugLink::instance().blob(vf->sequence, *it);
+			++it;
 		}
 	}
 
@@ -165,3 +181,4 @@ VideoFrame *VideoProcessor::getFrame()
 
 	return vf;
 }
+
