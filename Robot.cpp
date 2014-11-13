@@ -83,7 +83,7 @@ Robot::~Robot()
 }
 
 
-void Robot::motorsSpeed(int speed)
+void Robot::rotate(int speed)
 {
 	for (size_t i = 0; i < MOTORS_NUM; i++)
 	{
@@ -91,5 +91,15 @@ void Robot::motorsSpeed(int speed)
 		{
 			this->motors[i]->setSpeed(speed);
 		}
+	}
+}
+
+void Robot::direction(int direction, int speed)
+{
+	if (direction == DIRECTION_FWD)
+	{
+		this->motors[MOTOR_A]->setSpeed(speed);
+		this->motors[MOTOR_B]->setSpeed(-speed);
+		this->motors[MOTOR_C]->setSpeed(0);
 	}
 }

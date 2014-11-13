@@ -1,6 +1,8 @@
 #ifndef ROBOT_H
 #define ROBOT_H
 
+#define DIRECTION_FWD 1
+
 #include <dirent.h>
 #include "main.h"
 #include "comm/Coilgun.h"
@@ -17,7 +19,8 @@ public:
 	Motor *motors[MOTORS_NUM];
 	Coilgun *coilgun;
 
-	void motorsSpeed(int speed);
+	void rotate(int speed);
+	void direction(int direction, int speed);
 };
 
 #endif
