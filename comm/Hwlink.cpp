@@ -115,7 +115,7 @@ void Hwlink::tick()
 			return;
 		}
 
-		Log::perror("Hwlink: read error from %d", fd);
+		Log::perror("Hwlink<id=%d>: read error", this->id);
 		return;
 	}
 
@@ -148,7 +148,7 @@ void Hwlink::command(const char *fmt, ...)
 {
 	if (!this->isOpen())
 	{
-		Log::printf("Hwlink: error: link not open");
+		Log::printf("Hwlink<id=%d>: error: link not open", this->id);
 		return;
 	}
 
@@ -166,12 +166,12 @@ void Hwlink::command(const char *fmt, ...)
 	char debug[64];
 	snprintf(debug, strlen(cmd), "%s", cmd);
 
-	Log::printf("Hwlink: transmitting: %s", debug);
+	Log::printf("Hwlink<id=%d>: transmitting: %s", this->id, debug);
 
 #if HW_SIMULATE != 1
 	if (write(this->fd, cmd, strlen(cmd)) == -1)
 	{
-		Log::perror("Hwlink: sending command");
+		Log::perror("Hwlink<id=%d>: sending command", this->id);
 		return;
 	}
 #endif
