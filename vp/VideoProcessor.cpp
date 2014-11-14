@@ -81,14 +81,15 @@ VideoFrame *VideoProcessor::getFrame()
 			double width = abs(region->x1 - region->x2);
 			double height = abs(region->y1 - region->y2);
 
-			if (width < VP_MIN_WIDTH || height < VP_MIN_HEIGHT)
+			double ratio = width / height;
+			double density = region->area / (width * height);
+
+			if (width < VP_MIN_WIDTH || height < VP_MIN_HEIGHT || density < 0.5)
 			{
 				continue;
 			}
 
 			VideoFrame::Blob *blob = VideoFrame::Blob::fromRegion(region);
-
-			double ratio = width / height;
 
 			if (blob->color == VideoFrame::Blob::COLOR_BALL)
 			{
