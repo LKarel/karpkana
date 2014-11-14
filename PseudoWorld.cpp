@@ -120,7 +120,7 @@ void PseudoWorld::readBallBlob(VideoFrame *frame, VideoFrame::Blob *blob)
 	ball->sequence = frame->sequence;
 	ball->age = 0;
 	ball->radius = (abs(blob->x1 - blob->x2) + abs(blob->y1 - blob->y2)) / 2;
-	ball->pos = { sqrt(pow(point.x, 2) + pow(point.y, 2)), atan(point.x / point.y) };
+	ball->pos = { sqrt(pow(point.x, 2) + pow(point.y, 2)), -atan(point.x / point.y) };
 	ball->velocity = {0};
 
 	// Verify if in any tracking area
@@ -194,5 +194,5 @@ bool PseudoWorld::Ball::inTrackingRegion(PseudoWorld::Ball &ball) const
 
 bool PseudoWorld::Ball::inTribblerRegion() const
 {
-	return RELPOS_Y(this->pos) < 30.0 && abs(RELPOS_X(this->pos)) <= 40.0;
+	return RELPOS_Y(this->pos) < 30.0 && abs(RELPOS_X(this->pos)) <= 50.0;
 }

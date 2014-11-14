@@ -64,6 +64,11 @@ void Motor::setSpeed(int speed)
 	this->link->command(CMD_SET_SPEED, speed);
 }
 
+void Motor::stop()
+{
+	this->setSpeed(0);
+}
+
 int Motor::getStall()
 {
 	return this->stall;

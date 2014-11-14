@@ -18,6 +18,7 @@ public:
 
 	void tick();
 	void setSpeed(int speed);
+	void stop();
 	int getStall();
 
 private:

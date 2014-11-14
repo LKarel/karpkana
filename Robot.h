@@ -20,6 +20,8 @@ public:
 	Coilgun *coilgun;
 
 	void rotate(int speed);
+	void rotateForward(int fwd, int rotate);
+	void stop();
 	void direction(int direction, int speed);
 };
 

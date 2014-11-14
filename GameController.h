@@ -39,6 +39,9 @@ private:
 	void *stageCall(int call, int stage, void *state);
 	void *stageSearch(int call, void *state_);
 	void *stageApproach(int call, void *state_);
+	void *stageTarget(int call, void *state_);
+	void *stageKick(int call, void *state_);
+	void *stageIdle(int call, void *state_);
 
 	int chooseBall();
 };

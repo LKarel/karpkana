@@ -93,7 +93,7 @@ VideoFrame *VideoProcessor::getFrame()
 
 			if (blob->color == VideoFrame::Blob::COLOR_BALL)
 			{
-				if (width < 25 || ratio > 1.65 || ratio < 0.45)
+				if (width > 50)
 				{
 					// It's not a ball, maybe a discolored yellow goal?
 					blob->color = VideoFrame::Blob::COLOR_YELLOW;

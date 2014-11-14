@@ -10,6 +10,7 @@
 #define STAGE_APPROACH 2
 #define STAGE_TARGET 3
 #define STAGE_KICK 4
+#define STAGE_IDLE 5
 #define STAGE_MAX 4
 
 typedef struct
@@ -17,6 +18,11 @@ typedef struct
 	int ball;
 	PID *pid;
 } ApproachState;
+
+typedef struct
+{
+	PID *pid;
+} TargetState;
 
 GameController::GameController(VideoProcessor *vp) :
 	vp(vp),
@@ -63,11 +69,17 @@ void GameController::stop()
 
 void GameController::run()
 {
+	long begin = 0;
+
 	this->gotoStage(STAGE_SEARCH);
 
 	while (this->isRunning)
 	{
-		long begin = microtime();
+		if (!begin)
+		{
+			begin = microtime();
+		}
+
 		VideoFrame *frame = this->vp->getFrame();
 
 		if (!frame)
@@ -84,6 +96,7 @@ void GameController::run()
 		}
 
 		DebugLink::instance().fps(DebugLink::FPS_CTRL, 1000000.0 / (microtime() - begin));
+		begin = 0;
 
 		delete frame;
 	}
@@ -99,11 +112,12 @@ void GameController::gotoStage(int stage)
 	if (this->stage)
 	{
 		this->stageCall(STAGE_CALL_EXIT, this->stage, this->stageState);
+		this->robot.stop();
 	}
 
 	this->stage = stage;
 
-	if (this->stage > STAGE_MAX)
+	if (this->stage > STAGE_MAX && this->stage != STAGE_IDLE)
 	{
 		this->stage = 1;
 	}
@@ -127,6 +141,15 @@ void *GameController::stageCall(int call, int stage, void *state)
 
 		case STAGE_APPROACH:
 			return this->stageApproach(call, state);
+
+		case STAGE_TARGET:
+			return this->stageTarget(call, state);
+
+		case STAGE_KICK:
+			return this->stageKick(call, state);
+
+		case STAGE_IDLE:
+			return this->stageIdle(call, state);
 	}
 
 	return NULL;
@@ -156,7 +179,7 @@ void *GameController::stageApproach(int call, void *state_)
 	{
 		state = (ApproachState *) malloc(sizeof(ApproachState));
 		state->ball = 0;
-		state->pid = new PID(1.0, 0.125, 0.3);
+		state->pid = new PID(1.0, 0.05, 0.3);
 
 		return state;
 	}
@@ -196,18 +219,69 @@ void *GameController::stageApproach(int call, void *state_)
 		return NULL;
 	}
 
-	double rotate = state->pid->update(ball->pos.angle);
-	int speed = rotate < 0.0 ? -30 : 30;
 
-	if (ABS_F(rotate) < 0.16)
+	double rotate = state->pid->update(-ball->pos.angle);
+	int rotateSpeed = LIMIT(speedForRotation(rotate, 0.25), -90, 90);
+
+	//printf("rotate=%f\trotateSpeed=%d\n", rotate, rotateSpeed);
+
+	this->robot.rotateForward(35, rotateSpeed);
+
+	return NULL;
+}
+
+void *GameController::stageTarget(int call, void *state_)
+{
+	TargetState * state = (TargetState *) state_;
+
+	if (call == STAGE_CALL_INIT)
 	{
-		this->robot.direction(DIRECTION_FWD, 55);
+		state = (TargetState *) malloc(sizeof(TargetState));
+		state->pid = new PID(1.0, 0.05, 0.3);
+
+		return state;
 	}
-	else
+	else if (call == STAGE_CALL_EXIT)
 	{
-		this->robot.rotate(speed);
+		free(state->pid);
+		free(state);
+
+		return NULL;
 	}
 
+	double angle = this->world.target.pos.angle;
+
+	if (!this->world.target.visible)
+	{
+		angle = PI / 3;
+	}
+
+
+	double rotate = state->pid->update(-angle);
+	int rotateSpeed = LIMIT(speedForRotation(rotate, 0.4), -65, 65);
+
+	//printf("rotate=%f\trotateSpeed=%d\n", rotate, rotateSpeed);
+
+	this->robot.rotateForward(45, rotateSpeed);
+
+	return NULL;
+}
+
+void *GameController::stageKick(int call, void *state_)
+{
+	if (call == STAGE_CALL_TICK)
+	{
+		this->robot.coilgun->kick(20000);
+		usleep(50 * 1000);
+
+		this->nextStage();
+	}
+
+	return NULL;
+}
+
+void *GameController::stageIdle(int call, void *state_)
+{
 	return NULL;
 }
 

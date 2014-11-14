@@ -48,7 +48,8 @@ Robot::Robot(const char *type) :
 				case MOTOR_B:
 				case MOTOR_C:
 				{
-					this->motors[motors_count++] = new Motor(link);
+					this->motors[link->id] = new Motor(link);
+					motors_count++;
 				}
 				break;
 
@@ -68,7 +69,7 @@ Robot::Robot(const char *type) :
 		}
 	}
 
-	if (motors_count != MOTORS_NUM)
+	if (motors_count != 3)
 	{
 		Log::printf("Robot: warning: not all motors loaded");
 	}
@@ -98,9 +99,21 @@ void Robot::rotate(int speed)
 	{
 		if (this->motors[i])
 		{
-			this->motors[i]->setSpeed(speed);
+			if (speed == 0)
+			{
+				this->motors[i]->stop();
+			}
+			else
+			{
+				this->motors[i]->setSpeed(speed);
+			}
 		}
 	}
+}
+
+void Robot::stop()
+{
+	this->rotate(0);
 }
 
 void Robot::direction(int direction, int speed)
@@ -111,4 +124,11 @@ void Robot::direction(int direction, int speed)
 		this->motors[MOTOR_B]->setSpeed(-speed);
 		this->motors[MOTOR_C]->setSpeed(0);
 	}
+}
+
+void Robot::rotateForward(int fwd, int rotate)
+{
+	this->motors[MOTOR_A]->setSpeed(fwd - rotate);
+	this->motors[MOTOR_B]->setSpeed(-fwd + rotate);
+	this->motors[MOTOR_C]->setSpeed(rotate);
 }
