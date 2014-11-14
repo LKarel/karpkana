@@ -166,7 +166,9 @@ void Hwlink::command(const char *fmt, ...)
 	char debug[64];
 	snprintf(debug, strlen(cmd), "%s", cmd);
 
+#if HWLINK_DEBUG == 1
 	Log::printf("Hwlink<id=%d>: transmitting: %s", this->id, debug);
+#endif
 
 #if HW_SIMULATE != 1
 	if (write(this->fd, cmd, strlen(cmd)) == -1)

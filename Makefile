@@ -8,6 +8,10 @@ ifeq ($(HW_SIMULATE), 1)
 	CXXFLAGS += -DHW_SIMULATE=1
 endif
 
+ifeq ($(HWLINK_DEBUG), 1)
+	CXXFLAGS += -DHWLINK_DEBUG=1
+endif
+
 .PHONY: default all clean
 
 default: bin/main
