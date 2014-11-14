@@ -1,7 +1,7 @@
 #ifndef PSEUDOWORLD_H
 #define PSEUDOWORLD_H
 
-#define PSEUDOWORLD_MIN_AGE 10
+#define PSEUDOWORLD_MIN_AGE 20
 
 #include <cmath>
 #include <map>
@@ -50,6 +50,7 @@ public:
 	void onFrame(VideoFrame *frame);
 	bool hasBalls() const;
 	PseudoWorld::Ball *getBall(int id) const;
+	bool isBallCaught();
 
 	int targetColor;
 	std::map<int, PseudoWorld::Ball *> balls;
@@ -57,6 +58,7 @@ public:
 
 private:
 	int ids;
+	long caughtAt;
 
 	void readBallBlob(VideoFrame *frame, VideoFrame::Blob *blob);
 	void readGoalBlob(VideoFrame *frame, VideoFrame::Blob *blob);

@@ -168,7 +168,12 @@ void *GameController::stageApproach(int call, void *state_)
 		return NULL;
 	}
 
-	// TODO: Check here, if ball caught
+	if (this->world.isBallCaught())
+	{
+		Log::printf("GameController: STAGE_APPROACH: caught ball");
+		this->nextStage();
+		return NULL;
+	}
 
 	PseudoWorld::Ball *ball = this->world.getBall(state->ball);
 

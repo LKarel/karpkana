@@ -1,8 +1,11 @@
 #include "PseudoWorld.h"
 
+#define CAUGHT_TIMEOUT 300000
+
 PseudoWorld::PseudoWorld() :
 	targetColor(VideoFrame::Blob::COLOR_YELLOW),
-	ids(1)
+	ids(1),
+	caughtAt(0)
 {
 }
 
@@ -45,7 +48,10 @@ void PseudoWorld::onFrame(VideoFrame *frame)
 
 		if (frame->sequence - ball->sequence > 10)
 		{
-			// TODO: If in tribbler area and acceptable velocity...
+			if (ball->inTribblerRegion() && ball->velocity.y > 0)
+			{
+				this->caughtAt = microtime();
+			}
 
 			delete it->second;
 			this->balls.erase(it);
@@ -88,6 +94,17 @@ PseudoWorld::Ball *PseudoWorld::getBall(int id) const
 	}
 
 	return it->second;
+}
+
+bool PseudoWorld::isBallCaught()
+{
+	if (microtime() - this->caughtAt < CAUGHT_TIMEOUT)
+	{
+		this->caughtAt = 0;
+		return true;
+	}
+
+	return false;
 }
 
 void PseudoWorld::readBallBlob(VideoFrame *frame, VideoFrame::Blob *blob)
@@ -177,5 +194,5 @@ bool PseudoWorld::Ball::inTrackingRegion(PseudoWorld::Ball &ball) const
 
 bool PseudoWorld::Ball::inTribblerRegion() const
 {
-	return RELPOS_Y(this->pos) < 30 && abs(RELPOS_X(this->pos)) <= 40;
+	return RELPOS_Y(this->pos) < 30.0 && abs(RELPOS_X(this->pos)) <= 40.0;
 }
