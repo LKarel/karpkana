@@ -20,7 +20,7 @@ typedef struct
 
 GameController::GameController(VideoProcessor *vp) :
 	vp(vp),
-	isRunning(true),
+	isRunning(false),
 	robot("ttyACM"),
 	stage(0),
 	stageState(NULL)
@@ -34,13 +34,20 @@ GameController::GameController(VideoProcessor *vp) :
 		this->world.targetColor = VideoFrame::Blob::COLOR_YELLOW;
 		Log::printf("GameController: target color not specified, assuming yellow");
 	}
-
-	this->thread = std::thread(&GameController::run, this);
 }
 
 GameController::~GameController()
 {
 	this->stop();
+}
+
+void GameController::start()
+{
+	if (!this->isRunning)
+	{
+		this->isRunning = true;
+		this->thread = std::thread(&GameController::run, this);
+	}
 }
 
 void GameController::stop()

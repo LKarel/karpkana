@@ -18,6 +18,7 @@ public:
 	GameController(VideoProcessor *vp);
 	~GameController();
 
+	void start();
 	void stop();
 
 private:

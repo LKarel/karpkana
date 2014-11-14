@@ -38,6 +38,9 @@ int main(int argc, char** argv)
 		camera = (BaseCamera *) new Camera("/dev/video0", CAPT_WIDTH, CAPT_HEIGHT);
 	}
 
+	// Force DebugLink to initialize
+	DebugLink::instance();
+
 	VideoProcessor *vp = new VideoProcessor();
 	GameController *ctrl = new GameController(vp);
 
@@ -68,6 +71,14 @@ int main(int argc, char** argv)
 	{
 		Log::perror("main: initializing inotify");
 	}
+
+	if (!env_is("C22_AUTOSTART", "1"))
+	{
+		Log::printf("main: ready, press any key to continue...");
+		fgetc(stdin);
+	}
+
+	ctrl->start();
 
 	while (!sigint)
 	{
