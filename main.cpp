@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include "util.h"
 #include "GameController.h"
+#include "Kbui.h"
 #include "comm/DebugLink.h"
 #include "comm/Log.h"
 #include "vp/Camera.h"
@@ -17,6 +18,11 @@ bool sigint = false;
 
 void handleSigint(int signal)
 {
+	if (sigint)
+	{
+		kill(getpid(), SIGTERM);
+	}
+
 	sigint = true;
 }
 
@@ -46,20 +52,6 @@ int main(int argc, char** argv)
 
 	vp->loadColors(COLORS_FILE);
 
-	if (env_is("C22_DEBUGIMG", "raw"))
-	{
-		vp->debugImgMode = VideoProcessor::DEBUG_IMG_RAW;
-	}
-	else if (env_is("C22_DEBUGIMG", "classify"))
-	{
-		vp->debugImgMode = VideoProcessor::DEBUG_IMG_CLASSIFY;
-	}
-
-	if (env_is("C22_DEBUG_BLOBS", "1"))
-	{
-		vp->debugBlobs = true;
-	}
-
 	int inotifyFd = inotify_init1(IN_NONBLOCK);
 	int inotifyWd = -1;
 
@@ -72,18 +64,23 @@ int main(int argc, char** argv)
 		Log::perror("main: initializing inotify");
 	}
 
-	if (!env_is("C22_AUTOSTART", "1"))
-	{
-		Log::printf("main: ready, press any key to continue...");
-		fgetc(stdin);
-	}
-
-	ctrl->start();
+	Kbui kbui;
 
 	while (!sigint)
 	{
 		camera->Update();
 		vp->putRawFrame(camera->data);
+
+		switch (kbui.getCommand())
+		{
+			case Kbui::CMD_BEGIN:
+				ctrl->start();
+			break;
+
+			case Kbui::CMD_STOP:
+				ctrl->stop();
+			break;
+		}
 
 		char buf[INOTIFY_BUF_SIZE];
 		ssize_t size = read(inotifyFd, &buf, INOTIFY_BUF_SIZE);
@@ -101,6 +98,7 @@ int main(int argc, char** argv)
 	}
 
 	Log::printf("main: shutting down");
+
 	ctrl->stop();
 	DebugLink::instance().close();
 
@@ -110,8 +108,8 @@ int main(int argc, char** argv)
 		close(inotifyFd);
 	}
 
-	delete vp;
 	delete ctrl;
+	delete vp;
 	delete camera;
 
 	return 0;

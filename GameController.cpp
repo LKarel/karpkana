@@ -51,6 +51,8 @@ void GameController::start()
 {
 	if (!this->isRunning)
 	{
+		Log::printf("GameController: starting");
+
 		this->isRunning = true;
 		this->thread = std::thread(&GameController::run, this);
 	}
@@ -63,6 +65,8 @@ void GameController::stop()
 		return;
 	}
 
+	Log::printf("GameController: stopping");
+
 	this->isRunning = false;
 	this->thread.join();
 }
@@ -70,6 +74,9 @@ void GameController::stop()
 void GameController::run()
 {
 	long begin = 0;
+
+	this->stage = 0;
+	this->stageState = NULL;
 
 	this->gotoStage(STAGE_SEARCH);
 

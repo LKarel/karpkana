@@ -12,6 +12,20 @@ VideoProcessor::VideoProcessor() :
 	this->vision.initialize(CAPT_WIDTH, CAPT_HEIGHT);
 	this->vision.enable(CMV_DENSITY_MERGE);
 	this->vision.enable(CMV_DUAL_THRESHOLD);
+
+	if (env_is("C22_DEBUGIMG", "raw"))
+	{
+		this->debugImgMode = VideoProcessor::DEBUG_IMG_RAW;
+	}
+	else if (env_is("C22_DEBUGIMG", "classify"))
+	{
+		this->debugImgMode = VideoProcessor::DEBUG_IMG_CLASSIFY;
+	}
+
+	if (env_is("C22_DEBUG_BLOBS", "1"))
+	{
+		this->debugBlobs = true;
+	}
 }
 
 VideoProcessor::~VideoProcessor()
