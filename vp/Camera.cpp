@@ -660,6 +660,7 @@ unsigned char *Camera::Get() {
       break;
 
     case IO_METHOD_MMAP:
+	{
       CLEAR(buf);
 
       buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
@@ -676,7 +677,18 @@ unsigned char *Camera::Get() {
 
       assert(buf.index < (unsigned int)n_buffers);
 
-      memcpy(data, (unsigned char *)buffers[buf.index].start, buffers[buf.index].length);
+      //memcpy(data, (unsigned char *)buffers[buf.index].start, buffers[buf.index].length);
+
+	  ssize_t max = buffers[buf.index].length - 1;
+	  unsigned char *end = (unsigned char *) buffers[buf.index].start + max;
+
+	  for (ssize_t i = 0; i < (width * height) / 2; ++i)
+	  {
+		data[(i * 4)] = *(end - (i * 4) - 1);
+		data[(i * 4) + 1] = *(end - (i * 4) - 2);
+		data[(i * 4) + 2] = *(end - (i * 4) - 3);
+		data[(i * 4) + 3] = *(end - (i * 4));
+	  }
 
       if(-1 == xioctl (fd, VIDIOC_QBUF, &buf))
         return 0; //errno_exit ("VIDIOC_QBUF");
@@ -684,7 +696,8 @@ unsigned char *Camera::Get() {
     return data;
 
 
-      break;
+	}
+    break;
 
     case IO_METHOD_USERPTR:
 /*

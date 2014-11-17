@@ -24,10 +24,7 @@ VideoFrame::Blob::Blob(int x1, int y1, int x2, int y2, int color)
 
 VideoFrame::Blob *VideoFrame::Blob::fromRegion(CMVision::region *region)
 {
-	int y1 = CAPT_HEIGHT - region->y1;
-	int y2 = CAPT_HEIGHT - region->y2;
-
-	return new VideoFrame::Blob(region->x1, y1, region->x2, y2, region->color);
+	return new VideoFrame::Blob(region->x1, region->y1, region->x2, region->y2, region->color);
 }
 
 double VideoFrame::Blob::overlap(VideoFrame::Blob *blob)

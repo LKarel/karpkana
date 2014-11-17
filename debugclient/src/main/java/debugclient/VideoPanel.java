@@ -151,10 +151,10 @@ public class VideoPanel extends JPanel
 
 				// Draw a shadow for better visibility
 				g.setColor(Color.WHITE);
-				g.drawRect(blob.x1, blob.y2, blob.width(), blob.height());
+				g.drawRect(blob.x1, blob.y1, blob.width(), blob.height());
 
 				g.setColor(Color.RED);
-				g.drawRect(blob.x1 + 1, blob.y2 + 1, blob.width(), blob.height());
+				g.drawRect(blob.x1 + 1, blob.y1 + 1, blob.width(), blob.height());
 			}
 		}
 
