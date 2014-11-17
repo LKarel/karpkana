@@ -92,12 +92,14 @@ void DebugServer::run()
 	sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 	if (sockfd == -1)
 	{
+		Log::perror("DebugServer: socket()");
 		return;
 	}
 
 	// Enable the socket to reuse the address
 	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
 	{
+		Log::perror("DebugServer: set SO_REUSEADDR");
 		return;
 	}
 
@@ -105,11 +107,13 @@ void DebugServer::run()
 
 	if (bind(sockfd, res->ai_addr, res->ai_addrlen) == -1)
 	{
+		Log::perror("DebugServer: bind()");
 		return;
 	}
 
 	if (::listen(sockfd, 5) == -1)
 	{
+		Log::perror("DebugServer: listen()");
 		return;
 	}
 

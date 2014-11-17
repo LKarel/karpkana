@@ -188,6 +188,8 @@ void *GameController::stageApproach(int call, void *state_)
 		state->ball = 0;
 		state->pid = new PID(1.0, 0.05, 0.3);
 
+		this->robot.coilgun->tribbler(true);
+
 		return state;
 	}
 	else if (call == STAGE_CALL_EXIT)
@@ -198,9 +200,10 @@ void *GameController::stageApproach(int call, void *state_)
 		return NULL;
 	}
 
-	if (this->world.isBallCaught())
+	if (this->robot.motors[MOTOR_BDET]->queryBall())
 	{
 		Log::printf("GameController: STAGE_APPROACH: caught ball");
+		usleep(1000);
 		this->nextStage();
 		return NULL;
 	}
@@ -227,12 +230,22 @@ void *GameController::stageApproach(int call, void *state_)
 	}
 
 
-	double rotate = state->pid->update(-ball->pos.angle);
-	int rotateSpeed = LIMIT(speedForRotation(rotate, 0.25), -90, 90);
+	//double rotate = state->pid->update(-ball->pos.angle);
+	double rotate = -ball->pos.angle;
+	int rotateSpeed = LIMIT(speedForRotation(-rotate, 0.2), -65, 65);
 
-	//printf("rotate=%f\trotateSpeed=%d\n", rotate, rotateSpeed);
+	printf("rotate=%f\trotateSpeed=%d\n", rotate, rotateSpeed);
 
-	this->robot.rotateForward(35, rotateSpeed);
+	if (ABS_F(rotate) < 0.2)
+	{
+		this->robot.direction(DIRECTION_FWD, 40);
+	}
+	else
+	{
+		this->robot.rotate(rotateSpeed);
+	}
+
+	//this->robot.rotateForward(35, rotateSpeed);
 
 	return NULL;
 }
@@ -246,12 +259,16 @@ void *GameController::stageTarget(int call, void *state_)
 		state = (TargetState *) malloc(sizeof(TargetState));
 		state->pid = new PID(1.0, 0.05, 0.3);
 
+		this->robot.coilgun->tribbler(true);
+
 		return state;
 	}
 	else if (call == STAGE_CALL_EXIT)
 	{
 		free(state->pid);
 		free(state);
+
+		this->robot.coilgun->tribbler(false);
 
 		return NULL;
 	}
@@ -260,16 +277,21 @@ void *GameController::stageTarget(int call, void *state_)
 
 	if (!this->world.target.visible)
 	{
-		angle = PI / 3;
+		angle = PI / -3.0;
 	}
 
+	int rotateSpeed = LIMIT(speedForRotation(-angle, 0.3), -65, 65);
 
-	double rotate = state->pid->update(-angle);
-	int rotateSpeed = LIMIT(speedForRotation(rotate, 0.4), -65, 65);
+	printf("angle=%f\trotateSpeed=%d\n", angle, rotateSpeed);
 
-	//printf("rotate=%f\trotateSpeed=%d\n", rotate, rotateSpeed);
-
-	this->robot.rotateForward(45, rotateSpeed);
+	if (ABS_F(angle) < 0.2)
+	{
+		this->nextStage();
+	}
+	else
+	{
+		this->robot.rotate(rotateSpeed);
+	}
 
 	return NULL;
 }

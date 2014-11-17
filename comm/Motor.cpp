@@ -55,8 +55,6 @@ void Motor::tick()
 		else if (sscanf(msg, "<b:%d>", &arg) == 1)
 		{
 			this->ballState = arg;
-
-			Log::printf("Motor<id=%d>: ball state: %d", this->link->id, this->ballState);
 		}
 
 		free(msg);
