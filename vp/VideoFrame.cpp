@@ -27,24 +27,6 @@ VideoFrame::Blob *VideoFrame::Blob::fromRegion(CMVision::region *region)
 	return new VideoFrame::Blob(region->x1, region->y1, region->x2, region->y2, region->color);
 }
 
-double VideoFrame::Blob::overlap(VideoFrame::Blob *blob)
-{
-	int overlapArea = MAX(0, MIN(this->x2, blob->x2) - MAX(this->x1, blob->x1)) *
-		MAX(0, MAX(this->y1, blob->y1) - MIN(this->y2, blob->y2));
-	int unionArea = this->width() * this->height() +
-		blob->width() * blob->height() - overlapArea;
-
-	return (double) overlapArea / (double) unionArea;
-}
-
-void VideoFrame::Blob::consume(VideoFrame::Blob *blob)
-{
-	this->x1 = MIN(this->x1, blob->x1);
-	this->y1 = MAX(this->y1, blob->y1);
-	this->x2 = MAX(this->x2, blob->x2);
-	this->y2 = MIN(this->y2, blob->y2);
-}
-
 int VideoFrame::Blob::width()
 {
 	return abs(this->x2 - this->x1);

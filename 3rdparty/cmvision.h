@@ -68,8 +68,8 @@ Options File Format: (RGB merge name)
 #define CMV_MAX_COLORS     32
 
 // sets tweaked optimal values for image size
-#define CMV_DEFAULT_WIDTH  320
-#define CMV_DEFAULT_HEIGHT 240
+#define CMV_DEFAULT_WIDTH  640
+#define CMV_DEFAULT_HEIGHT 480
 
 // values may need tweaked, although these seem to work usually
 #define CMV_MAX_RUNS     (CMV_DEFAULT_WIDTH * CMV_DEFAULT_HEIGHT) / 4

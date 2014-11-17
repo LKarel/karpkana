@@ -10,6 +10,8 @@ VideoProcessor::VideoProcessor() :
 	dataFresh(false)
 {
 	this->vision.initialize(CAPT_WIDTH, CAPT_HEIGHT);
+	this->vision.enable(CMV_DENSITY_MERGE);
+	this->vision.enable(CMV_DUAL_THRESHOLD);
 }
 
 VideoProcessor::~VideoProcessor()
@@ -108,25 +110,6 @@ VideoFrame *VideoProcessor::getFrame()
 					// Not a valid goal
 					delete blob;
 					continue;
-				}
-			}
-
-			if (blob->color == VideoFrame::Blob::COLOR_BALL)
-			{
-				std::vector<VideoFrame::Blob *>::iterator it = vf->blobs.begin();
-				while (it != vf->blobs.end())
-				{
-					if (blob->color == (*it)->color && blob->overlap(*it) > 0.75)
-					{
-						blob->consume(*it);
-
-						delete *it;
-						it = vf->blobs.erase(it);
-					}
-					else
-					{
-						++it;
-					}
 				}
 			}
 

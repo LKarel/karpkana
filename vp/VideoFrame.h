@@ -27,9 +27,6 @@ public:
 		int y2;
 		int color;
 
-		double overlap(VideoFrame::Blob *blob);
-		void consume(VideoFrame::Blob *blob);
-
 		int width();
 		int height();
 	};
