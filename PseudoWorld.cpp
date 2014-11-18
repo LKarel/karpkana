@@ -4,8 +4,7 @@
 
 PseudoWorld::PseudoWorld() :
 	targetColor(VideoFrame::Blob::COLOR_YELLOW),
-	ids(1),
-	caughtAt(0)
+	ids(1)
 {
 }
 
@@ -48,11 +47,6 @@ void PseudoWorld::onFrame(VideoFrame *frame)
 
 		if (frame->sequence - ball->sequence > 20)
 		{
-			if (ball->inTribblerRegion() && ball->velocity.y > 0)
-			{
-				this->caughtAt = microtime();
-			}
-
 			delete it->second;
 			this->balls.erase(it);
 		}
@@ -96,17 +90,6 @@ PseudoWorld::Ball *PseudoWorld::getBall(int id) const
 	return it->second;
 }
 
-bool PseudoWorld::isBallCaught()
-{
-	if (microtime() - this->caughtAt < CAUGHT_TIMEOUT)
-	{
-		this->caughtAt = 0;
-		return true;
-	}
-
-	return false;
-}
-
 void PseudoWorld::readBallBlob(VideoFrame *frame, VideoFrame::Blob *blob)
 {
 	PseudoWorld::Ball *ball = new PseudoWorld::Ball();
@@ -121,7 +104,6 @@ void PseudoWorld::readBallBlob(VideoFrame *frame, VideoFrame::Blob *blob)
 	ball->age = 0;
 	ball->radius = (abs(blob->x1 - blob->x2) + abs(blob->y1 - blob->y2)) / 2;
 	ball->pos = { sqrt(pow(point.x, 2) + pow(point.y, 2)), -atan(point.x / point.y) };
-	ball->velocity = {0};
 
 	// Verify if in any tracking area
 	std::map<int, PseudoWorld::Ball *>::iterator it = this->balls.begin();
@@ -131,10 +113,6 @@ void PseudoWorld::readBallBlob(VideoFrame *frame, VideoFrame::Blob *blob)
 			it->second->inTrackingRegion(*ball))
 		{
 			ball->age = it->second->age + 1;
-			ball->velocity = {
-				RELPOS_X(it->second->pos) - RELPOS_X(ball->pos),
-				RELPOS_Y(it->second->pos) - RELPOS_Y(ball->pos),
-			};
 
 			// Replace the previous ball
 			id = it->first;

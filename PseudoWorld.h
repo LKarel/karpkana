@@ -15,7 +15,7 @@ public:
 	class Ball
 	{
 	public:
-		Ball() : sequence(0), age(0), pos{0}, velocity{0}
+		Ball() : sequence(0), age(0), pos{0}
 		{
 		}
 
@@ -27,7 +27,6 @@ public:
 		int radius;
 
 		RelPosition pos;
-		Vector2d velocity;
 	};
 
 	class Goal
@@ -50,7 +49,6 @@ public:
 	void onFrame(VideoFrame *frame);
 	bool hasBalls() const;
 	PseudoWorld::Ball *getBall(int id) const;
-	bool isBallCaught();
 
 	int targetColor;
 	std::map<int, PseudoWorld::Ball *> balls;
@@ -58,7 +56,6 @@ public:
 
 private:
 	int ids;
-	long caughtAt;
 
 	void readBallBlob(VideoFrame *frame, VideoFrame::Blob *blob);
 	void readGoalBlob(VideoFrame *frame, VideoFrame::Blob *blob);
