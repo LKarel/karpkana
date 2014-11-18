@@ -84,7 +84,7 @@ VideoFrame *VideoProcessor::getFrame()
 
 	VideoFrame *vf = new VideoFrame(this->sequence++);
 
-	for (size_t color = 0; color < REGION_NUM; color++)
+	for (size_t color = 0; color < CMV_MAX_COLORS; color++)
 	{
 		CMVision::region *region = this->vision.getRegions(color);
 

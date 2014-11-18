@@ -1,8 +1,6 @@
 #define CAPT_WIDTH 640
 #define CAPT_HEIGHT 480
 
-#define REGION_NUM 3
-
 #define MOTORS_NUM 4
 #define MOTOR_A 2
 #define MOTOR_B 1

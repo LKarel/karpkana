@@ -65,7 +65,7 @@ Options File Format: (RGB merge name)
 */
 
 #define CMV_COLOR_LEVELS  256
-#define CMV_MAX_COLORS     32
+#define CMV_MAX_COLORS      8
 
 // sets tweaked optimal values for image size
 #define CMV_DEFAULT_WIDTH  640
