@@ -12,6 +12,7 @@ VideoProcessor::VideoProcessor() :
 	this->vision.initialize(CAPT_WIDTH, CAPT_HEIGHT);
 	this->vision.enable(CMV_DENSITY_MERGE);
 	this->vision.enable(CMV_DUAL_THRESHOLD);
+	this->vision.enable(CMV_COLOR_AVERAGES);
 
 	if (env_is("C22_DEBUGIMG", "raw"))
 	{
@@ -89,11 +90,6 @@ VideoFrame *VideoProcessor::getFrame()
 
 		for(; region; region = region->next)
 		{
-			if (region->color == VideoFrame::Blob::COLOR_GUIDE)
-			{
-				continue;
-			}
-
 			double width = abs(region->x1 - region->x2);
 			double height = abs(region->y1 - region->y2);
 
@@ -109,10 +105,12 @@ VideoFrame *VideoProcessor::getFrame()
 
 			if (blob->color == VideoFrame::Blob::COLOR_BALL)
 			{
-				if (width > 50)
+				if (region->cen_y > CAPT_HEIGHT - 40 && abs(region->cen_x) < 50 &&
+					(ratio < 0.35 || ratio > 1.55))
 				{
-					// It's not a ball, maybe a discolored yellow goal?
-					blob->color = VideoFrame::Blob::COLOR_YELLOW;
+					// Not a valid ball
+					delete blob;
+					continue;
 				}
 			}
 
