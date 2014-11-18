@@ -73,6 +73,11 @@ Robot::Robot(const char *type) :
 	{
 		Log::printf("Robot: warning: not all motors loaded");
 	}
+
+	if (!this->coilgun)
+	{
+		Log::printf("Robot: warning: coilgun not loaded");
+	}
 #endif
 }
 
