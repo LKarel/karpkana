@@ -173,15 +173,23 @@ void *GameController::stageCall(int call, int stage, void *state)
 
 void *GameController::stageSearch(int call, void *state_)
 {
-	if (call == STAGE_CALL_TICK)
+	if (call == STAGE_CALL_INIT)
 	{
-		if (this->world.hasBalls())
-		{
-			this->nextStage();
-			return NULL;
-		}
+		this->robot.rotate(25);
+		return NULL;
+	}
+	else if (call == STAGE_CALL_EXIT)
+	{
+		return NULL;
+	}
 
-		// TODO: Do something useful
+	if (this->world.hasBalls())
+	{
+		this->nextStage();
+	}
+	else
+	{
+		usleep(1000);
 	}
 
 	return NULL;
