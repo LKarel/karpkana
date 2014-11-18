@@ -20,11 +20,13 @@ public:
 	void setSpeed(int speed);
 	void stop();
 	int getStall();
+	bool queryBall();
 
 private:
 	Hwlink *link;
 	int lastPing;
 	int stall;
+	int ballState;
 };
 
 #endif

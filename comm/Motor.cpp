@@ -7,11 +7,13 @@
 #define CMD_FAILSAFE "fs%d"
 #define CMD_SET_P "pg%d"
 #define CMD_SET_I "ig%d"
+#define CMD_QUERY_BALL "gb"
 
 Motor::Motor(Hwlink *link) :
 	link(link),
 	lastPing(0),
-	stall(0)
+	stall(0),
+	ballState(-1)
 {
 	this->link->command(CMD_FAILSAFE, 1);
 	this->link->command(CMD_SET_P, 6);
@@ -50,6 +52,15 @@ void Motor::tick()
 				Log::printf("Motor<id=%d>: stall changed: %d", this->link->id, this->stall);
 			}
 		}
+		else if (sscanf(msg, "<b:%d>", &arg) == 1)
+		{
+			this->ballState = arg;
+
+			Log::printf("Motor<id=%d>: ball state: %d", this->link->id, this->ballState);
+		}
+
+		free(msg);
+		this->link->messages.pop();
 	}
 }
 
@@ -72,4 +83,19 @@ void Motor::stop()
 int Motor::getStall()
 {
 	return this->stall;
+}
+
+bool Motor::queryBall()
+{
+	this->ballState = -1;
+	this->link->command(CMD_QUERY_BALL);
+
+	while (this->ballState == -1)
+	{
+		 //Block, until the result is available
+		this->tick();
+		usleep(500);
+	}
+
+	return (bool) this->ballState;
 }
