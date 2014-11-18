@@ -8,7 +8,8 @@
 #define CMD_KICK "k%d"
 #define CMD_AUTO_CHARGE "ac%d"
 #define CMD_FAILSAFE "fs%d"
-#define CMD_TRIBBLER "m%d"
+#define CMD_TRIBBLER_START "tg"
+#define CMD_TRIBBLER_STOP "ts"
 
 Coilgun::Coilgun(Hwlink *link) :
 	link(link)
@@ -17,9 +18,8 @@ Coilgun::Coilgun(Hwlink *link) :
 
 	this->lastPing = microtime();
 
-	this->link->command(CMD_AUTO_CHARGE, 0);
+	this->link->command(CMD_AUTO_CHARGE, 1);
 	this->link->command(CMD_FAILSAFE, 1);
-	//this->link->command(CMD_CHARGE);
 	this->tribbler(false);
 
 	Log::printf("Coilgun: ready");
@@ -49,7 +49,7 @@ void Coilgun::tick()
 
 void Coilgun::tribbler(bool active)
 {
-	this->link->command(CMD_TRIBBLER, active ? 1 : 0);
+	this->link->command(active ? CMD_TRIBBLER_START : CMD_TRIBBLER_STOP);
 }
 
 void Coilgun::kick(uint16_t time)
