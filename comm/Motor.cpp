@@ -1,6 +1,7 @@
 #include "comm/Motor.h"
 
 #define PING_INTERVAL 1000000
+#define BALL_DETECT_TIMEOUT 5000
 
 #define CMD_PING "p"
 #define CMD_SET_SPEED "sd%d"
@@ -85,15 +86,17 @@ int Motor::getStall()
 
 bool Motor::queryBall()
 {
+	int begin = microtime();
+
 	this->ballState = -1;
 	this->link->command(CMD_QUERY_BALL);
 
-	while (this->ballState == -1)
+	while (this->ballState == -1 && microtime() - begin < BALL_DETECT_TIMEOUT)
 	{
-		 //Block, until the result is available
+		//Block, until the result is available
 		this->tick();
 		usleep(500);
 	}
 
-	return (bool) this->ballState;
+	return this->ballState == 1;
 }
