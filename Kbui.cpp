@@ -1,12 +1,18 @@
 #include "Kbui.h"
 
-Kbui::Kbui() : isRunning(true), cmd(0)
+Kbui::Kbui(int fd) : isRunning(true), fd(fd)
 {
+	int flags;
+	flags = fcntl(this->fd, F_GETFL, 0);
+	flags |= O_NONBLOCK;
+	fcntl(this->fd, F_SETFL, flags);
+
 	this->thread = std::thread(&Kbui::run, this);
 }
 
 Kbui::~Kbui()
 {
+	close(this->fd);
 }
 
 void Kbui::stop()
@@ -18,39 +24,41 @@ void Kbui::stop()
 	}
 }
 
-int Kbui::getCommand()
+int Kbui::cmd()
 {
-	std::lock_guard<std::mutex> lock(this->cmdMutex);
+	std::lock_guard<std::mutex> lock(this->cmdsMutex);
 
-	int cmd = this->cmd;
-	this->cmd = 0;
+	int cmd = 0;
+
+	if (!this->cmds.empty())
+	{
+		cmd = this->cmds.front();
+		this->cmds.pop();
+	}
 
 	return cmd;
 }
 
 void Kbui::run()
 {
-	char ch;
-
 	while (this->isRunning)
 	{
-		ch = fgetc(stdin);
+		char ch = 0;
 
-		// Wait until the previous command has been handled
-		while (this->isRunning)
+		if (read(this->fd, &ch, 1) != 1)
 		{
-			usleep(10000);
-			std::lock_guard<std::mutex> lock(this->cmdMutex);
+			usleep(1000);
+			continue;
+		}
 
-			if (!this->cmd)
+		if (ch > 0)
+		{
+			std::lock_guard<std::mutex> lock(this->cmdsMutex);
+
+			switch (ch)
 			{
-				switch (ch)
-				{
-					case 's': this->cmd = Kbui::CMD_STOP; break;
-					case 'b': this->cmd = Kbui::CMD_BEGIN; break;
-				}
-
-				break;
+				case 's': this->cmds.push(Kbui::CMD_STOP); break;
+				case 'b': this->cmds.push(Kbui::CMD_BEGIN); break;
 			}
 		}
 	}

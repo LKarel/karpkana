@@ -71,14 +71,14 @@ int main(int argc, char** argv)
 		Log::perror("main: initializing inotify");
 	}
 
-	Kbui kbui;
+	Kbui kbui(0);
 
 	while (!sigint)
 	{
 		camera->Update();
 		vp->putRawFrame(camera->data);
 
-		switch (kbui.getCommand())
+		switch (kbui.cmd())
 		{
 			case Kbui::CMD_BEGIN:
 				ctrl->start();
@@ -107,6 +107,7 @@ int main(int argc, char** argv)
 	Log::printf("main: shutting down");
 
 	ctrl->stop();
+	kbui.stop();
 	DebugLink::instance().close();
 
 	if (inotifyFd >= 0)
