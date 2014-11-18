@@ -2,6 +2,8 @@
 
 #define VP_MIN_HEIGHT 10
 #define VP_MIN_WIDTH 10
+#define VP_BLACK_STEP 4
+#define VP_BLACK_THRESHOLD 4
 
 VideoProcessor::VideoProcessor() :
 	debugImgMode(DEBUG_IMG_NONE),
@@ -101,31 +103,53 @@ VideoFrame *VideoProcessor::getFrame()
 				continue;
 			}
 
-			VideoFrame::Blob *blob = VideoFrame::Blob::fromRegion(region);
-
-			if (blob->color == VideoFrame::Blob::COLOR_BALL)
+			if (region->color == VideoFrame::Blob::COLOR_BALL)
 			{
 				if (region->cen_y > CAPT_HEIGHT - 40 && abs(region->cen_x) < 50 &&
 					(ratio < 0.35 || ratio > 1.55))
 				{
 					// Not a valid ball
-					delete blob;
+					continue;
+				}
+
+				double ascent = (region->cen_x - (CAPT_WIDTH / 2)) / (CAPT_HEIGHT - region->cen_y);
+				int blackCount = 0;
+
+				for (size_t n = 0; blackCount < VP_BLACK_STEP; ++n)
+				{
+					int testX = region->cen_x - VP_BLACK_STEP * n * ascent;
+					int testY = region->cen_y + VP_BLACK_STEP * n;
+					int mapIndex = (CAPT_WIDTH * testY) + testX;
+
+					if (mapIndex > CAPT_WIDTH * CAPT_HEIGHT)
+					{
+						break;
+					}
+
+					if (this->vision.getMap()[mapIndex] & (1 << VideoFrame::Blob::COLOR_BLACK))
+					{
+						++blackCount;
+					}
+				}
+
+				if (blackCount >= VP_BLACK_STEP)
+				{
+					// Ball is behind a black line
 					continue;
 				}
 			}
 
-			if (blob->color == VideoFrame::Blob::COLOR_YELLOW ||
-				blob->color == VideoFrame::Blob::COLOR_BLUE)
+			if (region->color == VideoFrame::Blob::COLOR_YELLOW ||
+				region->color == VideoFrame::Blob::COLOR_BLUE)
 			{
 				if (width < 100 || height < 10)
 				{
 					// Not a valid goal
-					delete blob;
 					continue;
 				}
 			}
 
-			vf->blobs.push_back(blob);
+			vf->blobs.push_back(VideoFrame::Blob::fromRegion(region));
 		}
 	}
 
