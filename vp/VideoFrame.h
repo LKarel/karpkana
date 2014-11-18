@@ -14,8 +14,7 @@ public:
 	public:
 		static const int COLOR_BALL = 0;
 		static const int COLOR_BLUE = 1;
-		static const int COLOR_GUIDE = 2;
-		static const int COLOR_YELLOW = 9;
+		static const int COLOR_YELLOW = 2;
 
 		static Blob *fromRegion(CMVision::region *region);
 

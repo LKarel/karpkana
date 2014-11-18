@@ -46,7 +46,7 @@ void PseudoWorld::onFrame(VideoFrame *frame)
 	{
 		ball = it->second;
 
-		if (frame->sequence - ball->sequence > 10)
+		if (frame->sequence - ball->sequence > 20)
 		{
 			if (ball->inTribblerRegion() && ball->velocity.y > 0)
 			{

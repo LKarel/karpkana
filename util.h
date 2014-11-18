@@ -5,6 +5,7 @@
 #include "main.h"
 
 #define PI 3.14159265359
+#define EXP 2.71828
 #define ABS_F(x) ((x) < 0 ? -(x) : (x))
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 #define MIN(a, b) ((a) < (b) ? (a) : (b))

@@ -8,6 +8,7 @@
 #define MOTOR_B 1
 #define MOTOR_C 3
 #define COILGUN 4
+#define MOTOR_BDET 2
 
 #define ROBOT_RADIUS 0.12
 #define WHEEL_CIRCUMFERENCE 0.21991148575
