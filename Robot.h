@@ -19,6 +19,8 @@ public:
 	Motor *motors[MOTORS_NUM];
 	Coilgun *coilgun;
 
+	int getStall() const;
+
 	void rotate(int speed);
 	void rotateForward(int fwd, int rotate);
 	void stop();

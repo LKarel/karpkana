@@ -97,6 +97,20 @@ Robot::~Robot()
 	}
 }
 
+int Robot::getStall() const
+{
+	int stall = 0;
+
+	for (size_t i = 0; i < MOTORS_NUM; ++i)
+	{
+		if (this->motors[i])
+		{
+			stall = MAX(stall, this->motors[i]->getStall());
+		}
+	}
+
+	return stall;
+}
 
 void Robot::rotate(int speed)
 {

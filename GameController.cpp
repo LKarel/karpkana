@@ -10,8 +10,9 @@
 #define STAGE_APPROACH 2
 #define STAGE_TARGET 3
 #define STAGE_KICK 4
-#define STAGE_IDLE 5
-#define STAGE_MAX 4
+#define STAGE_CYCLE_END 5
+#define STAGE_IDLE 6
+#define STAGE_UNSTALL 7
 
 typedef struct
 {
@@ -97,6 +98,11 @@ void GameController::run()
 
 		this->world.onFrame(frame);
 
+		if (this->stage != STAGE_UNSTALL && this->robot.getStall())
+		{
+			this->gotoStage(STAGE_UNSTALL);
+		}
+
 		if (this->stage)
 		{
 			this->stageCall(STAGE_CALL_TICK, this->stage, this->stageState);
@@ -124,7 +130,7 @@ void GameController::gotoStage(int stage)
 
 	this->stage = stage;
 
-	if (this->stage > STAGE_MAX && this->stage != STAGE_IDLE)
+	if (this->stage == STAGE_CYCLE_END)
 	{
 		this->stage = 1;
 	}
@@ -157,6 +163,9 @@ void *GameController::stageCall(int call, int stage, void *state)
 
 		case STAGE_IDLE:
 			return this->stageIdle(call, state);
+
+		case STAGE_UNSTALL:
+			return this->stageUnstall(call, state);
 	}
 
 	return NULL;
@@ -311,6 +320,30 @@ void *GameController::stageKick(int call, void *state_)
 
 void *GameController::stageIdle(int call, void *state_)
 {
+	return NULL;
+}
+
+void *GameController::stageUnstall(int call, void *state_)
+{
+	if (call == STAGE_CALL_INIT)
+	{
+		this->robot.stop();
+		this->robot.coilgun->tribbler(false);
+	}
+	else if (call == STAGE_CALL_EXIT)
+	{
+		return NULL;
+	}
+
+	if (!this->robot.getStall())
+	{
+		this->gotoStage(STAGE_SEARCH);
+	}
+	else
+	{
+		usleep(10000);
+	}
+
 	return NULL;
 }
 
