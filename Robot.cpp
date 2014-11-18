@@ -97,6 +97,22 @@ Robot::~Robot()
 	}
 }
 
+void Robot::tick()
+{
+	if (this->coilgun)
+	{
+		this->coilgun->tick();
+	}
+
+	for (size_t i = 0; i < MOTORS_NUM; ++i)
+	{
+		if (this->motors[i])
+		{
+			this->motors[i]->tick();
+		}
+	}
+}
+
 int Robot::getStall() const
 {
 	int stall = 0;
@@ -149,5 +165,12 @@ void Robot::rotateForward(int fwd, int rotate)
 {
 	this->motors[MOTOR_A]->setSpeed(fwd - rotate);
 	this->motors[MOTOR_B]->setSpeed(-fwd + rotate);
+	this->motors[MOTOR_C]->setSpeed(rotate);
+}
+
+void Robot::rotateCurved(int rotate, double mod)
+{
+	this->motors[MOTOR_A]->setSpeed(rotate * mod);
+	this->motors[MOTOR_B]->setSpeed(rotate * mod);
 	this->motors[MOTOR_C]->setSpeed(rotate);
 }

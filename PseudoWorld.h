@@ -1,7 +1,7 @@
 #ifndef PSEUDOWORLD_H
 #define PSEUDOWORLD_H
 
-#define PSEUDOWORLD_MIN_AGE 20
+#define PSEUDOWORLD_MIN_AGE 14
 
 #include <cmath>
 #include <map>

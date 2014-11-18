@@ -1,6 +1,7 @@
 #include "PseudoWorld.h"
 
 #define CAUGHT_TIMEOUT 300000
+#define Y_SHIFT (CAPT_HEIGHT)
 
 PseudoWorld::PseudoWorld() :
 	targetColor(VideoFrame::Blob::COLOR_YELLOW),
@@ -45,7 +46,7 @@ void PseudoWorld::onFrame(VideoFrame *frame)
 	{
 		ball = it->second;
 
-		if (frame->sequence - ball->sequence > 20)
+		if (frame->sequence - ball->sequence > 25)
 		{
 			delete it->second;
 			this->balls.erase(it);
@@ -103,7 +104,7 @@ void PseudoWorld::readBallBlob(VideoFrame *frame, VideoFrame::Blob *blob)
 	ball->sequence = frame->sequence;
 	ball->age = 0;
 	ball->radius = (abs(blob->x1 - blob->x2) + abs(blob->y1 - blob->y2)) / 2;
-	ball->pos = { sqrt(pow(point.x, 2) + pow(point.y, 2)), -atan(point.x / point.y) };
+	ball->pos = { sqrt(pow(point.x, 2) + pow(point.y, 2)), -atan(point.x / (point.y + Y_SHIFT)) };
 
 	// Verify if in any tracking area
 	std::map<int, PseudoWorld::Ball *>::iterator it = this->balls.begin();

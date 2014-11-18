@@ -18,7 +18,6 @@ Coilgun::Coilgun(Hwlink *link) :
 
 	this->lastPing = microtime();
 
-	this->link->command(CMD_AUTO_CHARGE, 1);
 	this->link->command(CMD_FAILSAFE, 1);
 	this->tribbler(false);
 
@@ -52,7 +51,15 @@ void Coilgun::tribbler(bool active)
 	this->link->command(active ? CMD_TRIBBLER_START : CMD_TRIBBLER_STOP);
 }
 
+void Coilgun::chargeSync()
+{
+	Log::printf("Coilgun: charging");
+	this->link->command(CMD_CHARGE);
+	usleep(350 * 1000);
+}
+
 void Coilgun::kick(uint16_t time)
 {
+	Log::printf("Coilgun: kicking: %d", time);
 	this->link->command(CMD_KICK, time);
 }

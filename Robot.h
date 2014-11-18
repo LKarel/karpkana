@@ -21,8 +21,10 @@ public:
 
 	int getStall() const;
 
+	void tick();
 	void rotate(int speed);
 	void rotateForward(int fwd, int rotate);
+	void rotateCurved(int rotate, double mod);
 	void stop();
 	void direction(int direction, int speed);
 };
