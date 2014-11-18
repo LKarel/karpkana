@@ -41,7 +41,14 @@ int main(int argc, char** argv)
 	}
 	else
 	{
-		camera = (BaseCamera *) new Camera("/dev/video0", CAPT_WIDTH, CAPT_HEIGHT);
+		const char *camdev = "/dev/video0";
+
+		if (env_has("C22_CAMDEV"))
+		{
+			camdev = getenv("C22_CAMDEV");
+		}
+
+		camera = (BaseCamera *) new Camera(camdev, CAPT_WIDTH, CAPT_HEIGHT);
 	}
 
 	// Force DebugLink to initialize
