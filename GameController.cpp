@@ -76,6 +76,7 @@ void GameController::stop()
 void GameController::run()
 {
 	long begin = 0;
+	double fps = 0;
 
 	this->stage = 0;
 	this->stageState = NULL;
@@ -110,7 +111,7 @@ void GameController::run()
 			this->stageCall(STAGE_CALL_TICK, this->stage, this->stageState);
 		}
 
-		DebugLink::instance().fps(DebugLink::FPS_CTRL, 1000000.0 / (microtime() - begin));
+		fps = 1000000.0 / (microtime() - begin);
 		begin = 0;
 
 		delete frame;

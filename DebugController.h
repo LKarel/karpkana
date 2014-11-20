@@ -3,6 +3,7 @@
 
 #include <thread>
 #include <unistd.h>
+#include "3rdparty/jpge.h"
 #include "google/protobuf/message.h"
 #include "google/protobuf/stubs/common.h"
 #include "comm/pb/frame.pb.h"

@@ -6,7 +6,6 @@
 #include "DebugController.h"
 #include "GameController.h"
 #include "Kbui.h"
-#include "comm/DebugLink.h"
 #include "comm/Log.h"
 #include "vp/Camera.h"
 #include "vp/ImageCamera.h"

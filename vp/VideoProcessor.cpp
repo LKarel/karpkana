@@ -43,9 +43,7 @@ void VideoProcessor::putRawFrame(unsigned char *data)
 VideoFrame *VideoProcessor::getFrame()
 {
 	std::lock_guard<std::mutex> lock(this->visionMutex);
-
 	image_pixel *cmImg;
-	long begin = microtime();
 
 	// Convert data to a format acceptable to CMVision
 	{
@@ -172,8 +170,6 @@ VideoFrame *VideoProcessor::getFrame()
 			vf->imageOriginal[i].blue = (unsigned char) LIMIT(b, 0, 255);
 		}
 	}
-
-	DebugLink::instance().fps(DebugLink::FPS_PROC, 1000000.0 / (microtime() - begin));
 
 	delete[] cmImg;
 
