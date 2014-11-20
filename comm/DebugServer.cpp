@@ -72,6 +72,20 @@ void DebugServer::broadcast(const uint8_t *buf, size_t size)
     this->clients.resize(it - this->clients.begin());
 }
 
+DebugServer::Message *DebugServer::getIncoming()
+{
+	std::lock_guard<std::mutex> lock(this->incomingMutex);
+	DebugServer::Message *msg = NULL;
+
+	if (!this->incoming.empty())
+	{
+		msg = this->incoming.front();
+		this->incoming.pop();
+	}
+
+	return msg;
+}
+
 void DebugServer::run()
 {
 	int yes = 1;
@@ -175,13 +189,14 @@ void DebugServer::run()
 
 				if (count > 0)
 				{
-					// TODO: Do something useful
-					Log::printf("DebugServer: receiving data from client");
+					this->getParser(i)->handle((uint8_t *) buf, (size_t) count);
 				}
 				else
 				{
 					close(i);
 					FD_CLR(i, &fds);
+
+					// TODO: Remove the client's parser
 
 					Log::printf("DebugServer: client disconnected");
 				}
@@ -191,4 +206,70 @@ void DebugServer::run()
 
 	::close(sockfd);
 	Log::printf("DebugServer: server socket closed");
+}
+
+DebugServer::Parser *DebugServer::getParser(int client)
+{
+	std::lock_guard<std::mutex> lock(this->parsersMutex);
+	std::map<int, Parser *>::iterator it = this->parsers.find(client);
+
+	DebugServer::Parser *parser;
+
+	if (it == this->parsers.end())
+	{
+		parser = new DebugServer::Parser();
+		this->parsers[client] = parser;
+	}
+	else
+	{
+		parser = it->second;
+	}
+
+	return parser;
+}
+
+DebugServer::Parser::~Parser()
+{
+	while (!this->messages.empty())
+	{
+		delete this->messages.front();
+		this->messages.pop();
+	}
+}
+
+void DebugServer::Parser::handle(uint8_t *data, size_t count)
+{
+	for (size_t i = 0; i < count; ++i)
+	{
+		if (!this->type)
+		{
+			this->type = data[i];
+		}
+		else if (this->lenReceived != 4)
+		{
+			this->len = (this->len << 8) | data[i];
+			this->lenReceived++;
+		}
+		else if (this->payloadReceived != this->len)
+		{
+			if (!this->payload)
+			{
+				this->payload = (uint8_t *) malloc(this->len);
+			}
+
+			this->payload[this->payloadReceived++] = data[i];
+		}
+		else
+		{
+			// End of a message
+			this->messages.push(new DebugServer::Message(this->type, this->payload));
+
+			// Clean up the parser state for the next message
+			this->type = 0;
+			this->len = 0;
+			this->lenReceived = 0;
+			this->payload = NULL;
+			this->payloadReceived = 0;
+		}
+	}
 }

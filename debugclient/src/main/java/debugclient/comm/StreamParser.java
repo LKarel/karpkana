@@ -11,6 +11,8 @@ import java.io.EOFException;
 
 import javax.imageio.ImageIO;
 
+import com.google.protobuf.Message;
+
 public abstract class StreamParser implements Runnable
 {
 	private DataInputStream mIn;
@@ -44,82 +46,23 @@ public abstract class StreamParser implements Runnable
 	private Message readNextMessage()
 		throws EOFException, IOException
 	{
-		int first = mIn.read();
+		int type = mIn.read();
+		int len = mIn.readInt();
 
-		if (first < 0)
+		if (type < 0 || len < 0)
 		{
 			throw new EOFException();
 		}
 
-		switch (first)
+		byte[] buf = new byte[len];
+		mIn.readFully(buf);
+
+		switch (type)
 		{
-			case Protocol.TYPE_BALL: return readNextBall();
-			case Protocol.TYPE_IMAGE: return readNextFrame();
-			case Protocol.TYPE_BLOB: return readNextBlob();
-			case Protocol.TYPE_FPS: return readNextFps();
+			case 0x10: return (Message) c22dlink.FrameImage.parseFrom(buf);
 		}
 
 		return null;
-	}
-
-	private Message readNextBall()
-		throws EOFException, IOException
-	{
-		int sequence = mIn.readInt();
-		int x = mIn.readUnsignedShort();
-		int y = mIn.readUnsignedShort();
-		int radius = mIn.readUnsignedShort();
-
-		return new BallMessage(sequence, x, y, radius);
-	}
-
-	private Message readNextMsg()
-		throws EOFException, IOException
-	{
-		int level = mIn.readByte();
-		int len = mIn.readUnsignedShort();
-		byte[] buf = new byte[len];
-
-		mIn.readFully(buf);
-
-		return new MessageMessage(level, new String(buf));
-	}
-
-	private Message readNextBlob()
-		throws EOFException, IOException
-	{
-		int sequence = mIn.readInt();
-		int color = mIn.readByte();
-		int x1 = mIn.readShort();
-		int x2 = mIn.readShort();
-		int y1 = mIn.readShort();
-		int y2 = mIn.readShort();
-
-		return new BlobMessage(sequence, color, x1, x2, y1, y2);
-	}
-
-	private Message readNextFrame()
-		throws EOFException, IOException
-	{
-		int sequence = mIn.readInt();
-		int frame_height = mIn.readUnsignedShort();
-		int width = mIn.readUnsignedShort();
-		int height = mIn.readUnsignedShort();
-		int len = mIn.readInt();
-
-		byte[] buf = new byte[len];
-		mIn.readFully(buf);
-
-		InputStream bodyStream = new ByteArrayInputStream(buf);
-		BufferedImage image = ImageIO.read(bodyStream);
-
-		return new FrameMessage(sequence, (float) height / (float) frame_height, image);
-	}
-
-	private Message readNextFps()
-		throws EOFException, IOException
-	{
-		return new FpsMessage(mIn.read(), mIn.read());
 	}
 
 	protected abstract void onError(Throwable e);

@@ -3,6 +3,7 @@
 #include <sys/inotify.h>
 #include <unistd.h>
 #include "util.h"
+#include "DebugController.h"
 #include "GameController.h"
 #include "Kbui.h"
 #include "comm/DebugLink.h"
@@ -51,12 +52,7 @@ int main(int argc, char** argv)
 		camera = (BaseCamera *) new Camera(camdev, CAPT_WIDTH, CAPT_HEIGHT);
 	}
 
-	// Force DebugLink to initialize
-	DebugLink::instance();
-
 	VideoProcessor *vp = new VideoProcessor();
-	GameController *ctrl = new GameController(vp);
-
 	vp->loadColors(COLORS_FILE);
 
 	int inotifyFd = inotify_init1(IN_NONBLOCK);
@@ -71,44 +67,59 @@ int main(int argc, char** argv)
 		Log::perror("main: initializing inotify");
 	}
 
-	Kbui kbui(0);
-
-	while (!sigint)
+	if (env_is("C22_DEBUGMODE", "1"))
 	{
-		camera->Update();
-		vp->putRawFrame(camera->data);
+		DebugController ctrl(vp);
 
-		switch (kbui.cmd())
+		while (!sigint)
 		{
-			case Kbui::CMD_BEGIN:
-				ctrl->start();
-			break;
-
-			case Kbui::CMD_STOP:
-				ctrl->stop();
-			break;
+			camera->Update();
+			vp->putRawFrame(camera->data);
 		}
 
-		char buf[INOTIFY_BUF_SIZE];
-		ssize_t size = read(inotifyFd, &buf, INOTIFY_BUF_SIZE);
+		ctrl.stop();
+	}
+	else
+	{
+		GameController ctrl(vp);
+		Kbui kbui(0);
 
-		if (size > 0)
+		while (!sigint)
 		{
-			struct inotify_event *event = (struct inotify_event*) &buf;
+			camera->Update();
+			vp->putRawFrame(camera->data);
 
-			if (strcmp(event->name, "colors.txt") == 0)
+			switch (kbui.cmd())
 			{
-				Log::printf("main: colors config changed, reloading");
-				vp->loadColors(COLORS_FILE);
+				case Kbui::CMD_BEGIN:
+					ctrl.start();
+				break;
+
+				case Kbui::CMD_STOP:
+					ctrl.stop();
+				break;
+			}
+
+			char buf[INOTIFY_BUF_SIZE];
+			ssize_t size = read(inotifyFd, &buf, INOTIFY_BUF_SIZE);
+
+			if (size > 0)
+			{
+				struct inotify_event *event = (struct inotify_event*) &buf;
+
+				if (strcmp(event->name, "colors.txt") == 0)
+				{
+					Log::printf("main: colors config changed, reloading");
+					vp->loadColors(COLORS_FILE);
+				}
 			}
 		}
+
+		ctrl.stop();
+		kbui.stop();
 	}
 
 	Log::printf("main: shutting down");
-
-	ctrl->stop();
-	kbui.stop();
-	DebugLink::instance().close();
 
 	if (inotifyFd >= 0)
 	{
@@ -116,7 +127,6 @@ int main(int argc, char** argv)
 		close(inotifyFd);
 	}
 
-	delete ctrl;
 	delete vp;
 	delete camera;
 

@@ -1,0 +1,6 @@
+#ifndef COMM_PROTOCOL_H
+#define COMM_PROTOCOL_H
+
+#define PROTOCOL__FRAME_IMAGE 0x10
+
+#endif

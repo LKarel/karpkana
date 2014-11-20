@@ -6,8 +6,8 @@
 #define VP_BLACK_THRESHOLD 4
 
 VideoProcessor::VideoProcessor() :
-	debugImgMode(DEBUG_IMG_NONE),
-	debugBlobs(false),
+	keepOriginal(false),
+	keepClassify(false),
 	sequence(0),
 	dataFresh(false)
 {
@@ -15,20 +15,6 @@ VideoProcessor::VideoProcessor() :
 	this->vision.enable(CMV_DENSITY_MERGE);
 	this->vision.enable(CMV_DUAL_THRESHOLD);
 	this->vision.enable(CMV_COLOR_AVERAGES);
-
-	if (env_is("C22_DEBUGIMG", "raw"))
-	{
-		this->debugImgMode = VideoProcessor::DEBUG_IMG_RAW;
-	}
-	else if (env_is("C22_DEBUGIMG", "classify"))
-	{
-		this->debugImgMode = VideoProcessor::DEBUG_IMG_CLASSIFY;
-	}
-
-	if (env_is("C22_DEBUG_BLOBS", "1"))
-	{
-		this->debugBlobs = true;
-	}
 }
 
 VideoProcessor::~VideoProcessor()
@@ -153,26 +139,15 @@ VideoFrame *VideoProcessor::getFrame()
 		}
 	}
 
-	if (this->debugBlobs)
+	if (this->keepClassify)
 	{
-		std::vector<VideoFrame::Blob *>::iterator it = vf->blobs.begin();
-		while (it != vf->blobs.end())
-		{
-			DebugLink::instance().blob(vf->sequence, *it);
-			++it;
-		}
+		vf->imageClassify = new rgb[CAPT_WIDTH * CAPT_HEIGHT];
+		this->vision.testClassify(vf->imageClassify, cmImg);
 	}
 
-	if (this->debugImgMode == DEBUG_IMG_CLASSIFY)
+	if (this->keepOriginal)
 	{
-		rgb *debugImg = new rgb[CAPT_WIDTH * CAPT_HEIGHT];
-		this->vision.testClassify(debugImg, cmImg);
-
-		DebugLink::instance().image(vf->sequence, debugImg);
-	}
-	else if (this->debugImgMode == DEBUG_IMG_RAW)
-	{
-		rgb *debugImg = new rgb[CAPT_WIDTH * CAPT_HEIGHT];
+		vf->imageOriginal = new rgb[CAPT_WIDTH * CAPT_HEIGHT];
 		image_pixel yuyv;
 		int y;
 		int r, g, b;
@@ -187,12 +162,10 @@ VideoFrame *VideoProcessor::getFrame()
 			g = y - (0.698001 * (yuyv.v-128)) - (0.337633 * (yuyv.u-128));
 			b = y + (1.732446 * (yuyv.u-128));
 
-			debugImg[i].red = (unsigned char) LIMIT(r, 0, 255);
-			debugImg[i].green = (unsigned char) LIMIT(g, 0, 255);
-			debugImg[i].blue = (unsigned char) LIMIT(b, 0, 255);
+			vf->imageOriginal[i].red = (unsigned char) LIMIT(r, 0, 255);
+			vf->imageOriginal[i].green = (unsigned char) LIMIT(g, 0, 255);
+			vf->imageOriginal[i].blue = (unsigned char) LIMIT(b, 0, 255);
 		}
-
-		DebugLink::instance().image(vf->sequence, debugImg);
 	}
 
 	DebugLink::instance().fps(DebugLink::FPS_PROC, 1000000.0 / (microtime() - begin));

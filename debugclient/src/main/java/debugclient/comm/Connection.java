@@ -3,6 +3,8 @@ package debugclient.comm;
 import java.io.IOException;
 import java.net.Socket;
 
+import com.google.protobuf.Message;
+
 public abstract class Connection
 {
 	private Socket mSocket;

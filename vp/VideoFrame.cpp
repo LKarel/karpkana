@@ -1,7 +1,9 @@
 #include "VideoFrame.h"
 
 VideoFrame::VideoFrame(int sequence) :
-	sequence(sequence)
+	sequence(sequence),
+	imageOriginal(NULL),
+	imageClassify(NULL)
 {
 }
 
@@ -10,6 +12,16 @@ VideoFrame::~VideoFrame()
 	for (std::vector<VideoFrame::Blob>::size_type i = 0; i < this->blobs.size(); i++)
 	{
 		delete this->blobs[i];
+	}
+
+	if (this->imageOriginal)
+	{
+		delete[] this->imageOriginal;
+	}
+
+	if (this->imageClassify)
+	{
+		delete[] this->imageClassify;
 	}
 }
 

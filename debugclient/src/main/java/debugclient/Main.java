@@ -11,12 +11,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import com.google.protobuf.Message;
+
 import debugclient.comm.Connection;
-import debugclient.comm.FpsMessage;
-import debugclient.comm.FrameMessage;
-import debugclient.comm.BlobMessage;
-import debugclient.comm.MessageMessage;
-import debugclient.comm.Message;
 
 public class Main
 {
@@ -41,27 +38,31 @@ public class Main
 
 		final FpsPanel fpsPanel = new FpsPanel();
 		final VideoPanel videoPanel = new VideoPanel();
+		final VideoPanel classifyPanel = new VideoPanel();
 
 		final Connection connection = new Connection()
 		{
 			protected void onError(Throwable e)
 			{
-				videoPanel.setErrorMessage("CONNECTION LOST");
+				System.out.println(e);
 			}
 
 			protected void onMessage(Message msg)
 			{
-				if (msg instanceof FrameMessage)
+				String name = msg.getDescriptorForType().getFullName();
+
+				if (name.equals("c22dlink.FrameImage"))
 				{
-					videoPanel.setFrame((FrameMessage) msg);
-				}
-				else if (msg instanceof BlobMessage)
-				{
-					videoPanel.putBlob((BlobMessage) msg);
-				}
-				else if (msg instanceof FpsMessage)
-				{
-					fpsPanel.onFps((FpsMessage) msg);
+					c22dlink.FrameImage frameImage = (c22dlink.FrameImage) msg;
+
+					if (frameImage.getType() == c22dlink.FrameImage.Type.ORIGINAL)
+					{
+						videoPanel.putFrame(frameImage);
+					}
+					else
+					{
+						classifyPanel.putFrame(frameImage);
+					}
 				}
 			}
 		};
@@ -79,8 +80,13 @@ public class Main
 		topPanel.add(connectPanel);
 		topPanel.add(fpsPanel);
 
+		JPanel videosPanel = new JPanel();
+		videosPanel.setLayout(new GridLayout(1, 0));
+		videosPanel.add(classifyPanel);
+		videosPanel.add(videoPanel);
+
 		frame.add(topPanel);
-		frame.add(videoPanel);
+		frame.add(videosPanel);
 
 		frame.pack();
 		frame.setVisible(true);

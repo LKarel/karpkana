@@ -36,6 +36,10 @@ public:
 
 	int sequence;
 	std::vector<VideoFrame::Blob *> blobs;
+
+	rgb *imageOriginal;
+	rgb *imageClassify;
+
 };
 
 #endif
