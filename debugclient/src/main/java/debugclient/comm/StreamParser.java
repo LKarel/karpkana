@@ -59,7 +59,8 @@ public abstract class StreamParser implements Runnable
 
 		switch (type)
 		{
-			case 0x10: return (Message) c22dlink.FrameImage.parseFrom(buf);
+			case Protocol.FRAME_IMAGE: return (Message) c22dlink.FrameImage.parseFrom(buf);
+			case Protocol.COLORS_INFO: return (Message) c22dlink.ColorsInfo.parseFrom(buf);
 		}
 
 		return null;

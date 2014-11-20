@@ -1,0 +1,37 @@
+package c22dlink;
+
+option java_multiple_files = true;
+
+message RGB
+{
+	required int32 r = 1;
+	required int32 g = 2;
+	required int32 b = 3;
+}
+
+message YUV
+{
+	required int32 y = 1;
+	required int32 u = 2;
+	required int32 v = 3;
+}
+
+message ColorInfo
+{
+	required int32 id = 1;
+	optional RGB rgb = 2;
+	optional string name = 3;
+	required double merge = 4;
+	required int32 expected = 5;
+	required YUV yuvLow = 6;
+	required YUV yuvHigh = 7;
+}
+
+message ColorsInfo
+{
+	repeated ColorInfo colors = 1;
+}
+
+message RequestColors
+{
+}

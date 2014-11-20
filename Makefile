@@ -28,7 +28,7 @@ protobuf:
 	protoc -I=./protobuf/ --java_out=./debugclient/src/main/java/ $(PROTO)
 	cd comm/pb && for f in *.cc; do mv "$$f" "`basename $$f .cc`.cpp"; done
 
-bin/main: protobuf $(OBJECTS)
+bin/main: $(OBJECTS)
 	$(CXX) $(OBJECTS) -Wall $(LIBS) -o $@
 
 clean:

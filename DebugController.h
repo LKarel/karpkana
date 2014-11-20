@@ -26,6 +26,8 @@ private:
 	std::thread thread;
 
 	void run();
+	void handleColorInfo(c22dlink::ColorInfo *colorInfo);
+	void broadcastColorsInfo();
 	void broadcastImage(c22dlink::FrameImage::Type type, VideoFrame *frame, rgb *image);
 	void broadcastMessage(uint8_t type, google::protobuf::Message &msg);
 };

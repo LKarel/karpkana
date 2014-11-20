@@ -35,6 +35,11 @@ public:
 	 */
 	VideoFrame *getFrame();
 
+	/**
+	 * Get the CMVision instance
+	 */
+	CMVision *getVision();
+
 	bool keepOriginal;
 	bool keepClassify;
 

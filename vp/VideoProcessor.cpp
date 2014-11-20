@@ -22,6 +22,11 @@ VideoProcessor::~VideoProcessor()
 	this->vision.close();
 }
 
+CMVision *VideoProcessor::getVision()
+{
+	return &this->vision;
+}
+
 void VideoProcessor::loadColors(const char *file)
 {
 	std::lock_guard<std::mutex> lock(this->visionMutex);

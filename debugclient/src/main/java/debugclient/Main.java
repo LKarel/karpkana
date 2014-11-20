@@ -30,15 +30,15 @@ public class Main
 
 	private static void showGUI()
 	{
-		JFrame frame = new JFrame("DebugClient");
+		final JFrame frame = new JFrame("DebugClient");
 		frame.setSize(800, 600);
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
 
-		final FpsPanel fpsPanel = new FpsPanel();
 		final VideoPanel videoPanel = new VideoPanel();
 		final VideoPanel classifyPanel = new VideoPanel();
+		final ColorsPanel colorsPanel = new ColorsPanel();
 
 		final Connection connection = new Connection()
 		{
@@ -49,6 +49,11 @@ public class Main
 
 			protected void onMessage(Message msg)
 			{
+				if (msg == null)
+				{
+					return;
+				}
+
 				String name = msg.getDescriptorForType().getFullName();
 
 				if (name.equals("c22dlink.FrameImage"))
@@ -64,6 +69,11 @@ public class Main
 						classifyPanel.putFrame(frameImage);
 					}
 				}
+				else if (name.equals("c22dlink.ColorsInfo"))
+				{
+					colorsPanel.onColorsInfo((c22dlink.ColorsInfo) msg);
+					colorsPanel.onConnection(this);
+				}
 			}
 		};
 
@@ -72,21 +82,18 @@ public class Main
 			public void onConnect(String hostname, int port)
 			{
 				connection.connect(hostname, port);
+				connection.message(c22dlink.RequestColors.newBuilder().build());
 			};
 		};
-
-		JPanel topPanel = new JPanel();
-		topPanel.setLayout(new GridLayout(1, 0));
-		topPanel.add(connectPanel);
-		topPanel.add(fpsPanel);
 
 		JPanel videosPanel = new JPanel();
 		videosPanel.setLayout(new GridLayout(1, 0));
 		videosPanel.add(classifyPanel);
 		videosPanel.add(videoPanel);
 
-		frame.add(topPanel);
+		frame.add(connectPanel);
 		frame.add(videosPanel);
+		frame.add(colorsPanel);
 
 		frame.pack();
 		frame.setVisible(true);

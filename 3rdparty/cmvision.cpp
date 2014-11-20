@@ -805,6 +805,28 @@ bool CMVision::saveOptions(const char *filename)
   return(true);
 }
 
+void CMVision::recalculateOptions()
+{
+  int i;
+  unsigned k;
+  color_info *c;
+
+  // Clear out previously set options
+  for(i=0; i<CMV_COLOR_LEVELS; i++){
+    y_class[i] = u_class[i] = v_class[i] = 0;
+  }
+
+  for(i=0; i<CMV_MAX_COLORS; i++){
+    c = &colors[i];
+    if(c->name){
+      k = (1 << i);
+      set_bits(y_class,CMV_COLOR_LEVELS,c->y_low,c->y_high,k);
+      set_bits(u_class,CMV_COLOR_LEVELS,c->u_low,c->u_high,k);
+      set_bits(v_class,CMV_COLOR_LEVELS,c->v_low,c->v_high,k);
+    }
+  }
+}
+
 bool CMVision::enable(unsigned opt)
 {
   int valid;

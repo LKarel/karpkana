@@ -205,6 +205,7 @@ public:
   bool initialize(int nwidth,int nheight);
   bool loadOptions(const char *filename);
   bool saveOptions(const char *filename);
+  void recalculateOptions();
   bool enable(unsigned opt);
   bool disable(unsigned opt);
   void close();

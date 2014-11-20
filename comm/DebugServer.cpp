@@ -72,10 +72,10 @@ void DebugServer::broadcast(const uint8_t *buf, size_t size)
     this->clients.resize(it - this->clients.begin());
 }
 
-DebugServer::Message *DebugServer::getIncoming()
+google::protobuf::Message *DebugServer::getIncoming()
 {
 	std::lock_guard<std::mutex> lock(this->incomingMutex);
-	DebugServer::Message *msg = NULL;
+	google::protobuf::Message *msg = NULL;
 
 	if (!this->incoming.empty())
 	{
@@ -189,7 +189,15 @@ void DebugServer::run()
 
 				if (count > 0)
 				{
-					this->getParser(i)->handle((uint8_t *) buf, (size_t) count);
+					DebugServer::Parser *parser = this->getParser(i);
+
+					parser->handle((uint8_t *) buf, (size_t) count);
+
+					while (!parser->messages.empty())
+					{
+						this->incoming.push(parser->messages.front());
+						parser->messages.pop();
+					}
 				}
 				else
 				{
@@ -244,25 +252,36 @@ void DebugServer::Parser::handle(uint8_t *data, size_t count)
 		if (!this->type)
 		{
 			this->type = data[i];
+			continue;
 		}
 		else if (this->lenReceived != 4)
 		{
 			this->len = (this->len << 8) | data[i];
 			this->lenReceived++;
-		}
-		else if (this->payloadReceived != this->len)
-		{
-			if (!this->payload)
+
+			if (this->lenReceived == 4 && !this->len)
 			{
-				this->payload = (uint8_t *) malloc(this->len);
+				// Empty message
+				this->messages.push(this->parseProtobuf(this->type, NULL, 0));
+
+				this->type = 0;
+				this->lenReceived = 0;
 			}
 
-			this->payload[this->payloadReceived++] = data[i];
+			continue;
 		}
-		else
+
+		if (!this->payload)
+		{
+			this->payload = (uint8_t *) malloc(this->len);
+		}
+
+		this->payload[this->payloadReceived++] = data[i];
+
+		if (this->payloadReceived == this->len)
 		{
 			// End of a message
-			this->messages.push(new DebugServer::Message(this->type, this->payload));
+			this->messages.push(this->parseProtobuf(this->type, this->payload, this->len));
 
 			// Clean up the parser state for the next message
 			this->type = 0;
@@ -272,4 +291,27 @@ void DebugServer::Parser::handle(uint8_t *data, size_t count)
 			this->payloadReceived = 0;
 		}
 	}
+}
+
+google::protobuf::Message *DebugServer::Parser::parseProtobuf(int type, uint8_t *data, size_t len)
+{
+	google::protobuf::Message *msg = NULL;
+
+	switch (type)
+	{
+		case PROTOCOL__REQUEST_COLORS:
+			msg = new c22dlink::RequestColors();
+			break;
+
+		case PROTOCOL__COLOR_INFO:
+			msg = new c22dlink::ColorInfo();
+			break;
+	}
+
+	if (data && len)
+	{
+		msg->ParseFromArray(data, len);
+	}
+
+	return msg;
 }

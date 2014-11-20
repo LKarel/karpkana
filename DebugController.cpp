@@ -40,11 +40,94 @@ void DebugController::run()
 			continue;
 		}
 
+		google::protobuf::Message *incoming = NULL;
+		std::string name;
+
+		while ((incoming = this->server.getIncoming()))
+		{
+			name = incoming->GetTypeName();
+
+			if (name == "c22dlink.RequestColors")
+			{
+				this->broadcastColorsInfo();
+			}
+			else if (name == "c22dlink.ColorInfo")
+			{
+				this->handleColorInfo((c22dlink::ColorInfo *) incoming);
+			}
+
+			delete incoming;
+		}
+
 		this->broadcastImage(c22dlink::FrameImage::ORIGINAL, frame, frame->imageOriginal);
 		this->broadcastImage(c22dlink::FrameImage::CLASSIFY, frame, frame->imageClassify);
 
 		delete frame;
 	}
+}
+
+void DebugController::handleColorInfo(c22dlink::ColorInfo *msg)
+{
+	CMVision *vision = this->vp->getVision();
+	struct CMVision::color_info *color = vision->getColorInfo(msg->id());
+
+	if (!color || !color->name)
+	{
+		return;
+	}
+
+	Log::printf("DebugController: updating color '%s'", color->name);
+
+	color->merge = msg->merge();
+	color->expected_num = msg->expected();
+
+	color->y_low = msg->yuvlow().y();
+	color->u_low = msg->yuvlow().u();
+	color->v_low = msg->yuvlow().v();
+
+	color->y_high = msg->yuvhigh().y();
+	color->u_high = msg->yuvhigh().u();
+	color->v_high = msg->yuvhigh().v();
+
+	vision->recalculateOptions();
+}
+
+void DebugController::broadcastColorsInfo()
+{
+	CMVision *vision = this->vp->getVision();
+	struct CMVision::color_info *color;
+
+	c22dlink::ColorsInfo msg;
+
+	for (int i = 0; i < CMV_MAX_COLORS; ++i)
+	{
+		color = vision->getColorInfo(i);
+
+		if (!color || !color->name)
+		{
+			break;
+		}
+
+		c22dlink::ColorInfo *colorInfo = msg.add_colors();
+		colorInfo->set_id(i);
+		colorInfo->set_name(color->name);
+		colorInfo->set_merge(color->merge);
+		colorInfo->set_expected(color->expected_num);
+
+		colorInfo->mutable_rgb()->set_r(color->color.red);
+		colorInfo->mutable_rgb()->set_g(color->color.green);
+		colorInfo->mutable_rgb()->set_b(color->color.blue);
+
+		colorInfo->mutable_yuvlow()->set_y(color->y_low);
+		colorInfo->mutable_yuvlow()->set_u(color->u_low);
+		colorInfo->mutable_yuvlow()->set_v(color->v_low);
+
+		colorInfo->mutable_yuvhigh()->set_y(color->y_high);
+		colorInfo->mutable_yuvhigh()->set_u(color->u_high);
+		colorInfo->mutable_yuvhigh()->set_v(color->v_high);
+	}
+
+	this->broadcastMessage(PROTOCOL__COLORS_INFO, msg);
 }
 
 void DebugController::broadcastImage(c22dlink::FrameImage::Type type, VideoFrame *frame, rgb *image)
