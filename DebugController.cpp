@@ -67,8 +67,8 @@ void DebugController::run()
 			delete incoming;
 		}
 
-		//this->broadcastImage(c22dlink::FrameImage::ORIGINAL, frame, frame->imageOriginal);
-		//this->broadcastImage(c22dlink::FrameImage::CLASSIFY, frame, frame->imageClassify);
+		this->broadcastImage(c22dlink::FrameImage::ORIGINAL, frame, frame->imageOriginal);
+		this->broadcastImage(c22dlink::FrameImage::CLASSIFY, frame, frame->imageClassify);
 
 		delete frame;
 	}

@@ -15,7 +15,7 @@ import javax.swing.JTextField;
 
 import debugclient.comm.Connection;
 
-public class ColorsPanel extends JPanel
+public abstract class ColorsPanel extends JPanel
 {
 	private Connection connection = null;
 
@@ -113,12 +113,15 @@ public class ColorsPanel extends JPanel
 
 		private JTextField yLowField;
 		private JTextField yHighField;
+		private JButton yPreviewButton;
 
 		private JTextField uLowField;
 		private JTextField uHighField;
+		private JButton uPreviewButton;
 
 		private JTextField vLowField;
 		private JTextField vHighField;
+		private JButton vPreviewButton;
 
 		private JTextField mergeField;
 		private JTextField expectedField;
@@ -140,6 +143,9 @@ public class ColorsPanel extends JPanel
 			yHighField.setText(Integer.toString(colorInfo.getYuvHigh().getY()));
 			yHighField.addActionListener(this);
 			yPanel.add(yHighField);
+			yPreviewButton = new JButton("Th");
+			yPreviewButton.addActionListener(this);
+			yPanel.add(yPreviewButton);
 
 			JPanel uPanel = new JPanel();
 			uPanel.add(new JLabel("U:"));
@@ -151,6 +157,9 @@ public class ColorsPanel extends JPanel
 			uHighField.setText(Integer.toString(colorInfo.getYuvHigh().getU()));
 			uHighField.addActionListener(this);
 			uPanel.add(uHighField);
+			uPreviewButton = new JButton("Th");
+			uPreviewButton.addActionListener(this);
+			uPanel.add(uPreviewButton);
 
 			JPanel vPanel = new JPanel();
 			vPanel.add(new JLabel("V:"));
@@ -162,6 +171,9 @@ public class ColorsPanel extends JPanel
 			vHighField.setText(Integer.toString(colorInfo.getYuvHigh().getV()));
 			vHighField.addActionListener(this);
 			vPanel.add(vHighField);
+			vPreviewButton = new JButton("Th");
+			vPreviewButton.addActionListener(this);
+			vPanel.add(vPreviewButton);
 
 			JPanel mergePanel = new JPanel();
 			mergePanel.add(new JLabel("Merge:"));
@@ -187,7 +199,30 @@ public class ColorsPanel extends JPanel
 		@Override
 		public void actionPerformed(ActionEvent event)
 		{
-			onChange();
+			Object source = event.getSource();
+
+			if (source == yPreviewButton)
+			{
+				onPreview(VideoPanel.Channel.Y,
+					Integer.parseInt(yLowField.getText()),
+					Integer.parseInt(yHighField.getText()));
+			}
+			else if (source == uPreviewButton)
+			{
+				onPreview(VideoPanel.Channel.U,
+					Integer.parseInt(uLowField.getText()),
+					Integer.parseInt(uHighField.getText()));
+			}
+			else if (source == vPreviewButton)
+			{
+				onPreview(VideoPanel.Channel.V,
+					Integer.parseInt(vLowField.getText()),
+					Integer.parseInt(vHighField.getText()));
+			}
+			else
+			{
+				onChange();
+			}
 		}
 
 		public c22dlink.ColorInfo encodeColorInfo()
@@ -216,4 +251,6 @@ public class ColorsPanel extends JPanel
 
 		public abstract void onChange();
 	}
+
+	public abstract void onPreview(VideoPanel.Channel ch, int low, int high);
 }

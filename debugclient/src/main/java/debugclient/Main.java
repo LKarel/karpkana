@@ -38,7 +38,13 @@ public class Main
 
 		final VideoPanel videoPanel = new VideoPanel();
 		final VideoPanel classifyPanel = new VideoPanel();
-		final ColorsPanel colorsPanel = new ColorsPanel();
+		final ColorsPanel colorsPanel = new ColorsPanel()
+		{
+			public void onPreview(VideoPanel.Channel ch, int low, int high)
+			{
+				videoPanel.setThreshold(ch, low, high);
+			}
+		};
 
 		final Connection connection = new Connection()
 		{
