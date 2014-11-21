@@ -33,6 +33,16 @@ public final class Colors {
   static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_c22dlink_RequestColors_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_c22dlink_SaveColors_descriptor;
+  static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_c22dlink_SaveColors_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_c22dlink_LoadColors_descriptor;
+  static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_c22dlink_LoadColors_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -50,7 +60,9 @@ public final class Colors {
       "\005 \002(\005\022\035\n\006yuvLow\030\006 \002(\0132\r.c22dlink.YUV\022\036\n\007" +
       "yuvHigh\030\007 \002(\0132\r.c22dlink.YUV\"1\n\nColorsIn" +
       "fo\022#\n\006colors\030\001 \003(\0132\023.c22dlink.ColorInfo\"" +
-      "\017\n\rRequestColorsB\002P\001"
+      "\017\n\rRequestColors\"\036\n\nSaveColors\022\020\n\010filena" +
+      "me\030\001 \002(\t\"\036\n\nLoadColors\022\020\n\010filename\030\001 \002(\t",
+      "B\002P\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -94,6 +106,18 @@ public final class Colors {
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_c22dlink_RequestColors_descriptor,
         new java.lang.String[] { });
+    internal_static_c22dlink_SaveColors_descriptor =
+      getDescriptor().getMessageTypes().get(5);
+    internal_static_c22dlink_SaveColors_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_c22dlink_SaveColors_descriptor,
+        new java.lang.String[] { "Filename", });
+    internal_static_c22dlink_LoadColors_descriptor =
+      getDescriptor().getMessageTypes().get(6);
+    internal_static_c22dlink_LoadColors_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_c22dlink_LoadColors_descriptor,
+        new java.lang.String[] { "Filename", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

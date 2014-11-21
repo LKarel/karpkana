@@ -306,9 +306,17 @@ google::protobuf::Message *DebugServer::Parser::parseProtobuf(int type, uint8_t 
 		case PROTOCOL__COLOR_INFO:
 			msg = new c22dlink::ColorInfo();
 			break;
+
+		case PROTOCOL__LOAD_COLORS:
+			msg = new c22dlink::LoadColors();
+			break;
+
+		case PROTOCOL__SAVE_COLORS:
+			msg = new c22dlink::SaveColors();
+			break;
 	}
 
-	if (data && len)
+	if (msg && data && len)
 	{
 		msg->ParseFromArray(data, len);
 	}

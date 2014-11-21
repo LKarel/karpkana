@@ -38,6 +38,8 @@ class YUV;
 class ColorInfo;
 class ColorsInfo;
 class RequestColors;
+class SaveColors;
+class LoadColors;
 
 // ===================================================================
 
@@ -538,6 +540,174 @@ class RequestColors : public ::google::protobuf::Message {
   void InitAsDefaultInstance();
   static RequestColors* default_instance_;
 };
+// -------------------------------------------------------------------
+
+class SaveColors : public ::google::protobuf::Message {
+ public:
+  SaveColors();
+  virtual ~SaveColors();
+
+  SaveColors(const SaveColors& from);
+
+  inline SaveColors& operator=(const SaveColors& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const SaveColors& default_instance();
+
+  void Swap(SaveColors* other);
+
+  // implements Message ----------------------------------------------
+
+  SaveColors* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const SaveColors& from);
+  void MergeFrom(const SaveColors& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required string filename = 1;
+  inline bool has_filename() const;
+  inline void clear_filename();
+  static const int kFilenameFieldNumber = 1;
+  inline const ::std::string& filename() const;
+  inline void set_filename(const ::std::string& value);
+  inline void set_filename(const char* value);
+  inline void set_filename(const char* value, size_t size);
+  inline ::std::string* mutable_filename();
+  inline ::std::string* release_filename();
+  inline void set_allocated_filename(::std::string* filename);
+
+  // @@protoc_insertion_point(class_scope:c22dlink.SaveColors)
+ private:
+  inline void set_has_filename();
+  inline void clear_has_filename();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::std::string* filename_;
+  friend void  protobuf_AddDesc_colors_2eproto();
+  friend void protobuf_AssignDesc_colors_2eproto();
+  friend void protobuf_ShutdownFile_colors_2eproto();
+
+  void InitAsDefaultInstance();
+  static SaveColors* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class LoadColors : public ::google::protobuf::Message {
+ public:
+  LoadColors();
+  virtual ~LoadColors();
+
+  LoadColors(const LoadColors& from);
+
+  inline LoadColors& operator=(const LoadColors& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const LoadColors& default_instance();
+
+  void Swap(LoadColors* other);
+
+  // implements Message ----------------------------------------------
+
+  LoadColors* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const LoadColors& from);
+  void MergeFrom(const LoadColors& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required string filename = 1;
+  inline bool has_filename() const;
+  inline void clear_filename();
+  static const int kFilenameFieldNumber = 1;
+  inline const ::std::string& filename() const;
+  inline void set_filename(const ::std::string& value);
+  inline void set_filename(const char* value);
+  inline void set_filename(const char* value, size_t size);
+  inline ::std::string* mutable_filename();
+  inline ::std::string* release_filename();
+  inline void set_allocated_filename(::std::string* filename);
+
+  // @@protoc_insertion_point(class_scope:c22dlink.LoadColors)
+ private:
+  inline void set_has_filename();
+  inline void clear_has_filename();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::google::protobuf::uint32 _has_bits_[1];
+  mutable int _cached_size_;
+  ::std::string* filename_;
+  friend void  protobuf_AddDesc_colors_2eproto();
+  friend void protobuf_AssignDesc_colors_2eproto();
+  friend void protobuf_ShutdownFile_colors_2eproto();
+
+  void InitAsDefaultInstance();
+  static LoadColors* default_instance_;
+};
 // ===================================================================
 
 
@@ -1005,6 +1175,166 @@ ColorsInfo::mutable_colors() {
 // -------------------------------------------------------------------
 
 // RequestColors
+
+// -------------------------------------------------------------------
+
+// SaveColors
+
+// required string filename = 1;
+inline bool SaveColors::has_filename() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void SaveColors::set_has_filename() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void SaveColors::clear_has_filename() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void SaveColors::clear_filename() {
+  if (filename_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    filename_->clear();
+  }
+  clear_has_filename();
+}
+inline const ::std::string& SaveColors::filename() const {
+  // @@protoc_insertion_point(field_get:c22dlink.SaveColors.filename)
+  return *filename_;
+}
+inline void SaveColors::set_filename(const ::std::string& value) {
+  set_has_filename();
+  if (filename_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    filename_ = new ::std::string;
+  }
+  filename_->assign(value);
+  // @@protoc_insertion_point(field_set:c22dlink.SaveColors.filename)
+}
+inline void SaveColors::set_filename(const char* value) {
+  set_has_filename();
+  if (filename_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    filename_ = new ::std::string;
+  }
+  filename_->assign(value);
+  // @@protoc_insertion_point(field_set_char:c22dlink.SaveColors.filename)
+}
+inline void SaveColors::set_filename(const char* value, size_t size) {
+  set_has_filename();
+  if (filename_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    filename_ = new ::std::string;
+  }
+  filename_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:c22dlink.SaveColors.filename)
+}
+inline ::std::string* SaveColors::mutable_filename() {
+  set_has_filename();
+  if (filename_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    filename_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:c22dlink.SaveColors.filename)
+  return filename_;
+}
+inline ::std::string* SaveColors::release_filename() {
+  clear_has_filename();
+  if (filename_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = filename_;
+    filename_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void SaveColors::set_allocated_filename(::std::string* filename) {
+  if (filename_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete filename_;
+  }
+  if (filename) {
+    set_has_filename();
+    filename_ = filename;
+  } else {
+    clear_has_filename();
+    filename_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:c22dlink.SaveColors.filename)
+}
+
+// -------------------------------------------------------------------
+
+// LoadColors
+
+// required string filename = 1;
+inline bool LoadColors::has_filename() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void LoadColors::set_has_filename() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void LoadColors::clear_has_filename() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void LoadColors::clear_filename() {
+  if (filename_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    filename_->clear();
+  }
+  clear_has_filename();
+}
+inline const ::std::string& LoadColors::filename() const {
+  // @@protoc_insertion_point(field_get:c22dlink.LoadColors.filename)
+  return *filename_;
+}
+inline void LoadColors::set_filename(const ::std::string& value) {
+  set_has_filename();
+  if (filename_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    filename_ = new ::std::string;
+  }
+  filename_->assign(value);
+  // @@protoc_insertion_point(field_set:c22dlink.LoadColors.filename)
+}
+inline void LoadColors::set_filename(const char* value) {
+  set_has_filename();
+  if (filename_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    filename_ = new ::std::string;
+  }
+  filename_->assign(value);
+  // @@protoc_insertion_point(field_set_char:c22dlink.LoadColors.filename)
+}
+inline void LoadColors::set_filename(const char* value, size_t size) {
+  set_has_filename();
+  if (filename_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    filename_ = new ::std::string;
+  }
+  filename_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:c22dlink.LoadColors.filename)
+}
+inline ::std::string* LoadColors::mutable_filename() {
+  set_has_filename();
+  if (filename_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    filename_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:c22dlink.LoadColors.filename)
+  return filename_;
+}
+inline ::std::string* LoadColors::release_filename() {
+  clear_has_filename();
+  if (filename_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = filename_;
+    filename_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void LoadColors::set_allocated_filename(::std::string* filename) {
+  if (filename_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete filename_;
+  }
+  if (filename) {
+    set_has_filename();
+    filename_ = filename;
+  } else {
+    clear_has_filename();
+    filename_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:c22dlink.LoadColors.filename)
+}
 
 
 // @@protoc_insertion_point(namespace_scope)

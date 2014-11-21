@@ -55,12 +55,20 @@ void DebugController::run()
 			{
 				this->handleColorInfo((c22dlink::ColorInfo *) incoming);
 			}
+			else if (name == "c22dlink.SaveColors")
+			{
+				this->handleSaveColors((c22dlink::SaveColors *) incoming);
+			}
+			else if (name == "c22dlink.LoadColors")
+			{
+				this->handleLoadColors((c22dlink::LoadColors *) incoming);
+			}
 
 			delete incoming;
 		}
 
-		this->broadcastImage(c22dlink::FrameImage::ORIGINAL, frame, frame->imageOriginal);
-		this->broadcastImage(c22dlink::FrameImage::CLASSIFY, frame, frame->imageClassify);
+		//this->broadcastImage(c22dlink::FrameImage::ORIGINAL, frame, frame->imageOriginal);
+		//this->broadcastImage(c22dlink::FrameImage::CLASSIFY, frame, frame->imageClassify);
 
 		delete frame;
 	}
@@ -90,6 +98,17 @@ void DebugController::handleColorInfo(c22dlink::ColorInfo *msg)
 	color->v_high = msg->yuvhigh().v();
 
 	vision->recalculateOptions();
+}
+
+void DebugController::handleSaveColors(c22dlink::SaveColors *msg)
+{
+	this->vp->getVision()->saveOptions(msg->filename().c_str());
+}
+
+void DebugController::handleLoadColors(c22dlink::LoadColors *msg)
+{
+	this->vp->getVision()->loadOptions(msg->filename().c_str());
+	this->broadcastColorsInfo();
 }
 
 void DebugController::broadcastColorsInfo()

@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -18,18 +19,65 @@ public class ColorsPanel extends JPanel
 {
 	private Connection connection = null;
 
+	private JPanel optionsPanel;
+	private JPanel colorsPanel;
+
 	public ColorsPanel()
 	{
-		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+
+		optionsPanel = new JPanel();
+
+		final JTextField fileField = new JTextField(20);
+		fileField.setText("config/colors.txt");
+		JButton fileSaveButton = new JButton("Save");
+		JButton fileLoadButton = new JButton("Load");
+
+		fileSaveButton.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent event)
+			{
+				if (connection != null)
+				{
+					c22dlink.SaveColors.Builder builder = c22dlink.SaveColors.newBuilder();
+					builder.setFilename(fileField.getText());
+
+					connection.message(builder.build());
+				}
+			}
+		});
+
+		fileLoadButton.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent event)
+			{
+				if (connection != null)
+				{
+					c22dlink.LoadColors.Builder builder = c22dlink.LoadColors.newBuilder();
+					builder.setFilename(fileField.getText());
+
+					connection.message(builder.build());
+				}
+			}
+		});
+
+		optionsPanel.add(fileField);
+		optionsPanel.add(fileSaveButton);
+		optionsPanel.add(fileLoadButton);
+
+		colorsPanel = new JPanel();
+
+		add(optionsPanel);
+		add(colorsPanel);
 	}
 
 	public void onColorsInfo(c22dlink.ColorsInfo colors)
 	{
-		removeAll();
+		colorsPanel.removeAll();
 
 		for (c22dlink.ColorInfo color : colors.getColorsList())
 		{
-			add(new ColorPanel(color)
+			colorsPanel.add(new ColorPanel(color)
 			{
 				@Override
 				public void onChange()

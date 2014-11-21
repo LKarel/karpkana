@@ -35,6 +35,12 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* RequestColors_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   RequestColors_reflection_ = NULL;
+const ::google::protobuf::Descriptor* SaveColors_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  SaveColors_reflection_ = NULL;
+const ::google::protobuf::Descriptor* LoadColors_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  LoadColors_reflection_ = NULL;
 
 }  // namespace
 
@@ -129,6 +135,36 @@ void protobuf_AssignDesc_colors_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(RequestColors));
+  SaveColors_descriptor_ = file->message_type(5);
+  static const int SaveColors_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SaveColors, filename_),
+  };
+  SaveColors_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      SaveColors_descriptor_,
+      SaveColors::default_instance_,
+      SaveColors_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SaveColors, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SaveColors, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(SaveColors));
+  LoadColors_descriptor_ = file->message_type(6);
+  static const int LoadColors_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LoadColors, filename_),
+  };
+  LoadColors_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      LoadColors_descriptor_,
+      LoadColors::default_instance_,
+      LoadColors_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LoadColors, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(LoadColors, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(LoadColors));
 }
 
 namespace {
@@ -151,6 +187,10 @@ void protobuf_RegisterTypes(const ::std::string&) {
     ColorsInfo_descriptor_, &ColorsInfo::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     RequestColors_descriptor_, &RequestColors::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    SaveColors_descriptor_, &SaveColors::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    LoadColors_descriptor_, &LoadColors::default_instance());
 }
 
 }  // namespace
@@ -166,6 +206,10 @@ void protobuf_ShutdownFile_colors_2eproto() {
   delete ColorsInfo_reflection_;
   delete RequestColors::default_instance_;
   delete RequestColors_reflection_;
+  delete SaveColors::default_instance_;
+  delete SaveColors_reflection_;
+  delete LoadColors::default_instance_;
+  delete LoadColors_reflection_;
 }
 
 void protobuf_AddDesc_colors_2eproto() {
@@ -183,7 +227,9 @@ void protobuf_AddDesc_colors_2eproto() {
     "\005 \002(\005\022\035\n\006yuvLow\030\006 \002(\0132\r.c22dlink.YUV\022\036\n\007"
     "yuvHigh\030\007 \002(\0132\r.c22dlink.YUV\"1\n\nColorsIn"
     "fo\022#\n\006colors\030\001 \003(\0132\023.c22dlink.ColorInfo\""
-    "\017\n\rRequestColorsB\002P\001", 340);
+    "\017\n\rRequestColors\"\036\n\nSaveColors\022\020\n\010filena"
+    "me\030\001 \002(\t\"\036\n\nLoadColors\022\020\n\010filename\030\001 \002(\t"
+    "B\002P\001", 404);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "colors.proto", &protobuf_RegisterTypes);
   RGB::default_instance_ = new RGB();
@@ -191,11 +237,15 @@ void protobuf_AddDesc_colors_2eproto() {
   ColorInfo::default_instance_ = new ColorInfo();
   ColorsInfo::default_instance_ = new ColorsInfo();
   RequestColors::default_instance_ = new RequestColors();
+  SaveColors::default_instance_ = new SaveColors();
+  LoadColors::default_instance_ = new LoadColors();
   RGB::default_instance_->InitAsDefaultInstance();
   YUV::default_instance_->InitAsDefaultInstance();
   ColorInfo::default_instance_->InitAsDefaultInstance();
   ColorsInfo::default_instance_->InitAsDefaultInstance();
   RequestColors::default_instance_->InitAsDefaultInstance();
+  SaveColors::default_instance_->InitAsDefaultInstance();
+  LoadColors::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_colors_2eproto);
 }
 
@@ -1736,6 +1786,494 @@ void RequestColors::Swap(RequestColors* other) {
   ::google::protobuf::Metadata metadata;
   metadata.descriptor = RequestColors_descriptor_;
   metadata.reflection = RequestColors_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int SaveColors::kFilenameFieldNumber;
+#endif  // !_MSC_VER
+
+SaveColors::SaveColors()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:c22dlink.SaveColors)
+}
+
+void SaveColors::InitAsDefaultInstance() {
+}
+
+SaveColors::SaveColors(const SaveColors& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:c22dlink.SaveColors)
+}
+
+void SaveColors::SharedCtor() {
+  ::google::protobuf::internal::GetEmptyString();
+  _cached_size_ = 0;
+  filename_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+SaveColors::~SaveColors() {
+  // @@protoc_insertion_point(destructor:c22dlink.SaveColors)
+  SharedDtor();
+}
+
+void SaveColors::SharedDtor() {
+  if (filename_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete filename_;
+  }
+  if (this != default_instance_) {
+  }
+}
+
+void SaveColors::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* SaveColors::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return SaveColors_descriptor_;
+}
+
+const SaveColors& SaveColors::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_colors_2eproto();
+  return *default_instance_;
+}
+
+SaveColors* SaveColors::default_instance_ = NULL;
+
+SaveColors* SaveColors::New() const {
+  return new SaveColors;
+}
+
+void SaveColors::Clear() {
+  if (has_filename()) {
+    if (filename_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+      filename_->clear();
+    }
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool SaveColors::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:c22dlink.SaveColors)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required string filename = 1;
+      case 1: {
+        if (tag == 10) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_filename()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+            this->filename().data(), this->filename().length(),
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "filename");
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:c22dlink.SaveColors)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:c22dlink.SaveColors)
+  return false;
+#undef DO_
+}
+
+void SaveColors::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:c22dlink.SaveColors)
+  // required string filename = 1;
+  if (has_filename()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->filename().data(), this->filename().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "filename");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      1, this->filename(), output);
+  }
+
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+  // @@protoc_insertion_point(serialize_end:c22dlink.SaveColors)
+}
+
+::google::protobuf::uint8* SaveColors::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // @@protoc_insertion_point(serialize_to_array_start:c22dlink.SaveColors)
+  // required string filename = 1;
+  if (has_filename()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->filename().data(), this->filename().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "filename");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        1, this->filename(), target);
+  }
+
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:c22dlink.SaveColors)
+  return target;
+}
+
+int SaveColors::ByteSize() const {
+  int total_size = 0;
+
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required string filename = 1;
+    if (has_filename()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->filename());
+    }
+
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void SaveColors::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const SaveColors* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const SaveColors*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void SaveColors::MergeFrom(const SaveColors& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_filename()) {
+      set_filename(from.filename());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void SaveColors::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void SaveColors::CopyFrom(const SaveColors& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool SaveColors::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
+
+  return true;
+}
+
+void SaveColors::Swap(SaveColors* other) {
+  if (other != this) {
+    std::swap(filename_, other->filename_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata SaveColors::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = SaveColors_descriptor_;
+  metadata.reflection = SaveColors_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int LoadColors::kFilenameFieldNumber;
+#endif  // !_MSC_VER
+
+LoadColors::LoadColors()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:c22dlink.LoadColors)
+}
+
+void LoadColors::InitAsDefaultInstance() {
+}
+
+LoadColors::LoadColors(const LoadColors& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:c22dlink.LoadColors)
+}
+
+void LoadColors::SharedCtor() {
+  ::google::protobuf::internal::GetEmptyString();
+  _cached_size_ = 0;
+  filename_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+LoadColors::~LoadColors() {
+  // @@protoc_insertion_point(destructor:c22dlink.LoadColors)
+  SharedDtor();
+}
+
+void LoadColors::SharedDtor() {
+  if (filename_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete filename_;
+  }
+  if (this != default_instance_) {
+  }
+}
+
+void LoadColors::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* LoadColors::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return LoadColors_descriptor_;
+}
+
+const LoadColors& LoadColors::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_colors_2eproto();
+  return *default_instance_;
+}
+
+LoadColors* LoadColors::default_instance_ = NULL;
+
+LoadColors* LoadColors::New() const {
+  return new LoadColors;
+}
+
+void LoadColors::Clear() {
+  if (has_filename()) {
+    if (filename_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+      filename_->clear();
+    }
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool LoadColors::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:c22dlink.LoadColors)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required string filename = 1;
+      case 1: {
+        if (tag == 10) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_filename()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+            this->filename().data(), this->filename().length(),
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "filename");
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:c22dlink.LoadColors)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:c22dlink.LoadColors)
+  return false;
+#undef DO_
+}
+
+void LoadColors::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:c22dlink.LoadColors)
+  // required string filename = 1;
+  if (has_filename()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->filename().data(), this->filename().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "filename");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      1, this->filename(), output);
+  }
+
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+  // @@protoc_insertion_point(serialize_end:c22dlink.LoadColors)
+}
+
+::google::protobuf::uint8* LoadColors::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // @@protoc_insertion_point(serialize_to_array_start:c22dlink.LoadColors)
+  // required string filename = 1;
+  if (has_filename()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->filename().data(), this->filename().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "filename");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        1, this->filename(), target);
+  }
+
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:c22dlink.LoadColors)
+  return target;
+}
+
+int LoadColors::ByteSize() const {
+  int total_size = 0;
+
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required string filename = 1;
+    if (has_filename()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->filename());
+    }
+
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void LoadColors::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const LoadColors* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const LoadColors*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void LoadColors::MergeFrom(const LoadColors& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_filename()) {
+      set_filename(from.filename());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void LoadColors::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void LoadColors::CopyFrom(const LoadColors& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool LoadColors::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
+
+  return true;
+}
+
+void LoadColors::Swap(LoadColors* other) {
+  if (other != this) {
+    std::swap(filename_, other->filename_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata LoadColors::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = LoadColors_descriptor_;
+  metadata.reflection = LoadColors_reflection_;
   return metadata;
 }
 

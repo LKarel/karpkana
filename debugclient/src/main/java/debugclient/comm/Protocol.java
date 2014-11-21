@@ -13,6 +13,8 @@ public class Protocol
 	public static final int REQUEST_COLORS = 0x20;
 	public static final int COLORS_INFO = 0x21;
 	public static final int COLOR_INFO = 0x22;
+	public static final int LOAD_COLORS = 0x25;
+	public static final int SAVE_COLORS = 0x26;
 
 	public static int typeForMessage(Message msg)
 	{
@@ -25,6 +27,14 @@ public class Protocol
 		else if (name.equals("c22dlink.ColorInfo"))
 		{
 			return COLOR_INFO;
+		}
+		else if (name.equals("c22dlink.LoadColors"))
+		{
+			return LOAD_COLORS;
+		}
+		else if (name.equals("c22dlink.SaveColors"))
+		{
+			return SAVE_COLORS;
 		}
 
 		return 0;

@@ -28,6 +28,8 @@ private:
 
 	void run();
 	void handleColorInfo(c22dlink::ColorInfo *colorInfo);
+	void handleSaveColors(c22dlink::SaveColors *msg);
+	void handleLoadColors(c22dlink::LoadColors *msg);
 	void broadcastColorsInfo();
 	void broadcastImage(c22dlink::FrameImage::Type type, VideoFrame *frame, rgb *image);
 	void broadcastMessage(uint8_t type, google::protobuf::Message &msg);

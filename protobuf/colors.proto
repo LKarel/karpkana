@@ -35,3 +35,13 @@ message ColorsInfo
 message RequestColors
 {
 }
+
+message SaveColors
+{
+	required string filename = 1;
+}
+
+message LoadColors
+{
+	required string filename = 1;
+}
