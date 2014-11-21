@@ -14,7 +14,7 @@ public abstract class ConnectPanel extends JPanel
 	public ConnectPanel()
 	{
 		final JTextField connectField = new JTextField();
-		connectField.setText("127.0.0.1:11000");
+		connectField.setText("127.0.0.1:12000");
 		connectField.setColumns(20);
 
 		JButton connect = new JButton("Connect");
@@ -25,7 +25,7 @@ public abstract class ConnectPanel extends JPanel
 			public void actionPerformed(ActionEvent event)
 			{
 				String[] split = connectField.getText().split(":");
-				int port = 11000;
+				int port = 12000;
 
 				if (split.length == 2)
 				{
