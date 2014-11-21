@@ -96,6 +96,13 @@ public class ColorsPanel extends JPanel
 
 	public void onConnection(Connection connection)
 	{
+		if (connection == null)
+		{
+			colorsPanel.removeAll();
+			revalidate();
+			repaint();
+		}
+
 		this.connection = connection;
 	}
 

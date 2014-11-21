@@ -44,7 +44,8 @@ public class Main
 		{
 			protected void onError(Throwable e)
 			{
-				System.out.println(e);
+				e.printStackTrace();
+				colorsPanel.onConnection(null);
 			}
 
 			protected void onMessage(Message msg)
