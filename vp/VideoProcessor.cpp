@@ -13,8 +13,6 @@ VideoProcessor::VideoProcessor() :
 {
 	this->vision.initialize(CAPT_WIDTH, CAPT_HEIGHT);
 	this->vision.enable(CMV_DENSITY_MERGE);
-	this->vision.enable(CMV_DUAL_THRESHOLD);
-	this->vision.enable(CMV_COLOR_AVERAGES);
 }
 
 VideoProcessor::~VideoProcessor()
