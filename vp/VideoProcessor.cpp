@@ -1,8 +1,8 @@
 #include "VideoProcessor.h"
 
-#define VP_MIN_HEIGHT 10
-#define VP_MIN_WIDTH 10
-#define VP_BLACK_STEP 4
+#define VP_MIN_HEIGHT 6
+#define VP_MIN_WIDTH 6
+#define VP_BLACK_STEP 2
 #define VP_BLACK_THRESHOLD 4
 
 VideoProcessor::VideoProcessor() :
@@ -13,8 +13,6 @@ VideoProcessor::VideoProcessor() :
 {
 	this->vision.initialize(CAPT_WIDTH, CAPT_HEIGHT);
 	this->vision.enable(CMV_DENSITY_MERGE);
-	this->vision.enable(CMV_DUAL_THRESHOLD);
-	this->vision.enable(CMV_COLOR_AVERAGES);
 }
 
 VideoProcessor::~VideoProcessor()

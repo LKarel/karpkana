@@ -220,8 +220,7 @@ void *GameController::stageApproach(int call, void *state_)
 	if (this->robot.motors[MOTOR_BDET]->queryBall())
 	{
 		Log::printf("GameController: STAGE_APPROACH: caught ball");
-		usleep(350 * 1000);
-		//this->gotoStage(STAGE_IDLE);
+		usleep(150 * 1000);
 		this->nextStage();
 		return NULL;
 	}
@@ -263,22 +262,19 @@ void *GameController::stageApproach(int call, void *state_)
 		return NULL;
 	}
 
-	//double rotate = state->pid->update(-ball->pos.angle);
 	double rotate = -ball->pos.angle;
-	int rotateSpeed = speedForRotation(-rotate, 0.25);
+	int rotateSpeed = speedForRotation(-rotate, 0.1);
 
 	printf("ball=%d\trotate=%f\trotateSpeed=%d\n", state->ball, rotate, rotateSpeed);
 
-	if (ABS_F(rotate) < 0.15)
+	if (ABS_F(rotate) < 0.08)
 	{
-		this->robot.direction(DIRECTION_FWD, 40);
+		this->robot.direction(DIRECTION_FWD, 100 * (ball->pos.radius / 500) + 55);
 	}
 	else
 	{
 		this->robot.rotate(rotateSpeed);
 	}
-
-	//this->robot.rotateForward(35, rotateSpeed);
 
 	return NULL;
 }
@@ -319,17 +315,17 @@ void *GameController::stageTarget(int call, void *state_)
 		angle = PI / -3.0;
 	}
 
-	int rotateSpeed = speedForRotation(-angle, 0.3);
+	int rotateSpeed = speedForRotation(-angle, 0.25);
 
 	printf("angle=%f\trotateSpeed=%d\n", angle, rotateSpeed);
 
-	if (ABS_F(angle) < 0.2)
+	if (ABS_F(angle) < 0.08)
 	{
 		this->nextStage();
 	}
 	else
 	{
-		this->robot.rotateCurved(rotateSpeed, 0.3);
+		this->robot.rotateCurved(rotateSpeed, 0.2);
 	}
 
 	return NULL;
