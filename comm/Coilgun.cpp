@@ -55,7 +55,7 @@ void Coilgun::chargeSync()
 {
 	Log::printf("Coilgun: charging");
 	this->link->command(CMD_CHARGE);
-	usleep(350 * 1000);
+	usleep(700 * 1000);
 }
 
 void Coilgun::kick(uint16_t time)
