@@ -269,7 +269,7 @@ void *GameController::stageApproach(int call, void *state_)
 
 	printf("ball=%d\trotate=%f\trotateSpeed=%d\n", state->ball, rotate, rotateSpeed);
 
-	if (ABS_F(rotate) < 0.2)
+	if (ABS_F(rotate) < 0.15)
 	{
 		this->robot.direction(DIRECTION_FWD, 40);
 	}
