@@ -18,7 +18,7 @@ Coilgun::Coilgun(Hwlink *link) :
 
 	this->lastPing = microtime();
 
-	this->link->command(CMD_FAILSAFE, 1);
+	this->link->command(CMD_FAILSAFE, 0);
 	this->tribbler(false);
 
 	Log::printf("Coilgun: ready");
