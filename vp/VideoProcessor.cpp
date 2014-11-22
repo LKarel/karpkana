@@ -1,5 +1,6 @@
 #include "VideoProcessor.h"
 
+#define VP_IGNORE_TOP 50
 #define VP_MIN_HEIGHT 6
 #define VP_MIN_WIDTH 6
 #define VP_BLACK_STEP 2
@@ -85,7 +86,8 @@ VideoFrame *VideoProcessor::getFrame()
 			double ratio = width / height;
 			double density = region->area / (width * height);
 
-			if (width < VP_MIN_WIDTH || height < VP_MIN_HEIGHT || density < 0.5)
+			if (width < VP_MIN_WIDTH || height < VP_MIN_HEIGHT || density < 0.5 ||
+				region->cen_y < VP_IGNORE_TOP)
 			{
 				continue;
 			}
