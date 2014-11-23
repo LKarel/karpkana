@@ -94,8 +94,7 @@ VideoFrame *VideoProcessor::getFrame()
 
 			if (region->color == VideoFrame::Blob::COLOR_BALL)
 			{
-				if (region->cen_y > CAPT_HEIGHT - 40 && abs(region->cen_x) < 50 &&
-					(ratio < 0.35 || ratio > 1.55))
+				if (ratio < 0.4 || ratio > 1.5 || density < 0.64)
 				{
 					// Not a valid ball
 					continue;
@@ -126,6 +125,8 @@ VideoFrame *VideoProcessor::getFrame()
 					// Ball is behind a black line
 					continue;
 				}
+
+				printf("valid ball: cy=%f\n", region->cen_y);
 			}
 
 			if (region->color == VideoFrame::Blob::COLOR_YELLOW ||

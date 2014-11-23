@@ -1,6 +1,13 @@
 #define CAPT_WIDTH 640
 #define CAPT_HEIGHT 480
 
+#define HFOV 1.09955743
+#define VFOV 0.837758041
+
+#define CAM_ANGLE 0.4507042254
+#define CAM_HEIGHT 305.0
+#define CAM_DISTANCE 230.0
+
 #define MOTORS_NUM 4
 #define MOTOR_A 2
 #define MOTOR_B 1
