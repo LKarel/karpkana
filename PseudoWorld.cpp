@@ -137,8 +137,6 @@ void PseudoWorld::readBallBlob(VideoFrame *frame, VideoFrame::Blob *blob)
 		id = this->ids++;
 	}
 
-	printf("ball: id=%d\tdistance=%f\tangle=%f\n", id, ball->pos.radius, ball->pos.angle);
-
 	// This is a new ball
 	this->balls[id] = ball;
 }

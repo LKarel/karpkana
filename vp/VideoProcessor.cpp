@@ -125,8 +125,6 @@ VideoFrame *VideoProcessor::getFrame()
 					// Ball is behind a black line
 					continue;
 				}
-
-				printf("valid ball: cy=%f\n", region->cen_y);
 			}
 
 			if (region->color == VideoFrame::Blob::COLOR_YELLOW ||
