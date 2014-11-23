@@ -46,7 +46,7 @@ void PseudoWorld::onFrame(VideoFrame *frame)
 	{
 		ball = it->second;
 
-		if (frame->sequence - ball->sequence > 25)
+		if (frame->sequence - ball->sequence > 10)
 		{
 			delete it->second;
 			this->balls.erase(it);
