@@ -104,7 +104,12 @@ void PseudoWorld::readBallBlob(VideoFrame *frame, VideoFrame::Blob *blob)
 	ball->sequence = frame->sequence;
 	ball->age = 0;
 	ball->radius = (abs(blob->x1 - blob->x2) + abs(blob->y1 - blob->y2)) / 2;
-	ball->pos = { sqrt(pow(point.x, 2) + pow(point.y, 2)), -atan(point.x / (point.y + Y_SHIFT)) };
+
+	double angle = (HFOV * point.x) / CAPT_WIDTH;
+	double alpha = (VFOV * ((CAPT_HEIGHT / 2) - point.y)) / 2.0;
+	double radius = (((CAPT_HEIGHT / 2) - point.y - CAM_DISTANCE) * cos(angle)) / tan(alpha);
+
+	ball->pos = { radius, angle };
 
 	// Verify if in any tracking area
 	std::map<int, PseudoWorld::Ball *>::iterator it = this->balls.begin();
@@ -131,6 +136,8 @@ void PseudoWorld::readBallBlob(VideoFrame *frame, VideoFrame::Blob *blob)
 	{
 		id = this->ids++;
 	}
+
+	printf("ball: id=%d\tdistance=%f\tangle=%f\n", id, ball->pos.radius, ball->pos.angle);
 
 	// This is a new ball
 	this->balls[id] = ball;
