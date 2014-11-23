@@ -5,7 +5,8 @@
 
 PseudoWorld::PseudoWorld() :
 	targetColor(VideoFrame::Blob::COLOR_YELLOW),
-	ids(1)
+	ids(1),
+	age(0)
 {
 }
 
@@ -60,6 +61,8 @@ void PseudoWorld::onFrame(VideoFrame *frame)
 	{
 		this->target.visible = false;
 	}
+
+	this->age++;
 }
 
 bool PseudoWorld::hasBalls() const
@@ -91,6 +94,11 @@ PseudoWorld::Ball *PseudoWorld::getBall(int id) const
 	return it->second;
 }
 
+int PseudoWorld::getAge() const
+{
+	return this->age;
+}
+
 void PseudoWorld::readBallBlob(VideoFrame *frame, VideoFrame::Blob *blob)
 {
 	PseudoWorld::Ball *ball = new PseudoWorld::Ball();
@@ -104,10 +112,11 @@ void PseudoWorld::readBallBlob(VideoFrame *frame, VideoFrame::Blob *blob)
 	ball->sequence = frame->sequence;
 	ball->age = 0;
 	ball->radius = (abs(blob->x1 - blob->x2) + abs(blob->y1 - blob->y2)) / 2;
+	ball->blob = point;
 
 	double angle = (HFOV * point.x) / CAPT_WIDTH;
-	double alpha = (VFOV * ((CAPT_HEIGHT / 2) - point.y)) / 2.0;
-	double radius = (((CAPT_HEIGHT / 2) - point.y - CAM_DISTANCE) * cos(angle)) / tan(alpha);
+	double distance = CAM_HEIGHT / tan(VFOV * (CAPT_HEIGHT - point.y) / CAPT_HEIGHT);
+	double radius = distance / cos(angle);
 
 	ball->pos = { radius, angle };
 
@@ -131,6 +140,8 @@ void PseudoWorld::readBallBlob(VideoFrame *frame, VideoFrame::Blob *blob)
 
 		++it;
 	}
+
+	//printf("ball: id=%d\tradius=%f\tangle=%f\n", id, radius, angle);
 
 	if (!id)
 	{
@@ -173,7 +184,10 @@ void PseudoWorld::readGoalBlob(VideoFrame *frame, VideoFrame::Blob *blob)
 
 bool PseudoWorld::Ball::inTrackingRegion(PseudoWorld::Ball &ball) const
 {
-	return relPositionDistance(this->pos, ball.pos) <= this->radius * 1.5;
+	double distance = sqrt(pow(this->blob.x - ball.blob.x, 2) +
+		pow(this->blob.y - ball.blob.y, 2));
+
+	return distance <= this->radius * 1.5;
 }
 
 bool PseudoWorld::Ball::inTribblerRegion() const

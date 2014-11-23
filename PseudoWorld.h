@@ -27,6 +27,7 @@ public:
 		int radius;
 
 		RelPosition pos;
+		Point2d blob;
 	};
 
 	class Goal
@@ -49,6 +50,7 @@ public:
 	void onFrame(VideoFrame *frame);
 	bool hasBalls() const;
 	PseudoWorld::Ball *getBall(int id) const;
+	int getAge() const;
 
 	int targetColor;
 	std::map<int, PseudoWorld::Ball *> balls;
@@ -56,6 +58,7 @@ public:
 
 private:
 	int ids;
+	int age;
 
 	void readBallBlob(VideoFrame *frame, VideoFrame::Blob *blob);
 	void readGoalBlob(VideoFrame *frame, VideoFrame::Blob *blob);

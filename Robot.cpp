@@ -161,11 +161,11 @@ void Robot::direction(int direction, int speed)
 	}
 }
 
-void Robot::rotateForward(int fwd, int rotate)
+void Robot::drive(int velocity, double direction, int rotate)
 {
-	this->motors[MOTOR_A]->setSpeed(fwd - rotate);
-	this->motors[MOTOR_B]->setSpeed(-fwd + rotate);
-	this->motors[MOTOR_C]->setSpeed(rotate);
+	this->motors[MOTOR_B]->setSpeed(velocity * cos(5.0 * PI / 6.0 - direction) + rotate);
+	this->motors[MOTOR_A]->setSpeed(velocity * cos(PI / 6.0 - direction) + rotate);
+	this->motors[MOTOR_C]->setSpeed(velocity * cos(3.0 * PI / 2.0 - direction) + rotate);
 }
 
 void Robot::rotateCurved(int rotate, double mod)

@@ -94,7 +94,7 @@ VideoFrame *VideoProcessor::getFrame()
 
 			if (region->color == VideoFrame::Blob::COLOR_BALL)
 			{
-				if (ratio < 0.4 || ratio > 1.5 || density < 0.64)
+				if (ratio < 0.3 || ratio > 1.55 || density < 0.6)
 				{
 					// Not a valid ball
 					continue;

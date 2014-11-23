@@ -185,7 +185,7 @@ void *GameController::stageSearch(int call, void *state_)
 	{
 		this->nextStage();
 	}
-	else
+	else if (this->world.getAge() > PSEUDOWORLD_MIN_AGE)
 	{
 		this->robot.rotate(20);
 		usleep(1000);
@@ -263,17 +263,17 @@ void *GameController::stageApproach(int call, void *state_)
 	}
 
 	double rotate = -ball->pos.angle;
-	int rotateSpeed = speedForRotation(-rotate, 0.1);
+	int rotateSpeed = speedForRotation(rotate, 0.15);
 
 	printf("ball=%d\trotate=%f\trotateSpeed=%d\n", state->ball, rotate, rotateSpeed);
 
 	if (ABS_F(rotate) < 0.08)
 	{
-		this->robot.direction(DIRECTION_FWD, 100 * (ball->pos.radius / 500) + 55);
+		this->robot.direction(DIRECTION_FWD, 65);
 	}
 	else
 	{
-		this->robot.rotate(rotateSpeed);
+		this->robot.drive(65, 0.0, rotateSpeed);
 	}
 
 	return NULL;
@@ -317,7 +317,7 @@ void *GameController::stageTarget(int call, void *state_)
 
 	int rotateSpeed = speedForRotation(-angle, 0.25);
 
-	printf("angle=%f\trotateSpeed=%d\n", angle, rotateSpeed);
+	//printf("angle=%f\trotateSpeed=%d\n", angle, rotateSpeed);
 
 	if (ABS_F(angle) < 0.08)
 	{
