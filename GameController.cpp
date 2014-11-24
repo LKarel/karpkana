@@ -315,7 +315,7 @@ void *GameController::stageTarget(int call, void *state_)
 		angle = PI / -3.0;
 	}
 
-	int rotateSpeed = speedForRotation(-angle, 0.25);
+	int rotateSpeed = speedForRotation(-angle, 0.15);
 
 	//printf("angle=%f\trotateSpeed=%d\n", angle, rotateSpeed);
 
