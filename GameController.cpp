@@ -176,6 +176,11 @@ void *GameController::stageCall(int call, int stage, void *state)
 
 void *GameController::stageSearch(int call, void *state_)
 {
+	if (call == STAGE_CALL_INIT)
+	{
+		this->robot.coilgun->tribbler(false);
+	}
+
 	if (call != STAGE_CALL_TICK)
 	{
 		return NULL;
@@ -317,9 +322,9 @@ void *GameController::stageTarget(int call, void *state_)
 
 	int rotateSpeed = speedForRotation(-angle, 0.15);
 
-	//printf("angle=%f\trotateSpeed=%d\n", angle, rotateSpeed);
+	printf("angle=%f\trotateSpeed=%d\n", angle, rotateSpeed);
 
-	if (ABS_F(angle) < 0.08)
+	if (ABS_F(angle) < 0.1)
 	{
 		this->nextStage();
 	}

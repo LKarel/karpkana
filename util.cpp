@@ -38,3 +38,10 @@ double speedForRotation(double angle, double time)
 {
 	return (ROBOT_RADIUS * angle) / (ROTATION_CONST * WHEEL_CIRCUMFERENCE * time);
 }
+
+void pointToPosition(RelPosition &pos, const Point2d &point)
+{
+	pos.angle = (HFOV * point.x) / CAPT_WIDTH;
+	double distance = CAM_HEIGHT / tan(VFOV * (CAPT_HEIGHT - point.y) / CAPT_HEIGHT);
+	pos.radius = distance / cos(pos.angle);
+}

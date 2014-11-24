@@ -114,11 +114,7 @@ void PseudoWorld::readBallBlob(VideoFrame *frame, VideoFrame::Blob *blob)
 	ball->radius = (abs(blob->x1 - blob->x2) + abs(blob->y1 - blob->y2)) / 2;
 	ball->blob = point;
 
-	double angle = (HFOV * point.x) / CAPT_WIDTH;
-	double distance = CAM_HEIGHT / tan(VFOV * (CAPT_HEIGHT - point.y) / CAPT_HEIGHT);
-	double radius = distance / cos(angle);
-
-	ball->pos = { radius, angle };
+	pointToPosition(ball->pos, point);
 
 	// Verify if in any tracking area
 	std::map<int, PseudoWorld::Ball *>::iterator it = this->balls.begin();
@@ -141,12 +137,12 @@ void PseudoWorld::readBallBlob(VideoFrame *frame, VideoFrame::Blob *blob)
 		++it;
 	}
 
-	//printf("ball: id=%d\tradius=%f\tangle=%f\n", id, radius, angle);
-
 	if (!id)
 	{
 		id = this->ids++;
 	}
+
+	printf("ball: id=%d\tradius=%f\tangle=%f\n", id, ball->pos.radius, ball->pos.angle);
 
 	// This is a new ball
 	this->balls[id] = ball;
@@ -176,10 +172,8 @@ void PseudoWorld::readGoalBlob(VideoFrame *frame, VideoFrame::Blob *blob)
 	this->target.visible = true;
 	this->target.sequence = frame->sequence;
 	this->target.halfwidth = abs(blob->x1 - blob->x2) / 2;
-	this->target.pos = {
-		sqrt(pow(point.x, 2) + pow(point.y, 2)),
-		atan(point.x / point.y)
-	};
+
+	pointToPosition(this->target.pos, point);
 }
 
 bool PseudoWorld::Ball::inTrackingRegion(PseudoWorld::Ball &ball) const
@@ -187,7 +181,7 @@ bool PseudoWorld::Ball::inTrackingRegion(PseudoWorld::Ball &ball) const
 	double distance = sqrt(pow(this->blob.x - ball.blob.x, 2) +
 		pow(this->blob.y - ball.blob.y, 2));
 
-	return distance <= this->radius * 1.5;
+	return distance <= this->radius * 1.8;
 }
 
 bool PseudoWorld::Ball::inTribblerRegion() const

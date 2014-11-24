@@ -35,5 +35,6 @@ bool env_has(const char *env);
 bool env_is(const char *env, const char *test);
 double relPositionDistance(const RelPosition &pos1, const RelPosition &pos2);
 double speedForRotation(double angle, double time);
+void pointToPosition(RelPosition &pos, const Point2d &point);
 
 #endif
