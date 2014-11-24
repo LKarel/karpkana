@@ -1,12 +1,13 @@
 #ifndef PSEUDOWORLD_H
 #define PSEUDOWORLD_H
 
-#define PSEUDOWORLD_MIN_AGE 2
+#define PSEUDOWORLD_MIN_AGE 3
 
 #include <cmath>
 #include <map>
 #include "main.h"
 #include "util.h"
+#include "comm/Log.h"
 #include "vp/VideoFrame.h"
 
 class PseudoWorld
@@ -27,6 +28,7 @@ public:
 		int radius;
 
 		RelPosition pos;
+		Vector2d velocity;
 		Point2d blob;
 	};
 
@@ -59,6 +61,7 @@ public:
 private:
 	int ids;
 	int age;
+	long lastFrame;
 
 	void readBallBlob(VideoFrame *frame, VideoFrame::Blob *blob);
 	void readGoalBlob(VideoFrame *frame, VideoFrame::Blob *blob);

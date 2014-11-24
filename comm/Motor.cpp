@@ -64,13 +64,7 @@ void Motor::tick()
 
 void Motor::setSpeed(int speed)
 {
-	if (speed < SPEED_MIN || speed > SPEED_MAX)
-	{
-		Log::printf("Motor: error: speed out of allowed bounds: %d", speed);
-		return;
-	}
-
-	this->link->command(CMD_SET_SPEED, speed);
+	this->link->command(CMD_SET_SPEED, LIMIT(speed, SPEED_MIN, SPEED_MAX));
 }
 
 void Motor::stop()

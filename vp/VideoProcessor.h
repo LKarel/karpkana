@@ -6,6 +6,7 @@
 #include "main.h"
 #include "util.h"
 #include "3rdparty/cmvision.h"
+#include "comm/Log.h"
 #include "vp/Camera.h"
 #include "vp/VideoFrame.h"
 

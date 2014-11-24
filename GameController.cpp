@@ -1,6 +1,7 @@
 #include "GameController.h"
 
 #define ROTATION_TIME 0.25
+#define SEARCH_ROTATE_TIME 150000
 
 #define STAGE_CALL_INIT 1
 #define STAGE_CALL_EXIT 2
@@ -25,6 +26,12 @@ typedef struct
 {
 	PID *pid;
 } TargetState;
+
+typedef struct
+{
+	long long rotateBegin;
+	int rotateSpeed;
+} SearchState;
 
 GameController::GameController(VideoProcessor *vp) :
 	vp(vp),
@@ -176,13 +183,21 @@ void *GameController::stageCall(int call, int stage, void *state)
 
 void *GameController::stageSearch(int call, void *state_)
 {
+	SearchState *state = (SearchState *) state_;
+
 	if (call == STAGE_CALL_INIT)
 	{
-		this->robot.coilgun->tribbler(false);
-	}
+		state = (SearchState *) malloc(sizeof(SearchState));
+		state->rotateBegin = 0;
+		state->rotateSpeed = speedForRotation(HFOV - 0.2, SEARCH_ROTATE_TIME / 1000000.0);
 
-	if (call != STAGE_CALL_TICK)
+		this->robot.coilgun->tribbler(false);
+
+		return state;
+	}
+	else if (call == STAGE_CALL_EXIT)
 	{
+		free(state);
 		return NULL;
 	}
 
@@ -192,7 +207,18 @@ void *GameController::stageSearch(int call, void *state_)
 	}
 	else if (this->world.getAge() > PSEUDOWORLD_MIN_AGE)
 	{
-		this->robot.rotate(20);
+		signed long long diff = microtime() - state->rotateBegin;
+
+		if (diff > 0 && diff < SEARCH_ROTATE_TIME)
+		{
+			this->robot.rotate(state->rotateSpeed);
+		}
+		else if (diff > SEARCH_ROTATE_TIME)
+		{
+			this->robot.rotate(0);
+			state->rotateBegin = microtime() + SEARCH_ROTATE_TIME * 2;
+		}
+
 		usleep(1000);
 	}
 
@@ -208,7 +234,7 @@ void *GameController::stageApproach(int call, void *state_)
 		state = (ApproachState *) malloc(sizeof(ApproachState));
 		state->ball = 0;
 		state->ballGone = 0;
-		state->pid = new PID(1.0, 0.05, 0.3);
+		//state->pid = new PID(1.0, 0.05, 0.3);
 
 		this->robot.coilgun->tribbler(true);
 
@@ -216,7 +242,7 @@ void *GameController::stageApproach(int call, void *state_)
 	}
 	else if (call == STAGE_CALL_EXIT)
 	{
-		free(state->pid);
+		//free(state->pid);
 		free(state);
 
 		return NULL;
@@ -243,7 +269,7 @@ void *GameController::stageApproach(int call, void *state_)
 		}
 		else if (state->ballGone)
 		{
-			if (microtime() - state->ballGone > 150000)
+			if (microtime() - state->ballGone > 350000)
 			{
 				this->gotoStage(STAGE_SEARCH);
 			}
@@ -267,19 +293,22 @@ void *GameController::stageApproach(int call, void *state_)
 		return NULL;
 	}
 
+	state->ballGone = 0;
+
+	if (ball->velocity.y > BALL_VELOCITY_MAX)
+	{
+		Log::printf("GameController:: STAGE_APPROACH: abandoning fast-moving ball");
+
+		this->gotoStage(STAGE_SEARCH);
+		return NULL;
+	}
+
 	double rotate = -ball->pos.angle;
-	int rotateSpeed = speedForRotation(rotate, 0.15);
+	int rotateSpeed = speedForRotation(rotate, 0.2);
 
-	printf("ball=%d\trotate=%f\trotateSpeed=%d\n", state->ball, rotate, rotateSpeed);
+	//Log::printf("ball=%d\tradius=%f\tangle=%f", state->ball, ball->pos.radius, ball->pos.angle);
 
-	if (ABS_F(rotate) < 0.08)
-	{
-		this->robot.direction(DIRECTION_FWD, 65);
-	}
-	else
-	{
-		this->robot.drive(65, 0.0, rotateSpeed);
-	}
+	this->robot.drive(50, 0.0, rotateSpeed);
 
 	return NULL;
 }
@@ -291,18 +320,17 @@ void *GameController::stageTarget(int call, void *state_)
 	if (call == STAGE_CALL_INIT)
 	{
 		state = (TargetState *) malloc(sizeof(TargetState));
-		state->pid = new PID(1.0, 0.05, 0.3);
+		//state->pid = new PID(1.0, 0.05, 0.3);
 
 		this->robot.coilgun->tribbler(true);
+		this->robot.coilgun->chargePreload();
 
 		return state;
 	}
 	else if (call == STAGE_CALL_EXIT)
 	{
-		free(state->pid);
+		//free(state->pid);
 		free(state);
-
-		this->robot.coilgun->tribbler(false);
 
 		return NULL;
 	}
@@ -317,16 +345,18 @@ void *GameController::stageTarget(int call, void *state_)
 
 	if (!this->world.target.visible)
 	{
-		angle = PI / -3.0;
+		angle = PI / 3.0;
 	}
 
-	int rotateSpeed = speedForRotation(-angle, 0.15);
-
-	printf("angle=%f\trotateSpeed=%d\n", angle, rotateSpeed);
+	int rotateSpeed = speedForRotation(-angle, 0.175);
 
 	if (ABS_F(angle) < 0.1)
 	{
 		this->nextStage();
+	}
+	else if (ABS_F(angle) < 0.22)
+	{
+		this->robot.drive(45, (rotateSpeed > 0) ? (PI / 2.5) : (PI / -2.5), 0.0);
 	}
 	else
 	{
@@ -340,10 +370,18 @@ void *GameController::stageKick(int call, void *state_)
 {
 	if (call == STAGE_CALL_TICK)
 	{
+		if (!this->robot.motors[MOTOR_BDET]->queryBall())
+		{
+			Log::printf("GameController: STAGE_KICK: no ball");
+			this->gotoStage(STAGE_SEARCH);
+
+			return NULL;
+		}
+
 		Log::printf("GameController: STAGE_KICK: Doing the kick");
 
 		this->robot.coilgun->chargeSync();
-		this->robot.coilgun->kick(32000);
+		this->robot.coilgun->kick(15000);
 		usleep(50 * 1000);
 
 		this->nextStage();
@@ -393,7 +431,8 @@ int GameController::chooseBall()
 	{
 		ball = it->second;
 
-		if (ball->age > PSEUDOWORLD_MIN_AGE && ball->pos.radius < distance)
+		if (ball->age > PSEUDOWORLD_MIN_AGE && ball->pos.radius < distance &&
+			ball->velocity.x < BALL_VELOCITY_MAX)
 		{
 			distance = ball->pos.radius;
 			id = it->first;

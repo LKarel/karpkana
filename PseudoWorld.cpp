@@ -6,7 +6,8 @@
 PseudoWorld::PseudoWorld() :
 	targetColor(VideoFrame::Blob::COLOR_YELLOW),
 	ids(1),
-	age(0)
+	age(0),
+	lastFrame(0)
 {
 }
 
@@ -50,10 +51,12 @@ void PseudoWorld::onFrame(VideoFrame *frame)
 		if (frame->sequence - ball->sequence > 10)
 		{
 			delete it->second;
-			this->balls.erase(it);
+			it = this->balls.erase(it);
 		}
-
-		++it;
+		else
+		{
+			++it;
+		}
 	}
 
 	// Set the goal as not visible, if necessary
@@ -63,6 +66,7 @@ void PseudoWorld::onFrame(VideoFrame *frame)
 	}
 
 	this->age++;
+	this->lastFrame = microtime();
 }
 
 bool PseudoWorld::hasBalls() const
@@ -70,7 +74,8 @@ bool PseudoWorld::hasBalls() const
 	std::map<int, PseudoWorld::Ball *>::const_iterator it = this->balls.begin();
 	while (it != this->balls.end())
 	{
-		if (it->second->age >= PSEUDOWORLD_MIN_AGE)
+		if (it->second->age >= PSEUDOWORLD_MIN_AGE &&
+			it->second->velocity.y < BALL_VELOCITY_MAX)
 		{
 			// Only return true when at least one of the balls is old enough
 			return true;
@@ -103,6 +108,7 @@ void PseudoWorld::readBallBlob(VideoFrame *frame, VideoFrame::Blob *blob)
 {
 	PseudoWorld::Ball *ball = new PseudoWorld::Ball();
 	int id = 0;
+	double frameDt = microtime() - this->lastFrame;
 
 	Point2d point = {
 		((blob->x1 + blob->x2) / 2.0) - (CAPT_WIDTH / 2),
@@ -124,6 +130,10 @@ void PseudoWorld::readBallBlob(VideoFrame *frame, VideoFrame::Blob *blob)
 			it->second->inTrackingRegion(*ball))
 		{
 			ball->age = it->second->age + 1;
+			ball->velocity = {
+				(RELPOS_X(ball->pos) - RELPOS_X(it->second->pos)) / frameDt,
+				(RELPOS_Y(ball->pos) - RELPOS_Y(it->second->pos)) / frameDt,
+			};
 
 			// Replace the previous ball
 			id = it->first;
@@ -142,7 +152,8 @@ void PseudoWorld::readBallBlob(VideoFrame *frame, VideoFrame::Blob *blob)
 		id = this->ids++;
 	}
 
-	printf("ball: id=%d\tradius=%f\tangle=%f\n", id, ball->pos.radius, ball->pos.angle);
+	//Log::printf("ball: id=%d\tradius=%f\tangle=%f", id, ball->pos.radius, ball->pos.angle);
+	//Log::printf("ball: id=%d\tvx=%f\tvy=%f", id, ball->velocity.x, ball->velocity.y);
 
 	// This is a new ball
 	this->balls[id] = ball;

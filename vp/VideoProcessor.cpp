@@ -1,8 +1,8 @@
 #include "VideoProcessor.h"
 
 #define VP_IGNORE_TOP 50
-#define VP_MIN_HEIGHT 6
-#define VP_MIN_WIDTH 6
+#define VP_MIN_HEIGHT 7
+#define VP_MIN_WIDTH 7
 #define VP_BLACK_STEP 2
 #define VP_BLACK_THRESHOLD 4
 
@@ -86,15 +86,14 @@ VideoFrame *VideoProcessor::getFrame()
 			double ratio = width / height;
 			double density = region->area / (width * height);
 
-			if (width < VP_MIN_WIDTH || height < VP_MIN_HEIGHT || density < 0.5 ||
-				region->cen_y < VP_IGNORE_TOP)
+			if (width < VP_MIN_WIDTH || height < VP_MIN_HEIGHT || region->cen_y < VP_IGNORE_TOP)
 			{
 				continue;
 			}
 
 			if (region->color == VideoFrame::Blob::COLOR_BALL)
 			{
-				if (ratio < 0.3 || ratio > 1.7)
+				if (ratio < 0.3 || ratio > 1.7 || density < 0.5)
 				{
 					// Not a valid ball
 					continue;
@@ -122,7 +121,6 @@ VideoFrame *VideoProcessor::getFrame()
 
 				if (blackCount >= VP_BLACK_STEP)
 				{
-					// Ball is behind a black line
 					continue;
 				}
 			}
@@ -130,7 +128,7 @@ VideoFrame *VideoProcessor::getFrame()
 			if (region->color == VideoFrame::Blob::COLOR_YELLOW ||
 				region->color == VideoFrame::Blob::COLOR_BLUE)
 			{
-				if (width < 100 || height < 10)
+				if (width < 75 || height < 10 || density < 0.3)
 				{
 					// Not a valid goal
 					continue;
