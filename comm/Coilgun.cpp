@@ -73,7 +73,7 @@ void Coilgun::chargeSync()
 
 	if (diff < COILGUN_MIN_CHARGE)
 	{
-		usleep(diff);
+		usleep(COILGUN_MIN_CHARGE - diff);
 	}
 
 	if (diff > COILGUN_CHARGE_EXPIRE)
