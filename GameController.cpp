@@ -379,6 +379,7 @@ void *GameController::stageKick(int call, void *state_)
 		}
 
 		Log::printf("GameController: STAGE_KICK: Doing the kick");
+		usleep(100000);
 
 		this->robot.coilgun->chargeSync();
 		this->robot.coilgun->kick(15000);
