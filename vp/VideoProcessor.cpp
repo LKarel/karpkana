@@ -4,7 +4,7 @@
 #define VP_MIN_HEIGHT 7
 #define VP_MIN_WIDTH 7
 #define VP_BLACK_STEP 2
-#define VP_BLACK_THRESHOLD 4
+#define VP_BLACK_THRESHOLD 3
 
 VideoProcessor::VideoProcessor() :
 	keepOriginal(false),
