@@ -382,7 +382,7 @@ void *GameController::stageKick(int call, void *state_)
 		usleep(100000);
 
 		this->robot.coilgun->chargeSync();
-		this->robot.coilgun->kick(15000);
+		this->robot.coilgun->kick(32000);
 		usleep(50 * 1000);
 
 		this->nextStage();
