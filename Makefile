@@ -24,6 +24,7 @@ HEADERS = $(wildcard *.h)
 .PRECIOUS: $(TARGET) $(OBJECTS)
 
 protobuf:
+	mkdir -p comm/pb
 	protoc --proto_path=./protobuf --cpp_out=./comm/pb $(PROTO)
 	protoc -I=./protobuf/ --java_out=./debugclient/src/main/java/ $(PROTO)
 	cd comm/pb && for f in *.cc; do mv "$$f" "`basename $$f .cc`.cpp"; done
@@ -33,4 +34,5 @@ bin/main: $(OBJECTS)
 
 clean:
 	find . -type f -name '*.o' -exec rm -f {} \;
+	rm -rf comm/pb
 	rm -f main
