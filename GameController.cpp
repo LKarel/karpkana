@@ -14,6 +14,7 @@
 #define STAGE_CYCLE_END 5
 #define STAGE_IDLE 6
 #define STAGE_UNSTALL 7
+#define STAGE_UNDARK 8
 
 typedef struct
 {

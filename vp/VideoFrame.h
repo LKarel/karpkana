@@ -35,6 +35,7 @@ public:
 	~VideoFrame();
 
 	int sequence;
+	double darkDensity;
 	std::vector<VideoFrame::Blob *> blobs;
 
 	rgb *imageOriginal;

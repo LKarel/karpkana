@@ -2,6 +2,7 @@
 
 VideoFrame::VideoFrame(int sequence) :
 	sequence(sequence),
+	darkDensity(0.0),
 	imageOriginal(NULL),
 	imageClassify(NULL)
 {

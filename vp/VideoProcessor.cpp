@@ -6,6 +6,9 @@
 #define VP_BLACK_STEP 2
 #define VP_BLACK_THRESHOLD 3
 
+#define VP_DARK_HEIGHT 50
+#define VP_DARK_WIDTH (CAPT_WIDTH / 2)
+
 VideoProcessor::VideoProcessor() :
 	keepOriginal(false),
 	keepClassify(false),
@@ -138,6 +141,25 @@ VideoFrame *VideoProcessor::getFrame()
 			vf->blobs.push_back(VideoFrame::Blob::fromRegion(region));
 		}
 	}
+
+	unsigned int *map = this->vision.getMap();
+	int beginPos = CAPT_WIDTH * (CAPT_HEIGHT - 50);
+	int pad = (CAPT_WIDTH - VP_DARK_WIDTH) / 2;
+	int darkCount = 0;
+	int row, pixel;
+
+	for (size_t i = 0; i < CAPT_WIDTH * VP_DARK_HEIGHT; ++i)
+	{
+		row = i / VP_DARK_WIDTH;
+		pixel = pad * (2 * row + 1) + row * VP_DARK_WIDTH + (i % VP_DARK_WIDTH) + beginPos;
+
+		if (map[pixel] & (1 << VideoFrame::Blob::COLOR_BLACK))
+		{
+			++darkCount;
+		}
+	}
+
+	vf->darkDensity = ((double) darkCount) / ((double) (VP_DARK_WIDTH * VP_DARK_HEIGHT));
 
 	if (this->keepClassify)
 	{
